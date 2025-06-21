@@ -1,0 +1,175 @@
+.idea
+.vscode
+_deps
+cmake-*
+build
+build-*
+build_*
+.DS_Store
+*.pdf
+
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+CMakeUserPresets.json
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Linker files
+*.ilk
+
+# Debugger Files
+*.pdb
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# debug information files
+*.dwo
+
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+# debug information files
+*.dwo
+
+html
+latex
+*.a
+*.d
+*.o
+*.P
+*.axf
+*.bin
+*.elf
+*.env
+*.ind
+*.log
+*.map
+*.obj
+*.jlink
+*.emSession
+*.ninja*
+*.eww
+*.ewp
+*.ewt
+*.ewd
+*.hex
+cmake_install.cmake
+CMakeCache.txt
+settings/
+.settings/
+.vscode/
+.gdb_history
+/examples/*/*/build*
+test_old/
+tests_obsolete/
+_build
+/examples/*/*/ses
+/examples/*/*/ozone
+/examples/obsolete
+hw/bsp/**/cubemx/*/
+.mxproject
+# coverity intermediate files
+cov-int
+# cppcheck build directories
+*-build-dir
+/_bin/
+__pycache__
+cmake-build-*
+sdkconfig
+.PVS-Studio
+.vscode/
+build
+CMakeFiles
+Debug
+RelWithDebInfo
+Release
+BrowseInfo
+.cmake_build
