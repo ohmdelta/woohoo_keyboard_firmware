@@ -19,6 +19,7 @@ target_link_libraries(firmware PUBLIC pico_stdlib hardware_pio pico_unique_id ti
 target_sources(firmware PUBLIC
   src/main.c
   src/usb_descriptors.c
+  src/sym_defer_pk.c
 )
 
 # create map/bin/hex/uf2 file in addition to ELF.
