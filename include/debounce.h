@@ -1,7 +1,9 @@
-#pragma once
+#ifndef DEBOUNCE_H
+#define DEBOUNCE_H
 
 #include "keyboard_config.h"
 #include "structs.h"
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -22,3 +24,5 @@ bool debounce(matrix_row_t raw[], matrix_row_t cooked[], uint8_t num_rows,
 void debounce_init(uint8_t num_rows);
 
 void debounce_free(void);
+
+#endif

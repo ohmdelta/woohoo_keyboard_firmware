@@ -41,6 +41,7 @@
 #include "structs.h"
 
 #include "keyboard_config.h"
+#include "firmware_timer.h"
 #include "debounce.h"
 
 //--------------------------------------------------------------------+

@@ -20,6 +20,7 @@ target_sources(firmware PUBLIC
   src/main.c
   src/usb_descriptors.c
   src/sym_defer_pk.c
+  src/firmware_timer.c
 )
 
 # create map/bin/hex/uf2 file in addition to ELF.

@@ -20,10 +20,10 @@ When no state changes have occured for DEBOUNCE milliseconds, we push the state.
 */
 
 #include "debounce.h"
-// #include "timer.h"
+#include "firmware_timer.h"
 #include <stdlib.h>
 
-#define UINT8_MAX 255
+// #define UINT8_MAX 255
 
 #ifndef DEBOUNCE
 #define DEBOUNCE 5
