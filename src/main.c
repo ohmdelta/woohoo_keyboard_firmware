@@ -38,8 +38,10 @@
 #include "tusb.h"
 
 #include "usb_descriptors.h"
+#include "structs.h"
 
 #include "keyboard_config.h"
+#include "debounce.h"
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
@@ -151,6 +153,11 @@ void hid_task(void);
   gpio_set_dir(x, GPIO_IN); \
   gpio_pull_up(x);
   // gpio_put(x, 1);
+matrix_row_t raw_matrix[MATRIX_ROWS];
+matrix_row_t matrix[MATRIX_ROWS];
+
+void matrix_scan_kb(void) {
+}
 
 /*------------- MAIN -------------*/
 int main(void)
@@ -195,6 +202,8 @@ int main(void)
   SETUP_GPIO(T5)
   SETUP_GPIO(T6)
 
+  debounce_init(ROWS_PER_HAND);
+
   // init device stack on configured roothub port
   tud_init(BOARD_TUD_RHPORT);
 
@@ -213,6 +222,10 @@ int main(void)
   uint8_t p =0;
   while (1)
   {
+    bool changed = true;
+    changed = debounce(raw_matrix, matrix, ROWS_PER_HAND, changed);
+
+    matrix_scan_kb();
     tud_task(); // tinyusb device task
     led_blinking_task();
     uint64_t input_status = gpio_get_all64() & SWITCH_MASK;

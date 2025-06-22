@@ -48,4 +48,6 @@
 #define MATRIX_COLS 6
 #define MATRIX_ROWS 5
 
+#define ROWS_PER_HAND (MATRIX_ROWS)
+
 #endif
