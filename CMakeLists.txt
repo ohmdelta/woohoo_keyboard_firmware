@@ -18,6 +18,8 @@ target_link_libraries(firmware PUBLIC pico_stdlib hardware_pio pico_unique_id ti
 
 target_sources(firmware PUBLIC
   src/main.c
+  src/matrix.c
+  src/board.c
   src/usb_descriptors.c
   src/sym_defer_pk.c
   src/firmware_timer.c

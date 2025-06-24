@@ -42,6 +42,8 @@
 
 #include "keyboard_config.h"
 #include "firmware_timer.h"
+#include "matrix.h"
+#include "board.h"
 #include "debounce.h"
 
 //--------------------------------------------------------------------+
@@ -52,47 +54,6 @@
 
 #define KEYBOARD_BACKLIGHT_PIN 42
 #define NUM_PIXELS 36
-
-#define A1 (4)
-#define A2 (5)
-#define A3 (6)
-#define A4 (7)
-#define A5 (8)
-
-#define B1 (9)
-#define B2 (10)
-#define B3 (11)
-#define B4 (12)
-#define B5 (13)
-
-#define C1 (14)
-#define C2 (15)
-#define C3 (16)
-#define C4 (17)
-#define C5 (18)
-#define D1 (19)
-#define D2 (20)
-#define D3 (21)
-#define D4 (22)
-#define D5 (23)
-
-#define E1 (24)
-#define E2 (25)
-#define E3 (26)
-#define E4 (27)
-#define E5 (28)
-#define F1 (29)
-#define F2 (30)
-#define F3 (31)
-#define F4 (32)
-#define F5 (33)
-
-#define T1 (34)
-#define T2 (35)
-#define T3 (36)
-#define T4 (37)
-#define T5 (38)
-#define T6 (39)
 
 const uint64_t SWITCH_MASK = ((uint64_t)(1) << A1) | ((uint64_t)(1) << A2) | ((uint64_t)(1) << A3) | ((uint64_t)(1) << A4) | ((uint64_t)(1) << A5) | ((uint64_t)(1) << B1) | ((uint64_t)(1) << B2) | ((uint64_t)(1) << B3) | ((uint64_t)(1) << B4) | ((uint64_t)(1) << B5) | ((uint64_t)(1) << C1) | ((uint64_t)(1) << C2) | ((uint64_t)(1) << C3) | ((uint64_t)(1) << C4) | ((uint64_t)(1) << C5) | ((uint64_t)(1) << D1) | ((uint64_t)(1) << D2) | ((uint64_t)(1) << D3) | ((uint64_t)(1) << D4) | ((uint64_t)(1) << D5) | ((uint64_t)(1) << E1) | ((uint64_t)(1) << E2) | ((uint64_t)(1) << E3) | ((uint64_t)(1) << E4) | ((uint64_t)(1) << E5) | ((uint64_t)(1) << F1) | ((uint64_t)(1) << F2) | ((uint64_t)(1) << F3) | ((uint64_t)(1) << F4) | ((uint64_t)(1) << F5) | ((uint64_t)(1) << T1) | ((uint64_t)(1) << T2) | ((uint64_t)(1) << T3) | ((uint64_t)(1) << T4) | ((uint64_t)(1) << T5) | ((uint64_t)(1) << T6);
 
@@ -154,11 +115,8 @@ void hid_task(void);
   gpio_set_dir(x, GPIO_IN); \
   gpio_pull_up(x);
   // gpio_put(x, 1);
-matrix_row_t raw_matrix[MATRIX_ROWS];
-matrix_row_t matrix[MATRIX_ROWS];
-
-void matrix_scan_kb(void) {
-}
+// matrix_row_t raw_matrix[MATRIX_ROWS];
+// matrix_row_t matrix[MATRIX_ROWS];
 
 /*------------- MAIN -------------*/
 int main(void)
@@ -166,43 +124,15 @@ int main(void)
   // board_init();
 
   stdio_init_all();
-  SETUP_GPIO(A1);
-  SETUP_GPIO(A2);
-  SETUP_GPIO(A3);
-  SETUP_GPIO(A4);
-  SETUP_GPIO(A5);
-  SETUP_GPIO(B1)
-  SETUP_GPIO(B2)
-  SETUP_GPIO(B3)
-  SETUP_GPIO(B4)
-  SETUP_GPIO(B5)
-  SETUP_GPIO(C1)
-  SETUP_GPIO(C2)
-  SETUP_GPIO(C3)
-  SETUP_GPIO(C4)
-  SETUP_GPIO(C5)
-  SETUP_GPIO(D1)
-  SETUP_GPIO(D2)
-  SETUP_GPIO(D3)
-  SETUP_GPIO(D4)
-  SETUP_GPIO(D5)
-  SETUP_GPIO(E1)
-  SETUP_GPIO(E2)
-  SETUP_GPIO(E3)
-  SETUP_GPIO(E4)
-  SETUP_GPIO(E5)
-  SETUP_GPIO(F1)
-  SETUP_GPIO(F2)
-  SETUP_GPIO(F3)
-  SETUP_GPIO(F4)
-  SETUP_GPIO(F5)
-  SETUP_GPIO(T1)
-  SETUP_GPIO(T2)
-  SETUP_GPIO(T3)
-  SETUP_GPIO(T4)
-  SETUP_GPIO(T5)
-  SETUP_GPIO(T6)
+  setup_board();
 
+  // gpio_set_irq_enabled_with_callback(
+  //     BUTTON_DOWN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true, &isr_handler);
+  // gpio_set_irq_enabled(BUTTON_UP, GPIO_IRQ_EDGE_FALL, true);
+  // gpio_set_irq_enabled(BUTTON_RIGHT, GPIO_IRQ_EDGE_FALL, true);
+  // gpio_set_irq_enabled(BUTTON_LEFT, GPIO_IRQ_EDGE_FALL, true);
+
+  matrix_init();
   debounce_init(ROWS_PER_HAND);
 
   // init device stack on configured roothub port
@@ -224,7 +154,7 @@ int main(void)
   while (1)
   {
     bool changed = true;
-    changed = debounce(raw_matrix, matrix, ROWS_PER_HAND, changed);
+    // changed = debounce(raw_matrix, matrix, ROWS_PER_HAND, changed);
 
     matrix_scan_kb();
     tud_task(); // tinyusb device task

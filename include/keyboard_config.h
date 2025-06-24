@@ -1,6 +1,13 @@
 #ifndef KEYBOARD_CONFIG_H
 #define KEYBOARD_CONFIG_H
 
+// TEST
+#define BUTTON_UP (0)
+#define BUTTON_DOWN (3)
+#define BUTTON_LEFT (2)
+#define BUTTON_RIGHT (1)
+// 
+
 #define A1 4
 #define A2 5
 #define A3 6
