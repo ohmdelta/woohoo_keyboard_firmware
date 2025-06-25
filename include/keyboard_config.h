@@ -52,6 +52,7 @@
 #define T5 38
 #define T6 39
 
+#define NUM_KEYS ((5 * 6) + 6)
 #define MATRIX_COLS 6
 #define MATRIX_ROWS 5
 

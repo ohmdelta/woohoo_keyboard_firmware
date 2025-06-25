@@ -32,6 +32,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "bsp/board_api.h"
@@ -156,7 +157,7 @@ int main(void)
     bool changed = true;
     // changed = debounce(raw_matrix, matrix, ROWS_PER_HAND, changed);
 
-    matrix_scan_kb();
+    matrix_task();
     tud_task(); // tinyusb device task
     led_blinking_task();
     uint64_t input_status = gpio_get_all64() & SWITCH_MASK;

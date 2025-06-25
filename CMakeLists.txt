@@ -17,7 +17,6 @@ pico_generate_pio_header(firmware ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio OUTPU
 target_link_libraries(firmware PUBLIC pico_stdlib hardware_pio pico_unique_id tinyusb_device tinyusb_board)
 
 target_sources(firmware PUBLIC
-  src/main.c
   src/matrix.c
   src/board.c
   src/usb_descriptors.c

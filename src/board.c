@@ -6,7 +6,7 @@
 #define GPIO_INPUT_SETUP(BUTTON)   \
     gpio_init(BUTTON);             \
     gpio_set_dir(BUTTON, GPIO_IN); \
-    gpio_pull_up(BUTTON);
+    gpio_pull_down(BUTTON);
 
 void setup_board(void)
 {
