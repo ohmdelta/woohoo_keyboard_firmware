@@ -40,32 +40,58 @@
 // MACRO CONSTANT TYPEDEF PROTYPES
 //--------------------------------------------------------------------+
 
-#define BUTTON_UP (0)
-#define BUTTON_DOWN (3)
-#define BUTTON_LEFT (2)
-#define BUTTON_RIGHT (1)
+#define A1 (4)
+#define A2 (5)
+#define A3 (6)
+#define A4 (7)
+#define A5 (8)
+
+#define B1 (9)
+#define B2 (10)
+#define B3 (11)
+#define B4 (12)
+#define B5 (13)
+
+#define C1 (14)
+#define C2 (15)
+#define C3 (16)
+#define C4 (17)
+#define C5 (18)
+#define D1 (19)
+#define D2 (20)
+#define D3 (21)
+#define D4 (22)
+#define D5 (23)
+
+#define E1 (24)
+#define E2 (25)
+#define E3 (26)
+#define E4 (27)
+#define E5 (28)
+#define F1 (29)
+#define F2 (30)
+#define F3 (31)
+#define F4 (32)
+#define F5 (33)
+
+#define T1 (34)
+#define T2 (35)
+#define T3 (36)
+#define T4 (37)
+#define T5 (38)
+#define T6 (39)
 
 uint8_t buttons_queue = 0;
 void isr_handler(uint gpio, uint32_t events) {
   // Put the GPIO event(s) that just happened into event_str
   // so we can print it
-  switch (gpio) {
-  case BUTTON_UP:
-    buttons_queue = 'A';
-    break;
-  case BUTTON_DOWN:
-    buttons_queue = 'B';
-    break;
-  case BUTTON_LEFT:
-    buttons_queue = 'C';
-    break;
-  case BUTTON_RIGHT:
-    buttons_queue = 'D';
-    break;
-  default:
-    buttons_queue = 0;
-    break;
+  if (gpio <= T6) {
+    buttons_queue = 'A' + gpio - A1;
   }
+  else{
+    buttons_queue = 0;
+  }
+
 }
 
 /* Blink pattern
@@ -73,7 +99,8 @@ void isr_handler(uint gpio, uint32_t events) {
  * - 1000 ms : device mounted
  * - 2500 ms : device is suspended
  */
-enum {
+enum
+{
   BLINK_NOT_MOUNTED = 250,
   BLINK_MOUNTED = 1000,
   BLINK_SUSPENDED = 2500,
@@ -84,38 +111,103 @@ static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 void led_blinking_task(void);
 void hid_task(void);
 
+#define SETUP_GPIO(x)       \
+  gpio_init(x);             \
+  gpio_set_dir(x, GPIO_IN); \
+  gpio_pull_up(x);\
+  gpio_put(x, 1);
+
 /*------------- MAIN -------------*/
-int main(void) {
+int main(void)
+{
   // board_init();
 
   stdio_init_all();
-  gpio_init(BUTTON_DOWN);
-  gpio_init(BUTTON_UP);
-  gpio_init(BUTTON_RIGHT);
-  gpio_init(BUTTON_LEFT);
-  gpio_set_dir(BUTTON_DOWN, GPIO_IN);
-  gpio_set_dir(BUTTON_UP, GPIO_IN);
-  gpio_set_dir(BUTTON_RIGHT, GPIO_IN);
-  gpio_set_dir(BUTTON_LEFT, GPIO_IN);
-  gpio_pull_up(BUTTON_DOWN);
-  gpio_pull_up(BUTTON_UP);
-  gpio_pull_up(BUTTON_RIGHT);
-  gpio_pull_up(BUTTON_LEFT);
+  SETUP_GPIO(A1);
+  SETUP_GPIO(A2);
+  SETUP_GPIO(A3);
+  SETUP_GPIO(A4);
+  SETUP_GPIO(A5);
+  SETUP_GPIO(B1)
+  SETUP_GPIO(B2)
+  SETUP_GPIO(B3)
+  SETUP_GPIO(B4)
+  SETUP_GPIO(B5)
+  SETUP_GPIO(C1)
+  SETUP_GPIO(C2)
+  SETUP_GPIO(C3)
+  SETUP_GPIO(C4)
+  SETUP_GPIO(C5)
+  SETUP_GPIO(D1)
+  SETUP_GPIO(D2)
+  SETUP_GPIO(D3)
+  SETUP_GPIO(D4)
+  SETUP_GPIO(D5)
+  SETUP_GPIO(E1)
+  SETUP_GPIO(E2)
+  SETUP_GPIO(E3)
+  SETUP_GPIO(E4)
+  SETUP_GPIO(E5)
+  SETUP_GPIO(F1)
+  SETUP_GPIO(F2)
+  SETUP_GPIO(F3)
+  SETUP_GPIO(F4)
+  SETUP_GPIO(F5)
+  SETUP_GPIO(T1)
+  SETUP_GPIO(T2)
+  SETUP_GPIO(T3)
+  SETUP_GPIO(T4)
+  SETUP_GPIO(T5)
+  SETUP_GPIO(T6)
 
   gpio_set_irq_enabled_with_callback(
-      BUTTON_DOWN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true, &isr_handler);
-  gpio_set_irq_enabled(BUTTON_UP, GPIO_IRQ_EDGE_FALL, true);
-  gpio_set_irq_enabled(BUTTON_RIGHT, GPIO_IRQ_EDGE_FALL, true);
-  gpio_set_irq_enabled(BUTTON_LEFT, GPIO_IRQ_EDGE_FALL, true);
+      A1, GPIO_IRQ_EDGE_RISE, true, &isr_handler);
+  gpio_set_irq_enabled(A2, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(A3, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(A4, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(A5, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(B1, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(B2, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(B3, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(B4, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(B5, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(C1, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(C2, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(C3, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(C4, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(C5, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(D1, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(D2, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(D3, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(D4, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(D5, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(E1, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(E2, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(E3, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(E4, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(E5, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(F1, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(F2, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(F3, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(F4, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(F5, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(T1, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(T2, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(T3, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(T4, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(T5, GPIO_IRQ_LEVEL_LOW, true);
+  gpio_set_irq_enabled(T6, GPIO_IRQ_LEVEL_LOW, true);
 
   // init device stack on configured roothub port
   tud_init(BOARD_TUD_RHPORT);
 
-  if (board_init_after_tusb) {
+  if (board_init_after_tusb)
+  {
     board_init_after_tusb();
   }
 
-  while (1) {
+  while (1)
+  {
     tud_task(); // tinyusb device task
     led_blinking_task();
 
@@ -134,13 +226,15 @@ void tud_mount_cb(void) { blink_interval_ms = BLINK_MOUNTED; }
 void tud_umount_cb(void) { blink_interval_ms = BLINK_NOT_MOUNTED; }
 
 // Invoked when usb bus is suspended
-void tud_suspend_cb(bool remote_wakeup_en) {
+void tud_suspend_cb(bool remote_wakeup_en)
+{
   (void)remote_wakeup_en;
   blink_interval_ms = BLINK_SUSPENDED;
 }
 
 // Invoked when usb bus is resumed
-void tud_resume_cb(void) {
+void tud_resume_cb(void)
+{
   blink_interval_ms = tud_mounted() ? BLINK_MOUNTED : BLINK_NOT_MOUNTED;
 }
 
@@ -148,42 +242,38 @@ void tud_resume_cb(void) {
 // USB HID
 //--------------------------------------------------------------------+
 
-static void send_hid_report(uint8_t report_id, uint32_t btn) {
+static void send_hid_report(uint8_t report_id, uint32_t btn)
+{
   // skip if hid is not ready yet
   if (!tud_hid_ready())
     return;
 
-  switch (report_id) {
-  case REPORT_ID_KEYBOARD: {
+  switch (report_id)
+  {
+  case REPORT_ID_KEYBOARD:
+  {
     // use to avoid send multiple consecutive zero report for keyboard
     static bool has_keyboard_key = false;
 
-    if (btn && !has_keyboard_key) {
+    if (btn && !has_keyboard_key)
+    {
       uint8_t keycode[6] = {0};
 
-      switch (btn) {
-      case 'A':
-        keycode[0] = HID_KEY_A;
-        break;
-      case 'B':
-        keycode[0] = HID_KEY_B;
-        break;
-      case 'C':
-        keycode[0] = HID_KEY_C;
-        break;
-      case 'D':
-        keycode[0] = HID_KEY_D;
-        break;
-      default:
+      if (btn <= 'A' + T6 - A1) {
+        keycode[0] = HID_KEY_A + btn - 'A';
+      }
+      else{
         keycode[0] = HID_KEY_Z;
-        break;
       }
 
       buttons_queue = 0;
       tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
       has_keyboard_key = true;
-    } else {
-      if (has_keyboard_key) {
+    }
+    else
+    {
+      if (has_keyboard_key)
+      {
         tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
       }
       has_keyboard_key = false;
@@ -202,7 +292,8 @@ static void send_hid_report(uint8_t report_id, uint32_t btn) {
     //  }
     //  has_keyboard_key = false;
     //}
-  } break;
+  }
+  break;
 
   default:
     break;
@@ -212,7 +303,8 @@ static void send_hid_report(uint8_t report_id, uint32_t btn) {
 // Every 10ms, we will sent 1 report for each HID profile (keyboard, mouse etc
 // ..) tud_hid_report_complete_cb() is used to send the next report after
 // previous one is complete
-void hid_task(void) {
+void hid_task(void)
+{
   // Poll every 10ms
   const uint32_t interval_ms = 10;
   static uint32_t start_ms = 0;
@@ -252,13 +344,15 @@ void hid_task(void) {
 // Application can use this to send the next report
 // Note: For composite reports, report[0] is report ID
 void tud_hid_report_complete_cb(uint8_t instance, uint8_t const *report,
-                                uint16_t len) {
+                                uint16_t len)
+{
   (void)instance;
   (void)len;
 
   uint8_t next_report_id = report[0] + 1u;
 
-  if (next_report_id < REPORT_ID_COUNT) {
+  if (next_report_id < REPORT_ID_COUNT)
+  {
     // send_hid_report(next_report_id, board_button_read());
   }
 }
@@ -268,7 +362,8 @@ void tud_hid_report_complete_cb(uint8_t instance, uint8_t const *report,
 // Return zero will cause the stack to STALL request
 uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id,
                                hid_report_type_t report_type, uint8_t *buffer,
-                               uint16_t reqlen) {
+                               uint16_t reqlen)
+{
   // TODO not Implemented
   (void)instance;
   (void)report_id;
@@ -283,23 +378,29 @@ uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id,
 // received data on OUT endpoint ( Report ID = 0, Type = 0 )
 void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id,
                            hid_report_type_t report_type, uint8_t const *buffer,
-                           uint16_t bufsize) {
+                           uint16_t bufsize)
+{
   (void)instance;
 
-  if (report_type == HID_REPORT_TYPE_OUTPUT) {
+  if (report_type == HID_REPORT_TYPE_OUTPUT)
+  {
     // Set keyboard LED e.g Capslock, Numlock etc...
-    if (report_id == REPORT_ID_KEYBOARD) {
+    if (report_id == REPORT_ID_KEYBOARD)
+    {
       // bufsize should be (at least) 1
       if (bufsize < 1)
         return;
 
       uint8_t const kbd_leds = buffer[0];
 
-      if (kbd_leds & KEYBOARD_LED_CAPSLOCK) {
+      if (kbd_leds & KEYBOARD_LED_CAPSLOCK)
+      {
         // Capslock On: disable blink, turn led on
         blink_interval_ms = 0;
         board_led_write(true);
-      } else {
+      }
+      else
+      {
         // Caplocks Off: back to normal blink
         board_led_write(false);
         blink_interval_ms = BLINK_MOUNTED;
@@ -311,7 +412,8 @@ void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id,
 //--------------------------------------------------------------------+
 // BLINKING TASK
 //--------------------------------------------------------------------+
-void led_blinking_task(void) {
+void led_blinking_task(void)
+{
   static uint32_t start_ms = 0;
   static bool led_state = false;
 
