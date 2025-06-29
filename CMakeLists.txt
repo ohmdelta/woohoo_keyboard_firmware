@@ -17,6 +17,7 @@ pico_generate_pio_header(firmware ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio OUTPU
 target_link_libraries(firmware PUBLIC pico_stdlib hardware_pio pico_unique_id tinyusb_device tinyusb_board)
 
 target_sources(firmware PUBLIC
+  src/main.c
   src/matrix.c
   src/board.c
   src/usb_descriptors.c
@@ -36,5 +37,5 @@ target_include_directories(firmware PUBLIC
 # Uncomment this line to enable fix for Errata RP2040-E5 (the fix requires use of GPIO 15)
 #target_compile_definitions(firmware PUBLIC PICO_RP2040_USB_DEVICE_ENUMERATION_FIX=1)
 
-pico_add_extra_outputs(firmware)
+# pico_add_extra_outputs(firmware)
 

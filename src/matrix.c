@@ -27,7 +27,7 @@ uint64_t key_status = 0;
 uint8_t matrix_scan(void)
 {
   bool changed = false;
-  key_status = gpio_get_all64() & MATRIX_MASK;
+  key_status = gpio_get_all64() & SWITCH_MASK;
 
   // debounce(matrix_debouncing, matrix, matrix_rows(), changed);
   changed = debounce(raw_matrix, matrix, changed);

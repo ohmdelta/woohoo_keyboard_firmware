@@ -6,15 +6,10 @@
 #define GPIO_INPUT_SETUP(BUTTON)   \
     gpio_init(BUTTON);             \
     gpio_set_dir(BUTTON, GPIO_IN); \
-    gpio_pull_down(BUTTON);
+    gpio_pull_up(BUTTON);
 
 void setup_board(void)
 {
-    GPIO_INPUT_SETUP(BUTTON_DOWN)
-    GPIO_INPUT_SETUP(BUTTON_UP)
-    GPIO_INPUT_SETUP(BUTTON_RIGHT)
-    GPIO_INPUT_SETUP(BUTTON_LEFT)
-
     GPIO_INPUT_SETUP(A1)
     GPIO_INPUT_SETUP(A2)
     GPIO_INPUT_SETUP(A3)

@@ -54,9 +54,6 @@
 #define IS_RGBW false
 
 #define KEYBOARD_BACKLIGHT_PIN 42
-#define NUM_PIXELS 36
-
-const uint64_t SWITCH_MASK = ((uint64_t)(1) << A1) | ((uint64_t)(1) << A2) | ((uint64_t)(1) << A3) | ((uint64_t)(1) << A4) | ((uint64_t)(1) << A5) | ((uint64_t)(1) << B1) | ((uint64_t)(1) << B2) | ((uint64_t)(1) << B3) | ((uint64_t)(1) << B4) | ((uint64_t)(1) << B5) | ((uint64_t)(1) << C1) | ((uint64_t)(1) << C2) | ((uint64_t)(1) << C3) | ((uint64_t)(1) << C4) | ((uint64_t)(1) << C5) | ((uint64_t)(1) << D1) | ((uint64_t)(1) << D2) | ((uint64_t)(1) << D3) | ((uint64_t)(1) << D4) | ((uint64_t)(1) << D5) | ((uint64_t)(1) << E1) | ((uint64_t)(1) << E2) | ((uint64_t)(1) << E3) | ((uint64_t)(1) << E4) | ((uint64_t)(1) << E5) | ((uint64_t)(1) << F1) | ((uint64_t)(1) << F2) | ((uint64_t)(1) << F3) | ((uint64_t)(1) << F4) | ((uint64_t)(1) << F5) | ((uint64_t)(1) << T1) | ((uint64_t)(1) << T2) | ((uint64_t)(1) << T3) | ((uint64_t)(1) << T4) | ((uint64_t)(1) << T5) | ((uint64_t)(1) << T6);
 
 static inline void
 put_pixel(PIO pio, uint sm, uint32_t pixel_grb)
@@ -80,19 +77,6 @@ static inline uint32_t urgbw_u32(uint8_t r, uint8_t g, uint8_t b, uint8_t w)
 }
 
 uint8_t buttons_queue = 0;
-void isr_handler(uint gpio, uint32_t events)
-{
-  // Put the GPIO event(s) that just happened into event_str
-  // so we can print it
-  if (gpio <= T6)
-  {
-    buttons_queue = 'A' + gpio - A1;
-  }
-  else
-  {
-    buttons_queue = 0;
-  }
-}
 
 /* Blink pattern
  * - 250 ms  : device not mounted
@@ -111,13 +95,6 @@ static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 void led_blinking_task(void);
 void hid_task(void);
 
-#define SETUP_GPIO(x)       \
-  gpio_init(x);             \
-  gpio_set_dir(x, GPIO_IN); \
-  gpio_pull_up(x);
-  // gpio_put(x, 1);
-// matrix_row_t raw_matrix[MATRIX_ROWS];
-// matrix_row_t matrix[MATRIX_ROWS];
 
 /*------------- MAIN -------------*/
 int main(void)
@@ -126,12 +103,6 @@ int main(void)
 
   stdio_init_all();
   setup_board();
-
-  // gpio_set_irq_enabled_with_callback(
-  //     BUTTON_DOWN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true, &isr_handler);
-  // gpio_set_irq_enabled(BUTTON_UP, GPIO_IRQ_EDGE_FALL, true);
-  // gpio_set_irq_enabled(BUTTON_RIGHT, GPIO_IRQ_EDGE_FALL, true);
-  // gpio_set_irq_enabled(BUTTON_LEFT, GPIO_IRQ_EDGE_FALL, true);
 
   matrix_init();
   debounce_init(ROWS_PER_HAND);
@@ -151,15 +122,16 @@ int main(void)
   bool success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio, &sm, &offset, KEYBOARD_BACKLIGHT_PIN, 1, true);
   hard_assert(success);
   ws2812_program_init(pio, sm, offset, KEYBOARD_BACKLIGHT_PIN, 800000, IS_RGBW);
+
   uint8_t p =0;
   while (1)
   {
     bool changed = true;
     // changed = debounce(raw_matrix, matrix, ROWS_PER_HAND, changed);
 
-    matrix_task();
+    matrix_scan_kb();
     tud_task(); // tinyusb device task
-    led_blinking_task();
+
     uint64_t input_status = gpio_get_all64() & SWITCH_MASK;
 
     buttons_queue = 0;
@@ -381,25 +353,4 @@ void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id,
       }
     }
   }
-}
-
-//--------------------------------------------------------------------+
-// BLINKING TASK
-//--------------------------------------------------------------------+
-void led_blinking_task(void)
-{
-  static uint32_t start_ms = 0;
-  static bool led_state = false;
-
-  // blink is disabled
-  if (!blink_interval_ms)
-    return;
-
-  // Blink every interval ms
-  if (board_millis() - start_ms < blink_interval_ms)
-    return; // not enough time
-  start_ms += blink_interval_ms;
-
-  board_led_write(led_state);
-  led_state = 1 - led_state; // toggle
 }
