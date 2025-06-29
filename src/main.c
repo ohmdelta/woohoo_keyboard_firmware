@@ -26,6 +26,9 @@
 #include "hardware/gpio.h"
 #include "hardware/timer.h"
 #include "pico/stdlib.h"
+#include "hardware/pio.h"
+#include "hardware/clocks.h"
+#include "ws2812.pio.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,6 +42,11 @@
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
 //--------------------------------------------------------------------+
+
+#define IS_RGBW false
+
+#define KEYBOARD_BACKLIGHT_PIN 42
+#define NUM_PIXELS 36
 
 #define A1 (4)
 #define A2 (5)
@@ -81,17 +89,42 @@
 #define T5 (38)
 #define T6 (39)
 
+const uint64_t SWITCH_MASK = ((uint64_t)(1) << A1) | ((uint64_t)(1) << A2) | ((uint64_t)(1) << A3) | ((uint64_t)(1) << A4) | ((uint64_t)(1) << A5) | ((uint64_t)(1) << B1) | ((uint64_t)(1) << B2) | ((uint64_t)(1) << B3) | ((uint64_t)(1) << B4) | ((uint64_t)(1) << B5) | ((uint64_t)(1) << C1) | ((uint64_t)(1) << C2) | ((uint64_t)(1) << C3) | ((uint64_t)(1) << C4) | ((uint64_t)(1) << C5) | ((uint64_t)(1) << D1) | ((uint64_t)(1) << D2) | ((uint64_t)(1) << D3) | ((uint64_t)(1) << D4) | ((uint64_t)(1) << D5) | ((uint64_t)(1) << E1) | ((uint64_t)(1) << E2) | ((uint64_t)(1) << E3) | ((uint64_t)(1) << E4) | ((uint64_t)(1) << E5) | ((uint64_t)(1) << F1) | ((uint64_t)(1) << F2) | ((uint64_t)(1) << F3) | ((uint64_t)(1) << F4) | ((uint64_t)(1) << F5) | ((uint64_t)(1) << T1) | ((uint64_t)(1) << T2) | ((uint64_t)(1) << T3) | ((uint64_t)(1) << T4) | ((uint64_t)(1) << T5) | ((uint64_t)(1) << T6);
+
+static inline void
+put_pixel(PIO pio, uint sm, uint32_t pixel_grb)
+{
+  pio_sm_put_blocking(pio, sm, pixel_grb << 8u);
+}
+
+static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b)
+{
+  return ((uint32_t)(r) << 8) |
+         ((uint32_t)(g) << 16) |
+         (uint32_t)(b);
+}
+
+static inline uint32_t urgbw_u32(uint8_t r, uint8_t g, uint8_t b, uint8_t w)
+{
+  return ((uint32_t)(r) << 8) |
+         ((uint32_t)(g) << 16) |
+         ((uint32_t)(w) << 24) |
+         (uint32_t)(b);
+}
+
 uint8_t buttons_queue = 0;
-void isr_handler(uint gpio, uint32_t events) {
+void isr_handler(uint gpio, uint32_t events)
+{
   // Put the GPIO event(s) that just happened into event_str
   // so we can print it
-  if (gpio <= T6) {
+  if (gpio <= T6)
+  {
     buttons_queue = 'A' + gpio - A1;
   }
-  else{
+  else
+  {
     buttons_queue = 0;
   }
-
 }
 
 /* Blink pattern
@@ -114,8 +147,8 @@ void hid_task(void);
 #define SETUP_GPIO(x)       \
   gpio_init(x);             \
   gpio_set_dir(x, GPIO_IN); \
-  gpio_pull_up(x);\
-  gpio_put(x, 1);
+  gpio_pull_up(x);
+  // gpio_put(x, 1);
 
 /*------------- MAIN -------------*/
 int main(void)
@@ -160,44 +193,6 @@ int main(void)
   SETUP_GPIO(T5)
   SETUP_GPIO(T6)
 
-  gpio_set_irq_enabled_with_callback(
-      A1, GPIO_IRQ_EDGE_RISE, true, &isr_handler);
-  gpio_set_irq_enabled(A2, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(A3, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(A4, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(A5, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(B1, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(B2, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(B3, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(B4, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(B5, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(C1, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(C2, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(C3, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(C4, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(C5, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(D1, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(D2, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(D3, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(D4, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(D5, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(E1, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(E2, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(E3, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(E4, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(E5, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(F1, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(F2, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(F3, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(F4, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(F5, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(T1, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(T2, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(T3, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(T4, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(T5, GPIO_IRQ_LEVEL_LOW, true);
-  gpio_set_irq_enabled(T6, GPIO_IRQ_LEVEL_LOW, true);
-
   // init device stack on configured roothub port
   tud_init(BOARD_TUD_RHPORT);
 
@@ -206,13 +201,43 @@ int main(void)
     board_init_after_tusb();
   }
 
+  PIO pio;
+  uint sm;
+  uint offset;
+
+  bool success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio, &sm, &offset, KEYBOARD_BACKLIGHT_PIN, 1, true);
+  hard_assert(success);
+  ws2812_program_init(pio, sm, offset, KEYBOARD_BACKLIGHT_PIN, 800000, IS_RGBW);
+  uint8_t p =0;
   while (1)
   {
     tud_task(); // tinyusb device task
     led_blinking_task();
+    uint64_t input_status = gpio_get_all64() & SWITCH_MASK;
+
+    buttons_queue = 0;
+
+    if (input_status)
+      for (int i = A1; i <= T6; i++)
+      {
+        if (!((input_status >> i) & 1))
+        {
+          buttons_queue = 'A' + i - A1;
+        }
+      }
+
+    for (size_t i = A1; i <= T6; i++)
+    {
+      uint8_t val = (((input_status >> i) & 1) + 1) & 1;
+      put_pixel(pio, sm, urgb_u32((val)*p + 0b100, 0b100, 0b100));
+    }
+    p++;
+    sleep_ms(10);
 
     hid_task();
   }
+
+  pio_remove_program_and_unclaim_sm(&ws2812_program, pio, sm, offset);
 }
 
 //--------------------------------------------------------------------+
@@ -259,10 +284,12 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
     {
       uint8_t keycode[6] = {0};
 
-      if (btn <= 'A' + T6 - A1) {
+      if (btn <= 'A' + T6 - A1)
+      {
         keycode[0] = HID_KEY_A + btn - 'A';
       }
-      else{
+      else
+      {
         keycode[0] = HID_KEY_Z;
       }
 
