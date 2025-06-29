@@ -46,6 +46,7 @@
 #include "matrix.h"
 #include "board.h"
 #include "debounce.h"
+#include "keyboard_mapping.h"
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
