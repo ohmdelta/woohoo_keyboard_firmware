@@ -48,7 +48,7 @@ static bool cooked_changed;
 #define DEBOUNCE_ELAPSED 0
 
 static void update_debounce_counters_and_transfer_if_expired(
-    uint64_t raw, uint64_t cooked,
+    uint64_t *raw, uint64_t* cooked,
     uint8_t elapsed_time);
 static void start_debounce_counters(uint64_t raw, uint64_t cooked);
 
@@ -103,9 +103,7 @@ bool debounce(uint64_t raw, uint64_t cooked,
   return cooked_changed;
 }
 
-static void update_debounce_counters_and_transfer_if_expired(
-    uint64_t raw, uint64_t cooked,
-    uint8_t elapsed_time)
+static void update_debounce_counters_and_transfer_if_expired(uint64_t *raw, uint64_t *cooked, uint8_t elapsed_time)
 {
   counters_need_update = false;
   debounce_counter_t *debounce_pointer = debounce_counters;
@@ -114,9 +112,9 @@ static void update_debounce_counters_and_transfer_if_expired(
     if (*debounce_pointer <= elapsed_time)
     {
       *debounce_pointer = DEBOUNCE_ELAPSED;
-      uint8_t cooked_next = (cooked) | (raw);
-      cooked_changed |= cooked ^ cooked_next;
-      cooked = cooked_next;
+      uint64_t cooked_next = *cooked | *raw;
+      cooked_changed |= *cooked ^ cooked_next;
+      *cooked = cooked_next;
     }
     else
     {
@@ -124,7 +122,7 @@ static void update_debounce_counters_and_transfer_if_expired(
       counters_need_update = true;
     }
   }
-  debounce_pointer++;
+    debounce_pointer++;
 }
 
 static void start_debounce_counters(uint64_t raw, uint64_t cooked)

@@ -58,6 +58,7 @@ bool matrix_can_read(void);
 bool matrix_is_on(uint8_t row, uint8_t col);
 /* matrix state on row */
 matrix_row_t matrix_get_row(uint8_t row);
+uint64_t get_keys(void);
 /* print matrix for debug */
 void matrix_print(void);
 /* delay between changing matrix pin state and reading values */

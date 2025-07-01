@@ -124,34 +124,60 @@ int main(void)
   hard_assert(success);
   ws2812_program_init(pio, sm, offset, KEYBOARD_BACKLIGHT_PIN, 800000, IS_RGBW);
 
+  for (size_t i = A1; i <= T6; i++)
+  {
+    uint8_t val = 0;
+    put_pixel(pio, sm, urgb_u32(0b100 * val, 0b100 * val, 0b100 * val));
+  }
+
   uint8_t p =0;
   while (1)
   {
-    bool changed = true;
     // changed = debounce(raw_matrix, matrix, ROWS_PER_HAND, changed);
 
-    matrix_scan_kb();
+    bool changed = matrix_task();
+    uint64_t key = get_keys() & SWITCH_MASK;
+    buttons_queue = 0;
     tud_task(); // tinyusb device task
 
-    uint64_t input_status = gpio_get_all64() & SWITCH_MASK;
+    // uint64_t input_status = gpio_get_all64() & SWITCH_MASK;
 
-    buttons_queue = 0;
+    // buttons_queue = 0;
 
-    if (input_status)
+    // if (input_status)
+    //   for (int i = A1; i <= T6; i++)
+    //   {
+    //     if (!((input_status >> i) & 1))
+    //     {
+    //       buttons_queue = 'A' + i - A1;
+    //     }uint64_t input_status = gpio_get_all64() & SWITCH_MASK;
+
+    // buttons_queue = 0;
+
+    // if (input_status)
+    //   for (int i = A1; i <= T6; i++)
+    //   {
+    //     if (!((input_status >> i) & 1))
+    //     {
+    //       buttons_queue = 'A' + i - A1;
+    //     }
+    //   }
+    if(changed)
+    {
       for (int i = A1; i <= T6; i++)
       {
-        if (!((input_status >> i) & 1))
-        {
-          buttons_queue = 'A' + i - A1;
-        }
+        buttons_queue = (key >> i) & 1 ? i + 'A' - A1 : buttons_queue;
       }
 
-    for (size_t i = A1; i <= T6; i++)
-    {
-      uint8_t val = (((input_status >> i) & 1) + 1) & 1;
-      put_pixel(pio, sm, urgb_u32((val)*p + 0b100, 0b100, 0b100));
+      for (size_t i = A1; i <= T6; i++)
+      {
+        // uint8_t val = (((buttons_queue >> i) & 1) + 1) & 1;
+        uint8_t val = 1 ;
+        if (!key) val = 0;
+        put_pixel(pio, sm, urgb_u32(0b100 * (val + 4 * (buttons_queue == i + 'A' - A1)), 0b100 * val, 0b100 * val));
+      }
     }
-    p++;
+    // p++;
     sleep_ms(10);
 
     hid_task();
@@ -225,20 +251,6 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
       }
       has_keyboard_key = false;
     }
-
-    // if (btn) {
-    //   uint8_t keycode[6] = {0};
-    //   keycode[0] = HID_KEY_A;
-
-    //  tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
-    //  has_keyboard_key = true;
-    //} else {
-    //  // send empty key report if previously has key pressed
-    //  if (has_keyboard_key) {
-    //    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-    //  }
-    //  has_keyboard_key = false;
-    //}
   }
   break;
 
@@ -259,19 +271,6 @@ void hid_task(void)
   if (board_millis() - start_ms < interval_ms)
     return; // not enough time
   start_ms += interval_ms;
-
-  // uint32_t const btn = board_button_read();
-  // uint8_t buttons_queue = 0;
-  // if (!gpio_get(BUTTON_UP)) {
-  //  buttons_queue = 'A';
-  //} else if (!gpio_get(BUTTON_DOWN)) {
-  //  buttons_queue = 'B';
-  //} else if (!gpio_get(BUTTON_LEFT)) {
-  //  buttons_queue = 'C';
-  //} else if (!gpio_get(BUTTON_RIGHT)) {
-  //  buttons_queue = 'D';
-  //}
-  //
 
   send_hid_report(REPORT_ID_KEYBOARD, buttons_queue);
 
