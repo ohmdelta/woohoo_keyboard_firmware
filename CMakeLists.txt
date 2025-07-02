@@ -8,15 +8,15 @@ include(pico-sdk/pico_sdk_init.cmake)
 pico_sdk_init()
 project(firmware)
 
-add_executable(firmware)
+add_executable(left_firmware)
 
 file(MAKE_DIRECTORY generated)
-pico_generate_pio_header(firmware ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/generated)
+pico_generate_pio_header(left_firmware ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/generated)
 
 # Add pico_stdlib library which aggregates commonly used features
-target_link_libraries(firmware PUBLIC pico_stdlib hardware_pio pico_unique_id tinyusb_device tinyusb_board)
+target_link_libraries(left_firmware PUBLIC pico_stdlib hardware_pio pico_unique_id tinyusb_device tinyusb_board)
 
-target_sources(firmware PUBLIC
+target_sources(left_firmware PUBLIC
   src/main.c
   src/matrix.c
   src/board.c
@@ -26,10 +26,10 @@ target_sources(firmware PUBLIC
 )
 
 # create map/bin/hex/uf2 file in addition to ELF.
-pico_add_extra_outputs(firmware)
+pico_add_extra_outputs(left_firmware)
 
 # Make sure TinyUSB can find tusb_config.h
-target_include_directories(firmware PUBLIC
+target_include_directories(left_firmware PUBLIC
   include
 )
 #
@@ -39,3 +39,27 @@ target_include_directories(firmware PUBLIC
 
 # pico_add_extra_outputs(firmware)
 
+
+add_executable(right_firmware)
+
+pico_generate_pio_header(right_firmware ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/generated)
+# Add pico_stdlib library which aggregates commonly used features
+target_link_libraries(right_firmware PUBLIC pico_stdlib hardware_pio pico_unique_id tinyusb_device tinyusb_board)
+set_target_properties(right_firmware PROPERTIES COMPILE_DEFINITIONS "KEYBOARD_SIDE=1")
+target_sources(right_firmware PUBLIC
+  src/main.c
+  src/matrix.c
+  src/board.c
+  src/usb_descriptors.c
+  src/sym_defer_pk.c
+  src/firmware_timer.c
+)
+
+# create map/bin/hex/uf2 file in addition to ELF.
+pico_add_extra_outputs(right_firmware)
+
+# Make sure TinyUSB can find tusb_config.h
+target_include_directories(right_firmware PUBLIC
+  include
+)
+pico_add_extra_outputs(right_firmware)

@@ -140,28 +140,6 @@ int main(void)
     buttons_queue = 0;
     tud_task(); // tinyusb device task
 
-    // uint64_t input_status = gpio_get_all64() & SWITCH_MASK;
-
-    // buttons_queue = 0;
-
-    // if (input_status)
-    //   for (int i = A1; i <= T6; i++)
-    //   {
-    //     if (!((input_status >> i) & 1))
-    //     {
-    //       buttons_queue = 'A' + i - A1;
-    //     }uint64_t input_status = gpio_get_all64() & SWITCH_MASK;
-
-    // buttons_queue = 0;
-
-    // if (input_status)
-    //   for (int i = A1; i <= T6; i++)
-    //   {
-    //     if (!((input_status >> i) & 1))
-    //     {
-    //       buttons_queue = 'A' + i - A1;
-    //     }
-    //   }
     if(changed)
     {
       for (int i = A1; i <= T6; i++)
