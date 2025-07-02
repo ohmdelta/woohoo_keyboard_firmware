@@ -7,6 +7,9 @@
 #include <stdbool.h>
 
 #include "hardware/gpio.h"
+#include "matrix_status.h"
+
+#include <limits.h>
 
 uint64_t raw_matrix = 0;
 uint64_t matrix = 0;
@@ -67,18 +70,7 @@ bool matrix_task(void)
   // }
 
   matrix_scan();
-
-  // matrix_scan_perf_task();
-
-  // Short-circuit the complete matrix processing if it is not necessary
-  // if (!matrix_changed) {
-  //     generate_tick_event();
-  //     return matrix_changed;
-  // }
-
-  // if (debug_config.matrix) {
-  //     matrix_print();
-  // }
+  const uint32_t now = timer_read_fast();
 
   // const bool process_keypress = should_process_keypress();
 
@@ -87,6 +79,11 @@ bool matrix_task(void)
 
   // uint8_t button = 0;
   if (changes) {
+    for (int i = 0; i< NUM_KEYS; i++)
+    {
+      matrix_bank_status[i].is_pressed = (changes >> (i + A1)) & 1;
+      matrix_bank_status[i].last_update_time = now;
+    }
       // for(int i=0; i<64; i++)
       // {
       //   if ((changes >> i) & 1)
@@ -97,8 +94,8 @@ bool matrix_task(void)
       // }
 
       // switch_events(row, col, key_pressed);
-      matrix_previous = current;
-    }
+    matrix_previous = current;
+  }
 
   return changes;
 }

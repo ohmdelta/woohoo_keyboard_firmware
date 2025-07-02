@@ -166,7 +166,7 @@ int main(void)
     {
       for (int i = A1; i <= T6; i++)
       {
-        buttons_queue = (key >> i) & 1 ? i + 'A' - A1 : buttons_queue;
+        buttons_queue = (key >> i) & 1 ? i : buttons_queue;
       }
 
       for (size_t i = A1; i <= T6; i++)
@@ -174,7 +174,7 @@ int main(void)
         // uint8_t val = (((buttons_queue >> i) & 1) + 1) & 1;
         uint8_t val = 1 ;
         if (!key) val = 0;
-        put_pixel(pio, sm, urgb_u32(0b100 * (val + 4 * (buttons_queue == i + 'A' - A1)), 0b100 * val, 0b100 * val));
+        put_pixel(pio, sm, urgb_u32(0b100 * (val + 4 * (buttons_queue == i)), 0b100 * val, 0b100 * val));
       }
     }
     // p++;
@@ -230,13 +230,13 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
     {
       uint8_t keycode[6] = {0};
 
-      if (btn <= 'A' + T6 - A1)
+      if (btn != 0)
       {
-        keycode[0] = HID_KEY_A + btn - 'A';
+        keycode[0] = keymaps_layers[0][btn - A1];
       }
       else
       {
-        keycode[0] = HID_KEY_Z;
+        keycode[0] = HID_KEY_NONE;
       }
 
       buttons_queue = 0;
