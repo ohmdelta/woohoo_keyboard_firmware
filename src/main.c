@@ -54,8 +54,6 @@
 
 #define IS_RGBW false
 
-#define KEYBOARD_BACKLIGHT_PIN 42
-
 static inline void
 put_pixel(PIO pio, uint sm, uint32_t pixel_grb)
 {
@@ -120,14 +118,26 @@ int main(void)
   uint sm;
   uint offset;
 
+  PIO pio_2;
+  uint sm_2;
+  uint offset_2;
+
   bool success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio, &sm, &offset, KEYBOARD_BACKLIGHT_PIN, 1, true);
   hard_assert(success);
   ws2812_program_init(pio, sm, offset, KEYBOARD_BACKLIGHT_PIN, 800000, IS_RGBW);
 
+  success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio_2, &sm_2, &offset_2, INDICATOR_LEDS_PIN, 1, true);
+  hard_assert(success);
+  ws2812_program_init(pio_2, sm_2, offset_2, INDICATOR_LEDS_PIN, 800000, IS_RGBW);
+
   for (size_t i = A1; i <= T6; i++)
   {
-    uint8_t val = 0;
-    put_pixel(pio, sm, urgb_u32(0b100 * val, 0b100 * val, 0b100 * val));
+    put_pixel(pio, sm, urgb_u32(0b100 + 0b11, 0b100 + 0b11, 0b100 + 0b11));
+  }
+
+  for (size_t i = 0; i < 3; i++)
+  {
+    put_pixel(pio_2, sm_2, urgb_u32(0b100, 0b100, 0b100));
   }
 
   uint8_t p =0;
@@ -152,7 +162,7 @@ int main(void)
         // uint8_t val = (((buttons_queue >> i) & 1) + 1) & 1;
         uint8_t val = 1 ;
         if (!key) val = 0;
-        put_pixel(pio, sm, urgb_u32(0b100 * (val + 4 * (buttons_queue == i)), 0b100 * val, 0b100 * val));
+        put_pixel(pio, sm, urgb_u32(0b100 * (val + 4 * (buttons_queue == i)) + 0b11, 0b100 * val + 0b11, 0b100 * val + 0b11));
       }
     }
     // p++;

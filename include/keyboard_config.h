@@ -89,4 +89,7 @@
     (((uint64_t)(1)) << T5) | \
     (((uint64_t)(1)) << T6))
 
+#define KEYBOARD_BACKLIGHT_PIN 42
+#define INDICATOR_LEDS_PIN 1
+
 #endif
