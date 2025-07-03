@@ -8,10 +8,6 @@
 #include <stdint.h>
 #include "keyboard_config.h"
 
-// const uint16_t __in_flash("keymaps_mapping") keymaps_mapping[NUM_KEYS] = {
-    
-// };
-
 
 // A1, B1, C1, D1, E1, F1,        
 // A2, B2, C2, D2, E2, F2,        
@@ -21,14 +17,6 @@
 //                           T6  T5, 
 //                               T3,
 //                       T1, T2, T4, 
-
-
-#define LEFT 0
-#define RIGHT 1
-
-#ifndef KEYBOARD_SIDE
-#define KEYBOARD_SIDE 0
-#endif
 
 #if KEYBOARD_SIDE == LEFT
 const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {

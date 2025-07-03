@@ -48,6 +48,40 @@
 #include "debounce.h"
 #include "keyboard_mapping.h"
 
+#include "pico/stdlib.h"
+#include "hardware/uart.h"
+#include "hardware/irq.h"
+
+
+static int chars_rxed = 0;
+
+typedef struct
+{
+  bool caps_lock : 1;
+  bool num_lock : 1;
+  bool scroll_lock : 1;
+} indicator_state_t;
+
+indicator_state_t keyboard_indicator_state = {0, 0, 0};
+
+
+// RX interrupt handler
+void on_uart_rx()
+{
+  while (uart_is_readable(UART_ID))
+  {
+    uint8_t ch = uart_getc(UART_ID);
+    // Can we send it back?
+    if (uart_is_writable(UART_ID))
+    {
+      // Change it slightly first!
+      // ch++;
+      // uart_putc(UART_ID, ch);
+    }
+    chars_rxed++;
+  }
+}
+
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
 //--------------------------------------------------------------------+
@@ -94,6 +128,23 @@ static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 void led_blinking_task(void);
 void hid_task(void);
 
+PIO pio;
+uint sm;
+uint offset;
+
+PIO pio_2;
+uint sm_2;
+uint offset_2;
+
+void set_indicator_leds()
+{
+  uint8_t caps_lock = 0b100 * keyboard_indicator_state.caps_lock;
+  put_pixel(pio_2, sm_2, urgb_u32(caps_lock, caps_lock, caps_lock >> 1));
+  uint8_t num_lock = 0b100 * keyboard_indicator_state.num_lock;
+  put_pixel(pio_2, sm_2, urgb_u32(num_lock, num_lock, num_lock >> 1));
+  uint8_t scroll_lock = 0b100 * keyboard_indicator_state.scroll_lock;
+  put_pixel(pio_2, sm_2, urgb_u32(scroll_lock, scroll_lock, scroll_lock >> 1));
+}
 
 /*------------- MAIN -------------*/
 int main(void)
@@ -114,14 +165,6 @@ int main(void)
     board_init_after_tusb();
   }
 
-  PIO pio;
-  uint sm;
-  uint offset;
-
-  PIO pio_2;
-  uint sm_2;
-  uint offset_2;
-
   bool success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio, &sm, &offset, KEYBOARD_BACKLIGHT_PIN, 1, true);
   hard_assert(success);
   ws2812_program_init(pio, sm, offset, KEYBOARD_BACKLIGHT_PIN, 800000, IS_RGBW);
@@ -130,17 +173,54 @@ int main(void)
   hard_assert(success);
   ws2812_program_init(pio_2, sm_2, offset_2, INDICATOR_LEDS_PIN, 800000, IS_RGBW);
 
+  // Set up our UART with a basic baud rate.
+  uart_init(UART_ID, 2400);
+
+  // Set the TX and RX pins by using the function select on the GPIO
+  // Set datasheet for more information on function select
+  gpio_set_function(UART_TX_PIN, UART_FUNCSEL_NUM(UART_ID, UART_TX_PIN));
+  gpio_set_function(UART_RX_PIN, UART_FUNCSEL_NUM(UART_ID, UART_RX_PIN));
+
+  // Actually, we want a different speed
+  // The call will return the actual baud rate selected, which will be as close as
+  // possible to that requested
+  int actual = uart_set_baudrate(UART_ID, BAUD_RATE);
+  (void)actual;
+
+  // Set UART flow control CTS/RTS, we don't want these, so turn them off
+  uart_set_hw_flow(UART_ID, false, false);
+
+  // Set our data format
+  uart_set_format(UART_ID, DATA_BITS, STOP_BITS, PARITY);
+
+  // Turn off FIFO's - we want to do this character by character
+  uart_set_fifo_enabled(UART_ID, false);
+
+  // Set up a RX interrupt
+  // We need to set up the handler first
+  // Select correct interrupt for the UART we are using
+  int UART_IRQ = UART_ID == uart0 ? UART0_IRQ : UART1_IRQ;
+
+  // And set up and enable the interrupt handlers
+  irq_set_exclusive_handler(UART_IRQ, on_uart_rx);
+  irq_set_enabled(UART_IRQ, true);
+
+  // Now enable the UART to send interrupts - RX only
+  uart_set_irq_enables(UART_ID, true, false);
+
+  // OK, all set up.
+  // Lets send a basic string out, and then run a loop and wait for RX interrupts
+  // The handler will count them, but also reflect the incoming data back with a slight change!
+  uart_puts(UART_ID, "\nHello, uart interrupts\n");
+
   for (size_t i = A1; i <= T6; i++)
   {
     put_pixel(pio, sm, urgb_u32(0b100 + 0b11, 0b100 + 0b11, 0b100 + 0b11));
   }
 
-  for (size_t i = 0; i < 3; i++)
-  {
-    put_pixel(pio_2, sm_2, urgb_u32(0b100, 0b100, 0b100));
-  }
+  set_indicator_leds();
 
-  uint8_t p =0;
+  uint8_t p = 0;
   while (1)
   {
     // changed = debounce(raw_matrix, matrix, ROWS_PER_HAND, changed);
@@ -150,7 +230,7 @@ int main(void)
     buttons_queue = 0;
     tud_task(); // tinyusb device task
 
-    if(changed)
+    if (changed)
     {
       for (int i = A1; i <= T6; i++)
       {
@@ -160,8 +240,9 @@ int main(void)
       for (size_t i = A1; i <= T6; i++)
       {
         // uint8_t val = (((buttons_queue >> i) & 1) + 1) & 1;
-        uint8_t val = 1 ;
-        if (!key) val = 0;
+        uint8_t val = 1;
+        if (!key)
+          val = 0;
         put_pixel(pio, sm, urgb_u32(0b100 * (val + 4 * (buttons_queue == i)) + 0b11, 0b100 * val + 0b11, 0b100 * val + 0b11));
       }
     }
@@ -326,19 +407,10 @@ void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id,
         return;
 
       uint8_t const kbd_leds = buffer[0];
-
-      if (kbd_leds & KEYBOARD_LED_CAPSLOCK)
-      {
-        // Capslock On: disable blink, turn led on
-        blink_interval_ms = 0;
-        board_led_write(true);
-      }
-      else
-      {
-        // Caplocks Off: back to normal blink
-        board_led_write(false);
-        blink_interval_ms = BLINK_MOUNTED;
-      }
+      keyboard_indicator_state.caps_lock = kbd_leds & KEYBOARD_LED_CAPSLOCK;
+      keyboard_indicator_state.num_lock = kbd_leds & KEYBOARD_LED_NUMLOCK;
+      keyboard_indicator_state.scroll_lock = kbd_leds & KEYBOARD_LED_SCROLLLOCK;
+      set_indicator_leds();
     }
   }
 }

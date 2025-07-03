@@ -92,4 +92,27 @@
 #define KEYBOARD_BACKLIGHT_PIN 42
 #define INDICATOR_LEDS_PIN 1
 
+#define LEFT 0
+#define RIGHT 1
+
+#ifndef KEYBOARD_SIDE
+#define KEYBOARD_SIDE 0
+#endif
+
+#if KEYBOARD_SIDE == LEFT
+#define UART_TX_PIN 2
+#define UART_RX_PIN 3
+#else
+#define UART_TX_PIN 3
+#define UART_RX_PIN 2
+#endif
+
+// UART CONFIG
+#define UART_ID uart0
+#define BAUD_RATE 115200
+#define DATA_BITS 8
+#define STOP_BITS 1
+#define PARITY    UART_PARITY_NONE
+
+
 #endif
