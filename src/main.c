@@ -23,6 +23,8 @@
  *
  */
 
+#include "keyboard_config.h"
+
 #include "hardware/gpio.h"
 #include "hardware/timer.h"
 #include "pico/stdlib.h"
@@ -40,8 +42,8 @@
 
 #include "usb_descriptors.h"
 #include "structs.h"
+#include "matrix_status.h"
 
-#include "keyboard_config.h"
 #include "firmware_timer.h"
 #include "matrix.h"
 #include "board.h"
@@ -53,8 +55,6 @@
 #include "hardware/irq.h"
 
 
-static int chars_rxed = 0;
-
 typedef struct
 {
   bool caps_lock : 1;
@@ -64,21 +64,21 @@ typedef struct
 
 indicator_state_t keyboard_indicator_state = {0, 0, 0};
 
+typedef struct 
+{
+  uint8_t ch;
+  bool done;
+} other_board_t;
+
+other_board_t ch = {.ch=0, .done=1};
 
 // RX interrupt handler
 void on_uart_rx()
 {
   while (uart_is_readable(UART_ID))
   {
-    uint8_t ch = uart_getc(UART_ID);
-    // Can we send it back?
-    if (uart_is_writable(UART_ID))
-    {
-      // Change it slightly first!
-      // ch++;
-      // uart_putc(UART_ID, ch);
-    }
-    chars_rxed++;
+    ch.ch = uart_getc(UART_ID);
+    ch.done = 0;
   }
 }
 
@@ -174,7 +174,7 @@ int main(void)
   ws2812_program_init(pio_2, sm_2, offset_2, INDICATOR_LEDS_PIN, 800000, IS_RGBW);
 
   // Set up our UART with a basic baud rate.
-  uart_init(UART_ID, 2400);
+  uart_init(UART_ID, BAUD_RATE);
 
   // Set the TX and RX pins by using the function select on the GPIO
   // Set datasheet for more information on function select
@@ -184,8 +184,8 @@ int main(void)
   // Actually, we want a different speed
   // The call will return the actual baud rate selected, which will be as close as
   // possible to that requested
-  int actual = uart_set_baudrate(UART_ID, BAUD_RATE);
-  (void)actual;
+  // int actual = uart_set_baudrate(UART_ID, BAUD_RATE);
+  // (void)actual;
 
   // Set UART flow control CTS/RTS, we don't want these, so turn them off
   uart_set_hw_flow(UART_ID, false, false);
@@ -211,7 +211,7 @@ int main(void)
   // OK, all set up.
   // Lets send a basic string out, and then run a loop and wait for RX interrupts
   // The handler will count them, but also reflect the incoming data back with a slight change!
-  uart_puts(UART_ID, "\nHello, uart interrupts\n");
+  // uart_puts(UART_ID, "\nStarting now\n");
 
   for (size_t i = A1; i <= T6; i++)
   {
@@ -312,6 +312,14 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
       tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
       has_keyboard_key = true;
     }
+    else if (!ch.done)
+    {
+      ch.done = 1;
+      uint8_t keycode[6] = {0};
+      keycode[0] = ch.ch;
+      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
+      has_keyboard_key = true;
+    }
     else
     {
       if (has_keyboard_key)
@@ -331,6 +339,7 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
 // Every 10ms, we will sent 1 report for each HID profile (keyboard, mouse etc
 // ..) tud_hid_report_complete_cb() is used to send the next report after
 // previous one is complete
+uint8_t previous_btn = 0xff;
 void hid_task(void)
 {
   // Poll every 10ms
@@ -342,6 +351,14 @@ void hid_task(void)
   start_ms += interval_ms;
 
   send_hid_report(REPORT_ID_KEYBOARD, buttons_queue);
+
+  if ((buttons_queue) && (buttons_queue != previous_btn))
+  {
+    /* code */
+    uart_putc(UART_ID, keymaps_layers[0][buttons_queue - A1]);
+    previous_btn = buttons_queue;
+  }
+
 
   // Remote wakeup
   // if (tud_suspended() && buttons_queue) {

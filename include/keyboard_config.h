@@ -114,5 +114,6 @@
 #define STOP_BITS 1
 #define PARITY    UART_PARITY_NONE
 
+#define PICO_UART_ENABLE_CRLF_SUPPORT 0
 
 #endif

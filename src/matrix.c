@@ -60,6 +60,8 @@ uint64_t get_keys(void)
   return key_status;
 }
 
+matrix_status_t matrix_bank_status[NUM_KEYS] = {0};
+
 uint64_t matrix_previous = 0;
 bool matrix_task(void)
 {
