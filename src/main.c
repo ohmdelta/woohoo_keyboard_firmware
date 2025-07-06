@@ -235,24 +235,7 @@ int main(void)
     buttons_queue = 0;
     tud_task(); // tinyusb device task
 
-    // if (changed)
-    // {
-      // for (int i = A1; i <= T6; i++)
-      // {
-        // buttons_queue = (key >> i) & 1 ? i : buttons_queue;
-      // }
-
-      // for (size_t i = A1; i <= T6; i++)
-      // {
-      //   // uint8_t val = (((buttons_queue >> i) & 1) + 1) & 1;
-      //   uint8_t val = 1;
-      //   if (!key)
-      //     val = 0;
-      //   put_pixel(pio, sm, urgb_u32(0b100 * (val + 4 * (buttons_queue == i)) + 0b11, 0b100 * val + 0b11, 0b100 * val + 0b11));
-      // }
-    // }
-    // p++;
-    sleep_ms(10);
+    // sleep_ms(10);
 
     while (uart_is_readable(UART_ID))
     {
@@ -292,6 +275,22 @@ void tud_resume_cb(void)
 // USB HID
 //--------------------------------------------------------------------+
 
+static void send_hid_report_mod(uint8_t report_id, uint8_t modifier, uint32_t btn)
+{
+  // skip if hid is not ready yet
+  if (!tud_hid_ready())
+    return;
+
+  // use to avoid send multiple consecutive zero report for keyboard
+  // if (btn)
+  // {
+  uint8_t keycode[6] = {0};
+
+  keycode[0] = btn;
+
+  tud_hid_keyboard_report(REPORT_ID_KEYBOARD, modifier, keycode);
+}
+
 static void send_hid_report(uint8_t report_id, uint32_t btn)
 {
   // skip if hid is not ready yet
@@ -306,15 +305,12 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
   keycode[0] = btn;
 
   tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
-  // else if (!ch.done)
-  // {
-  //   ch.done = 1;
-  //   uint8_t keycode[6] = {0};
-  //   keycode[0] = ch.ch;
-  //   tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
-  //   has_keyboard_key = true;
-  // }
+}
 
+static uint8_t const keycode2ascii[128][2] = {HID_KEYCODE_TO_ASCII};
+
+bool is_modifier(uint8_t code){
+  return 0;
 }
 
 // Every 10ms, we will sent 1 report for each HID profile (keyboard, mouse etc
@@ -334,14 +330,55 @@ void hid_task(void)
 
   const uint32_t current_time = timer_read_fast();
   bool registered = false;
+  
+  bool shift_pressed = false;
   for (int i = 0; i < NUM_KEYS; i++)
   {
     if ((matrix_bank_status[i].is_pressed) )
     {
+      switch (keymaps_layers[0][i])
+      {
+      case HID_KEY_SHIFT_LEFT:
+      case HID_KEY_SHIFT_RIGHT:
+        shift_pressed = true;
+        break;
+
+      default:
+        break;
+      }
+    }
+  }
+
+  for (uint8_t i = 0; i < key_queue.size; i++)
+  {
+    if ((matrix_bank_status[i].is_pressed) )
+    {
+      switch (keymaps_layers[0][i])
+      {
+      case HID_KEY_SHIFT_LEFT:
+      case HID_KEY_SHIFT_RIGHT:
+        shift_pressed = true;
+        break;
+
+      default:
+        break;
+      }
+    }
+  }
+
+  for (int i = 0; i < NUM_KEYS; i++)
+  {
+    if ((matrix_bank_status[i].is_pressed)  )
+    {
       if ((current_time > (matrix_bank_status[i].last_handled_time + taphold_timeout)))
       {
-        send_hid_report(REPORT_ID_KEYBOARD, keymaps_layers[0][i]);
-        uart_putc(UART_ID, keymaps_layers[0][i]);
+        const uint8_t key = keymaps_layers[0][i];
+        if (!(( key >= HID_KEY_CONTROL_LEFT) && (key <=HID_KEY_GUI_RIGHT)) )
+        {
+          send_hid_report_mod(REPORT_ID_KEYBOARD, shift_pressed ? (1 << 1) : 0, key);
+          tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+        }
+        uart_putc(UART_ID, key);
         matrix_bank_status[i].last_handled_time = current_time;
         // previous_btn = buttons_queue;
         registered = true;
@@ -353,7 +390,10 @@ void hid_task(void)
 
   for (uint8_t i = 0; i < key_queue.size; i++)
   {
-    send_hid_report(REPORT_ID_KEYBOARD, key_queue.ch[i]);
+    const uint8_t key = key_queue.ch[i];
+    if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)))
+      send_hid_report_mod(REPORT_ID_KEYBOARD, shift_pressed ? (1 << 1) : 0, key);
+
     registered = true;
   }
   key_queue.size = 0;  
@@ -361,18 +401,6 @@ void hid_task(void)
   // if (registered){
   if (tud_hid_ready())
     tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-  // }
-  // } else
-  // {
-  //   send_hid_report(REPORT_ID_KEYBOARD, 0);
-  //   tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-
-  // }
-
-  // if ((buttons_queue) && (buttons_queue != previous_btn))
-  // {
-  //   /* code */
-  // }
 
 
   // Remote wakeup
