@@ -32,16 +32,6 @@ extern matrix_status matrix_bank_status[NUM_KEYS];
 // #define COL2ROW 0
 // #define ROW2COL 1
 
-// #if (MATRIX_COLS <= 8)
-// typedef uint8_t matrix_row_t;
-// #elif (MATRIX_COLS <= 16)
-// typedef uint16_t matrix_row_t;
-// #elif (MATRIX_COLS <= 32)
-// typedef uint32_t matrix_row_t;
-// #else
-// #    error "MATRIX_COLS: invalid value"
-// #endif
-
 #define MATRIX_ROW_SHIFTER ((matrix_row_t)1)
 
 #ifdef __cplusplus

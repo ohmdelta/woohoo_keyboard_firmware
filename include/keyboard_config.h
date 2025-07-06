@@ -120,4 +120,9 @@
 
 #define taphold_timeout 90
 
+#define ENCODER_BUTTON 45
+#define ENCODER_A 46
+#define ENCODER_B 47
+
+
 #endif
