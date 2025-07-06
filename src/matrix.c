@@ -1,17 +1,21 @@
+#include <stdlib.h>
+#include <stdbool.h>
+#include <limits.h>
+
+#include "hardware/gpio.h"
+
 #include "matrix.h"
 #include "firmware_timer.h"
 #include "structs.h"
 #include "debounce.h"
-#include <stdlib.h>
-#include <stdbool.h>
 
-#include "hardware/gpio.h"
 #include "matrix_status.h"
 
-#include <limits.h>
 
 uint64_t raw_matrix = 0;
 uint64_t matrix = 0;
+
+matrix_status matrix_bank_status[NUM_KEYS] = {0};
 
 /**
  * @brief Generates a tick event at a maximum rate of 1KHz that drives the
@@ -31,7 +35,8 @@ void matrix_scan_kb(void)
 }
 
 void matrix_init_kb() {}
-matrix_status matrix_bank_status[NUM_KEYS] = {0};
+
+
 void matrix_init(void)
 {
   /* Column output pins */

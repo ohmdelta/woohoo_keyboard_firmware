@@ -155,7 +155,6 @@ void set_indicator_leds()
 int main(void)
 {
   // board_init();
-
   stdio_init_all();
   setup_board();
 
@@ -274,6 +273,53 @@ void tud_resume_cb(void)
 //--------------------------------------------------------------------+
 // USB HID
 //--------------------------------------------------------------------+
+void send_hid_report_mod(uint8_t report_id, uint8_t modifier, uint32_t btn);
+
+static void encoder_task()
+{
+  // skip if hid is not ready yet
+  if (!tud_hid_ready())
+    return;
+
+  static bool has_consumer_key = false;
+  if (encoder_has_action())
+  {
+    if (encoder_a)
+    {
+      uint16_t volume_down = HID_USAGE_CONSUMER_VOLUME_DECREMENT;
+      tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_down, 2);
+      encoder_a = false;
+      has_consumer_key = true;
+    }
+    if (encoder_b)
+    {
+      uint8_t volume_up[2] = {0x00, 0xE9};
+      tud_hid_report(REPORT_ID_CONSUMER_CONTROL, volume_up, 2);
+      // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
+      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+      encoder_b = false;
+      has_consumer_key = true;
+    }
+    if (encoder_button)
+    {
+      uint16_t volume_mute = HID_USAGE_CONSUMER_MUTE;
+      tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_mute, 2);
+      encoder_button = false;
+      has_consumer_key = true;
+    }
+    uint16_t empty_key = 0;
+    tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &empty_key, 2);
+  }
+  // else
+  // {
+  //   if (has_consumer_key)
+  //   {
+  //     uint16_t empty_key = 0;
+  //     if (has_consumer_key)
+  //   }
+  //   has_consumer_key = true;
+  // }
+}
 
 static void send_hid_report_mod(uint8_t report_id, uint8_t modifier, uint32_t btn)
 {
@@ -297,19 +343,15 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
   if (!tud_hid_ready())
     return;
 
-  // use to avoid send multiple consecutive zero report for keyboard
-  // if (btn)
-  // {
   uint8_t keycode[6] = {0};
-
   keycode[0] = btn;
-
   tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
 }
 
 static uint8_t const keycode2ascii[128][2] = {HID_KEYCODE_TO_ASCII};
 
-bool is_modifier(uint8_t code){
+bool is_modifier(uint8_t code)
+{
   return 0;
 }
 
@@ -330,11 +372,11 @@ void hid_task(void)
 
   const uint32_t current_time = timer_read_fast();
   bool registered = false;
-  
+
   bool shift_pressed = false;
   for (int i = 0; i < NUM_KEYS; i++)
   {
-    if ((matrix_bank_status[i].is_pressed) )
+    if ((matrix_bank_status[i].is_pressed))
     {
       switch (keymaps_layers[0][i])
       {
@@ -351,7 +393,7 @@ void hid_task(void)
 
   for (uint8_t i = 0; i < key_queue.size; i++)
   {
-    if ((matrix_bank_status[i].is_pressed) )
+    if ((matrix_bank_status[i].is_pressed))
     {
       switch (keymaps_layers[0][i])
       {
@@ -368,12 +410,12 @@ void hid_task(void)
 
   for (int i = 0; i < NUM_KEYS; i++)
   {
-    if ((matrix_bank_status[i].is_pressed)  )
+    if ((matrix_bank_status[i].is_pressed))
     {
       if ((current_time > (matrix_bank_status[i].last_handled_time + taphold_timeout)))
       {
         const uint8_t key = keymaps_layers[0][i];
-        if (!(( key >= HID_KEY_CONTROL_LEFT) && (key <=HID_KEY_GUI_RIGHT)) )
+        if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)))
         {
           send_hid_report_mod(REPORT_ID_KEYBOARD, shift_pressed ? (1 << 1) : 0, key);
           tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
@@ -396,12 +438,15 @@ void hid_task(void)
 
     registered = true;
   }
-  key_queue.size = 0;  
+  key_queue.size = 0;
 
   // if (registered){
   if (tud_hid_ready())
+  {
     tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+  }
 
+  // encoder_task();
 
   // Remote wakeup
   // if (tud_suspended() && buttons_queue) {

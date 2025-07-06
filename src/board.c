@@ -8,6 +8,38 @@
     gpio_set_dir(BUTTON, GPIO_IN); \
     gpio_pull_up(BUTTON);
 
+#define GPIO_INPUT_DOWN(BUTTON)   \
+    gpio_init(BUTTON);             \
+    gpio_set_dir(BUTTON, GPIO_IN); \
+    gpio_pull_down(BUTTON);
+
+bool encoder_a = 0;
+bool encoder_b = 0;
+bool encoder_button = 0;
+
+bool encoder_has_action()
+{
+    return encoder_a || encoder_b || encoder_button;
+}
+
+static void isr_handler(uint buf, uint32_t events)
+{
+    switch (buf)
+    {
+    case ENCODER_A:
+        encoder_a = true; 
+        break;
+    case ENCODER_B:
+        encoder_b = true; 
+        break;
+    case ENCODER_BUTTON:
+        encoder_button = true; 
+        break;
+    default:
+        break;
+    }
+}
+
 void setup_board(void)
 {
     GPIO_INPUT_SETUP(A1)
@@ -53,4 +85,12 @@ void setup_board(void)
     GPIO_INPUT_SETUP(T4)
     GPIO_INPUT_SETUP(T5)
     GPIO_INPUT_SETUP(T6)
+
+    GPIO_INPUT_SETUP(ENCODER_BUTTON)
+    GPIO_INPUT_SETUP(ENCODER_A)
+    GPIO_INPUT_SETUP(ENCODER_B)
+
+    // gpio_set_irq_enabled_with_callback(ENCODER_BUTTON, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true, &isr_handler);
+    // gpio_set_irq_enabled(ENCODER_A, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
+    // gpio_set_irq_enabled(ENCODER_B, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
 }
