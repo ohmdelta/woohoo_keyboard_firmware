@@ -15,12 +15,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef MATRIX_H
+#define MATRIX_H
 
 #include <stdint.h>
 #include <stdbool.h>
 #include "structs.h"
-// #include "gpio.h"
+
+#include "keyboard_config.h"
+#include "matrix_status.h"
+
+
+extern matrix_status matrix_bank_status[NUM_KEYS];
 
 /* diode directions */
 // #define COL2ROW 0
@@ -87,4 +93,6 @@ void matrix_slave_scan_user(void);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

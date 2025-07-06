@@ -55,6 +55,8 @@
 #include "hardware/irq.h"
 
 
+#define QUEUE_SIZE 128
+
 typedef struct
 {
   bool caps_lock : 1;
@@ -70,16 +72,19 @@ typedef struct
   bool done;
 } other_board_t;
 
+typedef struct 
+{
+  uint8_t size;
+  uint8_t ch[QUEUE_SIZE];
+} queue_t;
+
+
 other_board_t ch = {.ch=0, .done=1};
+queue_t key_queue = {0, 0};
 
 // RX interrupt handler
 void on_uart_rx()
 {
-  while (uart_is_readable(UART_ID))
-  {
-    ch.ch = uart_getc(UART_ID);
-    ch.done = 0;
-  }
 }
 
 //--------------------------------------------------------------------+
@@ -202,11 +207,11 @@ int main(void)
   int UART_IRQ = UART_ID == uart0 ? UART0_IRQ : UART1_IRQ;
 
   // And set up and enable the interrupt handlers
-  irq_set_exclusive_handler(UART_IRQ, on_uart_rx);
-  irq_set_enabled(UART_IRQ, true);
+  // irq_set_exclusive_handler(UART_IRQ, on_uart_rx);
+  // irq_set_enabled(UART_IRQ, true);
 
-  // Now enable the UART to send interrupts - RX only
-  uart_set_irq_enables(UART_ID, true, false);
+  // // Now enable the UART to send interrupts - RX only
+  // uart_set_irq_enables(UART_ID, true, false);
 
   // OK, all set up.
   // Lets send a basic string out, and then run a loop and wait for RX interrupts
@@ -230,24 +235,29 @@ int main(void)
     buttons_queue = 0;
     tud_task(); // tinyusb device task
 
-    if (changed)
-    {
-      for (int i = A1; i <= T6; i++)
-      {
-        buttons_queue = (key >> i) & 1 ? i : buttons_queue;
-      }
+    // if (changed)
+    // {
+      // for (int i = A1; i <= T6; i++)
+      // {
+        // buttons_queue = (key >> i) & 1 ? i : buttons_queue;
+      // }
 
-      for (size_t i = A1; i <= T6; i++)
-      {
-        // uint8_t val = (((buttons_queue >> i) & 1) + 1) & 1;
-        uint8_t val = 1;
-        if (!key)
-          val = 0;
-        put_pixel(pio, sm, urgb_u32(0b100 * (val + 4 * (buttons_queue == i)) + 0b11, 0b100 * val + 0b11, 0b100 * val + 0b11));
-      }
-    }
+      // for (size_t i = A1; i <= T6; i++)
+      // {
+      //   // uint8_t val = (((buttons_queue >> i) & 1) + 1) & 1;
+      //   uint8_t val = 1;
+      //   if (!key)
+      //     val = 0;
+      //   put_pixel(pio, sm, urgb_u32(0b100 * (val + 4 * (buttons_queue == i)) + 0b11, 0b100 * val + 0b11, 0b100 * val + 0b11));
+      // }
+    // }
     // p++;
     sleep_ms(10);
+
+    while (uart_is_readable(UART_ID))
+    {
+      key_queue.ch[key_queue.size++] = uart_getc(UART_ID);
+    }
 
     hid_task();
   }
@@ -288,52 +298,23 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
   if (!tud_hid_ready())
     return;
 
-  switch (report_id)
-  {
-  case REPORT_ID_KEYBOARD:
-  {
-    // use to avoid send multiple consecutive zero report for keyboard
-    static bool has_keyboard_key = false;
+  // use to avoid send multiple consecutive zero report for keyboard
+  // if (btn)
+  // {
+  uint8_t keycode[6] = {0};
 
-    if (btn && !has_keyboard_key)
-    {
-      uint8_t keycode[6] = {0};
+  keycode[0] = btn;
 
-      if (btn != 0)
-      {
-        keycode[0] = keymaps_layers[0][btn - A1];
-      }
-      else
-      {
-        keycode[0] = HID_KEY_NONE;
-      }
+  tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
+  // else if (!ch.done)
+  // {
+  //   ch.done = 1;
+  //   uint8_t keycode[6] = {0};
+  //   keycode[0] = ch.ch;
+  //   tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
+  //   has_keyboard_key = true;
+  // }
 
-      buttons_queue = 0;
-      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
-      has_keyboard_key = true;
-    }
-    else if (!ch.done)
-    {
-      ch.done = 1;
-      uint8_t keycode[6] = {0};
-      keycode[0] = ch.ch;
-      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
-      has_keyboard_key = true;
-    }
-    else
-    {
-      if (has_keyboard_key)
-      {
-        tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-      }
-      has_keyboard_key = false;
-    }
-  }
-  break;
-
-  default:
-    break;
-  }
 }
 
 // Every 10ms, we will sent 1 report for each HID profile (keyboard, mouse etc
@@ -348,16 +329,50 @@ void hid_task(void)
 
   if (board_millis() - start_ms < interval_ms)
     return; // not enough time
+
   start_ms += interval_ms;
 
-  send_hid_report(REPORT_ID_KEYBOARD, buttons_queue);
-
-  if ((buttons_queue) && (buttons_queue != previous_btn))
+  const uint32_t current_time = timer_read_fast();
+  bool registered = false;
+  for (int i = 0; i < NUM_KEYS; i++)
   {
-    /* code */
-    uart_putc(UART_ID, keymaps_layers[0][buttons_queue - A1]);
-    previous_btn = buttons_queue;
+    if ((matrix_bank_status[i].is_pressed) )
+    {
+      if ((current_time > (matrix_bank_status[i].last_handled_time + taphold_timeout)))
+      {
+        send_hid_report(REPORT_ID_KEYBOARD, keymaps_layers[0][i]);
+        uart_putc(UART_ID, keymaps_layers[0][i]);
+        matrix_bank_status[i].last_handled_time = current_time;
+        // previous_btn = buttons_queue;
+        registered = true;
+      }
+    }
+    uint8_t val = matrix_bank_status[i].is_pressed;
+    put_pixel(pio, sm, urgb_u32(0b100 * (val * 4) + 0b11, 0b100 * val + 0b11, 0b100 * val + 0b11));
   }
+
+  for (uint8_t i = 0; i < key_queue.size; i++)
+  {
+    send_hid_report(REPORT_ID_KEYBOARD, key_queue.ch[i]);
+    registered = true;
+  }
+  key_queue.size = 0;  
+
+  // if (registered){
+  if (tud_hid_ready())
+    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+  // }
+  // } else
+  // {
+  //   send_hid_report(REPORT_ID_KEYBOARD, 0);
+  //   tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+
+  // }
+
+  // if ((buttons_queue) && (buttons_queue != previous_btn))
+  // {
+  //   /* code */
+  // }
 
 
   // Remote wakeup

@@ -1,6 +1,5 @@
-#include "keyboard_config.h"
-#include "firmware_timer.h"
 #include "matrix.h"
+#include "firmware_timer.h"
 #include "structs.h"
 #include "debounce.h"
 #include <stdlib.h>
@@ -32,11 +31,17 @@ void matrix_scan_kb(void)
 }
 
 void matrix_init_kb() {}
-
+matrix_status matrix_bank_status[NUM_KEYS] = {0};
 void matrix_init(void)
 {
   /* Column output pins */
   matrix_init_kb();
+  for (uint8_t i = 0; i < NUM_KEYS; i++)
+  {
+    matrix_bank_status[i].is_pressed = 0;
+    matrix_bank_status[i].last_handled_time = 0;
+    matrix_bank_status[i].last_update_time = 0;
+  }
 }
 
 uint64_t key_status = 0;
@@ -60,8 +65,6 @@ uint64_t get_keys(void)
   return key_status;
 }
 
-matrix_status_t matrix_bank_status[NUM_KEYS] = {0};
-
 uint64_t matrix_previous = 0;
 bool matrix_task(void)
 {
@@ -77,27 +80,28 @@ bool matrix_task(void)
   // const bool process_keypress = should_process_keypress();
 
   const uint64_t current = key_status;
-  changes = (current ^ matrix_previous) & SWITCH_MASK;
+  changes = (current ^ matrix_previous);
 
   // uint8_t button = 0;
-  if (changes) {
-    for (int i = 0; i< NUM_KEYS; i++)
+  if (changes)
+  {
+    for (uint8_t i = A1; i <= T6; i++)
     {
-      matrix_bank_status[i].is_pressed = (changes >> (i + A1)) & 1;
-      matrix_bank_status[i].last_update_time = now;
+      matrix_bank_status[i - A1].is_pressed = ((current >> (i)) & 1);
+      matrix_bank_status[i - A1].last_update_time = now;
     }
-      // for(int i=0; i<64; i++)
-      // {
-      //   if ((changes >> i) & 1)
-      //   {
-      //     // action_exec(MAKE_KEYEVENT(row, col, key_pressed));
-      //     button = i;
-      //   }
-      // }
-
-      // switch_events(row, col, key_pressed);
-    matrix_previous = current;
   }
+  // for(int i=0; i<64; i++)
+  // {
+  //   if ((changes >> i) & 1)
+  //   {
+  //     // action_exec(MAKE_KEYEVENT(row, col, key_pressed));
+  //     button = i;
+  //   }
+  // }
+
+  // switch_events(row, col, key_pressed);
+  matrix_previous = current;
 
   return changes;
 }

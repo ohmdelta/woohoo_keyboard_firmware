@@ -1,6 +1,8 @@
 #ifndef KEYBOARD_CONFIG_H
 #define KEYBOARD_CONFIG_H
 
+#include <stdint.h>
+
 #define A1 4
 #define A2 5
 #define A3 6
@@ -115,5 +117,7 @@
 #define PARITY    UART_PARITY_NONE
 
 #define PICO_UART_ENABLE_CRLF_SUPPORT 0
+
+#define taphold_timeout 90
 
 #endif
