@@ -273,7 +273,7 @@ void tud_resume_cb(void)
 //--------------------------------------------------------------------+
 // USB HID
 //--------------------------------------------------------------------+
-void send_hid_report_mod(uint8_t report_id, uint8_t modifier, uint32_t btn);
+static void send_hid_report_mod(uint8_t report_id, uint8_t modifier, uint32_t btn);
 
 static void encoder_task()
 {
@@ -286,24 +286,28 @@ static void encoder_task()
   {
     if (encoder_a)
     {
-      uint16_t volume_down = HID_USAGE_CONSUMER_VOLUME_DECREMENT;
-      tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_down, 2);
+      // uint16_t volume_down = HID_USAGE_CONSUMER_VOLUME_DECREMENT;
+      // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_down, 2);
+      send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
+      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
       encoder_a = false;
       has_consumer_key = true;
     }
     if (encoder_b)
     {
-      uint8_t volume_up[2] = {0x00, 0xE9};
-      tud_hid_report(REPORT_ID_CONSUMER_CONTROL, volume_up, 2);
-      // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
-      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+      // uint8_t volume_up[2] = {0x00, 0xE9};
+      // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, volume_up, 2);
+      send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
+      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
       encoder_b = false;
       has_consumer_key = true;
     }
     if (encoder_button)
     {
-      uint16_t volume_mute = HID_USAGE_CONSUMER_MUTE;
-      tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_mute, 2);
+      // uint16_t volume_mute = HID_USAGE_CONSUMER_MUTE;
+      // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_mute, 2);
+      send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
+      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
       encoder_button = false;
       has_consumer_key = true;
     }
@@ -440,13 +444,14 @@ void hid_task(void)
   }
   key_queue.size = 0;
 
+  encoder_task();
+
   // if (registered){
   if (tud_hid_ready())
   {
     tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
   }
 
-  // encoder_task();
 
   // Remote wakeup
   // if (tud_suspended() && buttons_queue) {
