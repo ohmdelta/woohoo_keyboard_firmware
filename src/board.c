@@ -8,6 +8,11 @@
     gpio_set_dir(BUTTON, GPIO_IN); \
     gpio_pull_up(BUTTON);
 
+#define GPIO_INPUT_PULLDOWN(BUTTON)   \
+    gpio_init(BUTTON);             \
+    gpio_set_dir(BUTTON, GPIO_IN); \
+    gpio_pull_down(BUTTON);
+
 bool encoder_a = 0;
 bool encoder_b = 0;
 bool encoder_button = 0;
@@ -81,11 +86,11 @@ void setup_board(void)
     GPIO_INPUT_SETUP(T5)
     GPIO_INPUT_SETUP(T6)
 
-    GPIO_INPUT_SETUP(ENCODER_BUTTON)
-    GPIO_INPUT_SETUP(ENCODER_A)
-    GPIO_INPUT_SETUP(ENCODER_B)
+    GPIO_INPUT_PULLDOWN(ENCODER_BUTTON)
+    GPIO_INPUT_PULLDOWN(ENCODER_A)
+    GPIO_INPUT_PULLDOWN(ENCODER_B)
 
-    // gpio_set_irq_enabled_with_callback(ENCODER_BUTTON, GPIO_IRQ_LEVEL_LOW, true, &isr_handler);
+    gpio_set_irq_enabled_with_callback(ENCODER_BUTTON, GPIO_IRQ_EDGE_FALL, true, &isr_handler);
     // gpio_set_irq_enabled(ENCODER_A, GPIO_IRQ_LEVEL_LOW, true);
     // gpio_set_irq_enabled(ENCODER_B, GPIO_IRQ_LEVEL_LOW, true);
 }

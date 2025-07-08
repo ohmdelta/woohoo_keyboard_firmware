@@ -54,6 +54,8 @@
 #include "hardware/uart.h"
 #include "hardware/irq.h"
 
+#include "keyboard_led.h"
+
 
 #define QUEUE_SIZE 128
 
@@ -82,10 +84,7 @@ typedef struct
 other_board_t ch = {.ch=0, .done=1};
 queue_t key_queue = {0, 0};
 
-// RX interrupt handler
-void on_uart_rx()
-{
-}
+static void encoder_task();
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
@@ -93,26 +92,6 @@ void on_uart_rx()
 
 #define IS_RGBW false
 
-static inline void
-put_pixel(PIO pio, uint sm, uint32_t pixel_grb)
-{
-  pio_sm_put_blocking(pio, sm, pixel_grb << 8u);
-}
-
-static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b)
-{
-  return ((uint32_t)(r) << 8) |
-         ((uint32_t)(g) << 16) |
-         (uint32_t)(b);
-}
-
-static inline uint32_t urgbw_u32(uint8_t r, uint8_t g, uint8_t b, uint8_t w)
-{
-  return ((uint32_t)(r) << 8) |
-         ((uint32_t)(g) << 16) |
-         ((uint32_t)(w) << 24) |
-         (uint32_t)(b);
-}
 
 uint8_t buttons_queue = 0;
 
@@ -140,6 +119,15 @@ uint offset;
 PIO pio_2;
 uint sm_2;
 uint offset_2;
+
+void led_task() {
+  run_pattern(pio, sm, NUM_KEYS);
+}
+
+static inline void put_pixel(PIO pio, uint sm, uint32_t pixel_grb)
+{
+    pio_sm_put_blocking(pio, sm, pixel_grb << 8u);
+}
 
 void set_indicator_leds()
 {
@@ -242,6 +230,8 @@ int main(void)
     }
 
     hid_task();
+    led_task();
+    encoder_task();
   }
 
   pio_remove_program_and_unclaim_sm(&ws2812_program, pio, sm, offset);
@@ -278,41 +268,42 @@ static void send_hid_report_mod(uint8_t report_id, uint8_t modifier, uint32_t bt
 static void encoder_task()
 {
   // skip if hid is not ready yet
-  if (!tud_hid_ready())
-    return;
+  // if (!tud_hid_ready())
+  //   return;
 
   static bool has_consumer_key = false;
   if (encoder_has_action())
   {
-    if (encoder_a)
-    {
-      // uint16_t volume_down = HID_USAGE_CONSUMER_VOLUME_DECREMENT;
-      // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_down, 2);
-      send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
-      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-      encoder_a = false;
-      has_consumer_key = true;
-    }
-    if (encoder_b)
-    {
-      // uint8_t volume_up[2] = {0x00, 0xE9};
-      // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, volume_up, 2);
-      send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
-      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-      encoder_b = false;
-      has_consumer_key = true;
-    }
+    // if (encoder_a)
+    // {
+    //   // uint16_t volume_down = HID_USAGE_CONSUMER_VOLUME_DECREMENT;
+    //   // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_down, 2);
+    //   send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
+    //   tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+    //   encoder_a = false;
+    //   has_consumer_key = true;
+    // }
+    // if (encoder_b)
+    // {
+    //   // uint8_t volume_up[2] = {0x00, 0xE9};
+    //   // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, volume_up, 2);
+    //   send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
+    //   tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+    //   encoder_b = false;
+    //   has_consumer_key = true;
+    // }
     if (encoder_button)
     {
       // uint16_t volume_mute = HID_USAGE_CONSUMER_MUTE;
       // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_mute, 2);
-      send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
-      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+      // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
+      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+      led_cycle_pattern();
       encoder_button = false;
       has_consumer_key = true;
     }
-    uint16_t empty_key = 0;
-    tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &empty_key, 2);
+    // uint16_t empty_key = 0;
+    // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &empty_key, 2);
   }
   // else
   // {
@@ -431,7 +422,7 @@ void hid_task(void)
       }
     }
     uint8_t val = matrix_bank_status[i].is_pressed;
-    put_pixel(pio, sm, urgb_u32(0b100 * (val * 4) + 0b11, 0b100 * val + 0b11, 0b100 * val + 0b11));
+    // put_pixel(pio, sm, urgb_u32(0b100 * (val * 4) + 0b11, 0b100 * val + 0b11, 0b100 * val + 0b11));
   }
 
   for (uint8_t i = 0; i < key_queue.size; i++)
@@ -444,14 +435,11 @@ void hid_task(void)
   }
   key_queue.size = 0;
 
-  encoder_task();
-
   // if (registered){
   if (tud_hid_ready())
   {
     tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
   }
-
 
   // Remote wakeup
   // if (tud_suspended() && buttons_queue) {
