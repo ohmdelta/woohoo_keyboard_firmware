@@ -56,7 +56,6 @@
 
 #include "keyboard_led.h"
 
-
 #define QUEUE_SIZE 128
 
 typedef struct
@@ -68,20 +67,19 @@ typedef struct
 
 indicator_state_t keyboard_indicator_state = {0, 0, 0};
 
-typedef struct 
+typedef struct
 {
   uint8_t ch;
   bool done;
 } other_board_t;
 
-typedef struct 
+typedef struct
 {
   uint8_t size;
   uint8_t ch[QUEUE_SIZE];
 } queue_t;
 
-
-other_board_t ch = {.ch=0, .done=1};
+other_board_t ch = {.ch = 0, .done = 1};
 queue_t key_queue = {0, 0};
 
 static void encoder_task();
@@ -91,7 +89,6 @@ static void encoder_task();
 //--------------------------------------------------------------------+
 
 #define IS_RGBW false
-
 
 uint8_t buttons_queue = 0;
 
@@ -120,13 +117,14 @@ PIO pio_2;
 uint sm_2;
 uint offset_2;
 
-void led_task() {
+void led_task()
+{
   run_pattern(pio, sm, NUM_KEYS);
 }
 
 static inline void put_pixel(PIO pio, uint sm, uint32_t pixel_grb)
 {
-    pio_sm_put_blocking(pio, sm, pixel_grb << 8u);
+  pio_sm_put_blocking(pio, sm, pixel_grb << 8u);
 }
 
 void set_indicator_leds()
@@ -369,6 +367,10 @@ void hid_task(void)
   bool registered = false;
 
   bool shift_pressed = false;
+  bool ctrl_pressed = false;
+  bool gui_pressed = false;
+  bool alt_pressed = false;
+
   for (int i = 0; i < NUM_KEYS; i++)
   {
     if ((matrix_bank_status[i].is_pressed))
@@ -379,7 +381,18 @@ void hid_task(void)
       case HID_KEY_SHIFT_RIGHT:
         shift_pressed = true;
         break;
-
+      case HID_KEY_CONTROL_LEFT:
+      case HID_KEY_CONTROL_RIGHT:
+        ctrl_pressed = true;
+        break;
+      case HID_KEY_GUI_LEFT:
+      case HID_KEY_GUI_RIGHT:
+        gui_pressed = true;
+        break;
+      case HID_KEY_ALT_LEFT:
+      case HID_KEY_ALT_RIGHT:
+        alt_pressed = true;
+        break;
       default:
         break;
       }
@@ -396,7 +409,18 @@ void hid_task(void)
       case HID_KEY_SHIFT_RIGHT:
         shift_pressed = true;
         break;
-
+      case HID_KEY_CONTROL_LEFT:
+      case HID_KEY_CONTROL_RIGHT:
+        ctrl_pressed = true;
+        break;
+      case HID_KEY_GUI_LEFT:
+      case HID_KEY_GUI_RIGHT:
+        gui_pressed = true;
+        break;
+      case HID_KEY_ALT_LEFT:
+      case HID_KEY_ALT_RIGHT:
+        alt_pressed = true;
+        break;
       default:
         break;
       }
@@ -410,9 +434,10 @@ void hid_task(void)
       if ((current_time > (matrix_bank_status[i].last_handled_time + taphold_timeout)))
       {
         const uint8_t key = keymaps_layers[0][i];
-        if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)))
+        if (
+            (tud_ready()) && !((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)))
         {
-          send_hid_report_mod(REPORT_ID_KEYBOARD, shift_pressed ? (1 << 1) : 0, key);
+          send_hid_report_mod(REPORT_ID_KEYBOARD, ((shift_pressed * KEYBOARD_MODIFIER_LEFTSHIFT) | (ctrl_pressed * KEYBOARD_MODIFIER_LEFTCTRL) | (alt_pressed * KEYBOARD_MODIFIER_LEFTALT) | (gui_pressed * KEYBOARD_MODIFIER_LEFTGUI)), key);
           tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
         }
         uart_putc(UART_ID, key);
