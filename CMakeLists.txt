@@ -24,6 +24,7 @@ target_sources(left_firmware PUBLIC
   src/sym_defer_pk.c
   src/keyboard_led.c
   src/firmware_timer.c
+  src/layer.c
 )
 
 # create map/bin/hex/uf2 file in addition to ELF.
@@ -55,6 +56,7 @@ target_sources(right_firmware PUBLIC
   src/sym_defer_pk.c
   src/keyboard_led.c
   src/firmware_timer.c
+  src/layer.c
 )
 
 # create map/bin/hex/uf2 file in addition to ELF.

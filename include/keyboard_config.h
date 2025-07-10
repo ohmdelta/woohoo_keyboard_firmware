@@ -124,5 +124,7 @@
 #define ENCODER_A 46
 #define ENCODER_B 47
 
+#define KEYBOARD_LAYERS 2
+#define LAYER_MODIFIER_KEY D5
 
 #endif

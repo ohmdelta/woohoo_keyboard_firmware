@@ -55,6 +55,7 @@
 #include "hardware/irq.h"
 
 #include "keyboard_led.h"
+// #include "layer.h"
 
 #define QUEUE_SIZE 128
 
@@ -89,8 +90,6 @@ static void encoder_task();
 //--------------------------------------------------------------------+
 
 #define IS_RGBW false
-
-uint8_t buttons_queue = 0;
 
 /* Blink pattern
  * - 250 ms  : device not mounted
@@ -171,12 +170,6 @@ int main(void)
   gpio_set_function(UART_TX_PIN, UART_FUNCSEL_NUM(UART_ID, UART_TX_PIN));
   gpio_set_function(UART_RX_PIN, UART_FUNCSEL_NUM(UART_ID, UART_RX_PIN));
 
-  // Actually, we want a different speed
-  // The call will return the actual baud rate selected, which will be as close as
-  // possible to that requested
-  // int actual = uart_set_baudrate(UART_ID, BAUD_RATE);
-  // (void)actual;
-
   // Set UART flow control CTS/RTS, we don't want these, so turn them off
   uart_set_hw_flow(UART_ID, false, false);
 
@@ -191,18 +184,6 @@ int main(void)
   // Select correct interrupt for the UART we are using
   int UART_IRQ = UART_ID == uart0 ? UART0_IRQ : UART1_IRQ;
 
-  // And set up and enable the interrupt handlers
-  // irq_set_exclusive_handler(UART_IRQ, on_uart_rx);
-  // irq_set_enabled(UART_IRQ, true);
-
-  // // Now enable the UART to send interrupts - RX only
-  // uart_set_irq_enables(UART_ID, true, false);
-
-  // OK, all set up.
-  // Lets send a basic string out, and then run a loop and wait for RX interrupts
-  // The handler will count them, but also reflect the incoming data back with a slight change!
-  // uart_puts(UART_ID, "\nStarting now\n");
-
   for (size_t i = A1; i <= T6; i++)
   {
     put_pixel(pio, sm, urgb_u32(0b100 + 0b11, 0b100 + 0b11, 0b100 + 0b11));
@@ -211,16 +192,13 @@ int main(void)
   set_indicator_leds();
 
   uint8_t p = 0;
+  while(!tud_hid_ready()) // WAIT;
+
   while (1)
   {
     // changed = debounce(raw_matrix, matrix, ROWS_PER_HAND, changed);
-
     bool changed = matrix_task();
-    uint64_t key = get_keys() & SWITCH_MASK;
-    buttons_queue = 0;
     tud_task(); // tinyusb device task
-
-    // sleep_ms(10);
 
     while (uart_is_readable(UART_ID))
     {
@@ -230,6 +208,9 @@ int main(void)
     hid_task();
     led_task();
     encoder_task();
+
+    if (tud_suspended())
+      tud_remote_wakeup();
   }
 
   pio_remove_program_and_unclaim_sm(&ws2812_program, pio, sm, offset);
@@ -294,7 +275,7 @@ static void encoder_task()
     {
       // uint16_t volume_mute = HID_USAGE_CONSUMER_MUTE;
       // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_mute, 2);
-      // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
+      // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MUTE);
       // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
       led_cycle_pattern();
       encoder_button = false;
@@ -398,33 +379,18 @@ void hid_task(void)
       }
     }
   }
-
-  for (uint8_t i = 0; i < key_queue.size; i++)
+  static int8_t layer = 0;
+  const uint8_t layer_mod_key = LAYER_MODIFIER_KEY - A1;
+  if ((matrix_bank_status[layer_mod_key].is_pressed) && (current_time > (matrix_bank_status[layer_mod_key].last_handled_time + taphold_timeout)))
   {
-    if ((matrix_bank_status[i].is_pressed))
-    {
-      switch (keymaps_layers[0][i])
-      {
-      case HID_KEY_SHIFT_LEFT:
-      case HID_KEY_SHIFT_RIGHT:
-        shift_pressed = true;
-        break;
-      case HID_KEY_CONTROL_LEFT:
-      case HID_KEY_CONTROL_RIGHT:
-        ctrl_pressed = true;
-        break;
-      case HID_KEY_GUI_LEFT:
-      case HID_KEY_GUI_RIGHT:
-        gui_pressed = true;
-        break;
-      case HID_KEY_ALT_LEFT:
-      case HID_KEY_ALT_RIGHT:
-        alt_pressed = true;
-        break;
-      default:
-        break;
-      }
-    }
+// #if KEYBOARD_SIDE == LEFT
+//     update_layer(LAYER_UP);
+// #else
+//     update_layer(LAYER_DOWN);
+// #endif
+    layer++;
+    layer %= KEYBOARD_LAYERS;
+    matrix_bank_status[layer_mod_key].last_handled_time = current_time;
   }
 
   for (int i = 0; i < NUM_KEYS; i++)
@@ -433,7 +399,7 @@ void hid_task(void)
     {
       if ((current_time > (matrix_bank_status[i].last_handled_time + taphold_timeout)))
       {
-        const uint8_t key = keymaps_layers[0][i];
+        const uint8_t key = keymaps_layers[layer][i];
         if (
             (tud_ready()) && !((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)))
         {
@@ -467,10 +433,6 @@ void hid_task(void)
   }
 
   // Remote wakeup
-  // if (tud_suspended() && buttons_queue) {
-  //  // Wake up host if we are in suspend mode
-  //  // and REMOTE_WAKEUP feature is enabled by host
-  //  tud_remote_wakeup();
   //} else {
   //  // Send the 1st of report chain, the rest will be sent by
   //  // tud_hid_report_complete_cb()

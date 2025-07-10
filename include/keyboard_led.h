@@ -6,7 +6,7 @@
 #include "hardware/clocks.h"
 #include "ws2812.pio.h"
 
-#define LED_TIMEOUT 20000
+#define LED_TIMEOUT 30000
 
 void led_cycle_pattern();
 
