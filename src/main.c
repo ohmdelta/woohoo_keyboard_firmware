@@ -55,9 +55,10 @@
 #include "hardware/irq.h"
 
 #include "keyboard_led.h"
-// #include "layer.h"
+#include "layer.h"
 
 #define QUEUE_SIZE 128
+#define LAYER_MOD_KEY ((uint8_t)(LAYER_MODIFIER_KEY - A1))
 
 typedef struct
 {
@@ -128,12 +129,25 @@ static inline void put_pixel(PIO pio, uint sm, uint32_t pixel_grb)
 
 void set_indicator_leds()
 {
+  int8_t layer = get_layer();
+
   uint8_t caps_lock = 0b100 * keyboard_indicator_state.caps_lock;
-  put_pixel(pio_2, sm_2, urgb_u32(caps_lock, caps_lock, caps_lock >> 1));
   uint8_t num_lock = 0b100 * keyboard_indicator_state.num_lock;
-  put_pixel(pio_2, sm_2, urgb_u32(num_lock, num_lock, num_lock >> 1));
   uint8_t scroll_lock = 0b100 * keyboard_indicator_state.scroll_lock;
-  put_pixel(pio_2, sm_2, urgb_u32(scroll_lock, scroll_lock, scroll_lock >> 1));
+
+  uint8_t red_addition = 0;
+  uint8_t green_addition = 0;
+  uint8_t blue_addition = 0;
+  if (layer == 1) {
+    red_addition += 0b01;
+  }
+  else if (layer == 2) {
+    blue_addition += 0b1;
+  }
+
+  put_pixel(pio_2, sm_2, urgb_u32(red_addition + caps_lock, green_addition + caps_lock, blue_addition + caps_lock >> 1));
+  put_pixel(pio_2, sm_2, urgb_u32(red_addition + num_lock, green_addition + num_lock, blue_addition + num_lock >> 1));
+  put_pixel(pio_2, sm_2, urgb_u32(red_addition + scroll_lock, green_addition + scroll_lock, blue_addition + scroll_lock >> 1));
 }
 
 /*------------- MAIN -------------*/
@@ -192,26 +206,42 @@ int main(void)
   set_indicator_leds();
 
   uint8_t p = 0;
-  while(!tud_hid_ready()) // WAIT;
+  while (!tud_hid_ready()) // WAIT;
 
-  while (1)
-  {
-    // changed = debounce(raw_matrix, matrix, ROWS_PER_HAND, changed);
-    bool changed = matrix_task();
-    tud_task(); // tinyusb device task
-
-    while (uart_is_readable(UART_ID))
+    while (1)
     {
-      key_queue.ch[key_queue.size++] = uart_getc(UART_ID);
+      // changed = debounce(raw_matrix, matrix, ROWS_PER_HAND, changed);
+      bool changed = matrix_task();
+      tud_task(); // tinyusb device task
+
+      while (uart_is_readable(UART_ID))
+      {
+        uint8_t c = uart_getc(UART_ID);
+        if ((c == LAYER_DOWN_CODE) || (c == LAYER_UP_CODE))
+        {
+          if (c == LAYER_DOWN_CODE)
+          {
+            update_layer(LAYER_DOWN);
+          }
+          else
+          {
+            update_layer(LAYER_UP);
+          }
+          set_indicator_leds();
+        }
+        else
+        {
+          key_queue.ch[key_queue.size++] = c;
+        }
+      }
+
+      hid_task();
+      led_task();
+      encoder_task();
+
+      if (tud_suspended())
+        tud_remote_wakeup();
     }
-
-    hid_task();
-    led_task();
-    encoder_task();
-
-    if (tud_suspended())
-      tud_remote_wakeup();
-  }
 
   pio_remove_program_and_unclaim_sm(&ws2812_program, pio, sm, offset);
 }
@@ -379,27 +409,27 @@ void hid_task(void)
       }
     }
   }
-  static int8_t layer = 0;
-  const uint8_t layer_mod_key = LAYER_MODIFIER_KEY - A1;
-  if ((matrix_bank_status[layer_mod_key].is_pressed) && (current_time > (matrix_bank_status[layer_mod_key].last_handled_time + taphold_timeout)))
+
+  if ((matrix_bank_status[LAYER_MOD_KEY].is_pressed) && (current_time > (matrix_bank_status[LAYER_MOD_KEY].last_handled_time + 2 * TAPHOLD_TIMEOUT)))
   {
-// #if KEYBOARD_SIDE == LEFT
-//     update_layer(LAYER_UP);
-// #else
-//     update_layer(LAYER_DOWN);
-// #endif
-    layer++;
-    layer %= KEYBOARD_LAYERS;
-    matrix_bank_status[layer_mod_key].last_handled_time = current_time;
+#if KEYBOARD_SIDE == LEFT
+    update_layer(LAYER_UP);
+    uart_putc(UART_ID, LAYER_UP_CODE);
+#else
+    update_layer(LAYER_DOWN);
+    uart_putc(UART_ID, LAYER_DOWN_CODE);
+#endif
+    set_indicator_leds();
+    matrix_bank_status[LAYER_MOD_KEY].last_handled_time = current_time;
   }
 
-  for (int i = 0; i < NUM_KEYS; i++)
+  for (uint8_t i = 0; i < NUM_KEYS; i++)
   {
     if ((matrix_bank_status[i].is_pressed))
     {
-      if ((current_time > (matrix_bank_status[i].last_handled_time + taphold_timeout)))
+      if ((current_time > (matrix_bank_status[i].last_handled_time + TAPHOLD_TIMEOUT)))
       {
-        const uint8_t key = keymaps_layers[layer][i];
+        const uint8_t key = keymaps_layers[get_layer()][i];
         if (
             (tud_ready()) && !((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)))
         {

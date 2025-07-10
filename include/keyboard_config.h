@@ -118,7 +118,7 @@
 
 #define PICO_UART_ENABLE_CRLF_SUPPORT 0
 
-#define taphold_timeout 90
+#define TAPHOLD_TIMEOUT 90
 
 #define ENCODER_BUTTON 45
 #define ENCODER_A 46
