@@ -334,8 +334,7 @@ static void send_hid_report_mod(uint8_t report_id, uint8_t modifier, uint32_t bt
   // use to avoid send multiple consecutive zero report for keyboard
   // if (btn)
   // {
-  uint8_t keycode[6] = {0};
-
+  uint8_t keycode[6] = {0, 0, 0, 0, 0, 0};
   keycode[0] = btn;
 
   tud_hid_keyboard_report(REPORT_ID_KEYBOARD, modifier, keycode);
@@ -423,6 +422,8 @@ void hid_task(void)
     matrix_bank_status[LAYER_MOD_KEY].last_handled_time = current_time;
   }
 
+  uint8_t keycode[6] = {0, 0, 0, 0, 0, 0};
+  uint8_t keycode_count = 0;
   for (uint8_t i = 0; i < NUM_KEYS; i++)
   {
     if ((matrix_bank_status[i].is_pressed))
@@ -430,35 +431,34 @@ void hid_task(void)
       if ((current_time > (matrix_bank_status[i].last_handled_time + TAPHOLD_TIMEOUT)))
       {
         const uint8_t key = keymaps_layers[get_layer()][i];
-        if (
-            (tud_ready()) && !((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)))
+        if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) && (key != HID_KEY_NONE))
         {
-          send_hid_report_mod(REPORT_ID_KEYBOARD, ((shift_pressed * KEYBOARD_MODIFIER_LEFTSHIFT) | (ctrl_pressed * KEYBOARD_MODIFIER_LEFTCTRL) | (alt_pressed * KEYBOARD_MODIFIER_LEFTALT) | (gui_pressed * KEYBOARD_MODIFIER_LEFTGUI)), key);
-          tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+          if (keycode_count < 6)
+            keycode[keycode_count++] = key;
         }
         uart_putc(UART_ID, key);
         matrix_bank_status[i].last_handled_time = current_time;
         // previous_btn = buttons_queue;
-        registered = true;
       }
     }
-    uint8_t val = matrix_bank_status[i].is_pressed;
-    // put_pixel(pio, sm, urgb_u32(0b100 * (val * 4) + 0b11, 0b100 * val + 0b11, 0b100 * val + 0b11));
   }
 
   for (uint8_t i = 0; i < key_queue.size; i++)
   {
     const uint8_t key = key_queue.ch[i];
-    if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)))
-      send_hid_report_mod(REPORT_ID_KEYBOARD, shift_pressed ? (1 << 1) : 0, key);
-
-    registered = true;
+    if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) && (key != HID_KEY_NONE))
+    {
+      if (keycode_count < 6)
+        keycode[keycode_count++] = key;
+    }
   }
+
   key_queue.size = 0;
 
   // if (registered){
   if (tud_hid_ready())
   {
+    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, ((shift_pressed * KEYBOARD_MODIFIER_LEFTSHIFT) | (ctrl_pressed * KEYBOARD_MODIFIER_LEFTCTRL) | (alt_pressed * KEYBOARD_MODIFIER_LEFTALT) | (gui_pressed * KEYBOARD_MODIFIER_LEFTGUI)), keycode);
     tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
   }
 
