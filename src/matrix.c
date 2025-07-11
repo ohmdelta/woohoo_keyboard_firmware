@@ -43,6 +43,7 @@ void matrix_init(void)
   matrix_init_kb();
   for (uint8_t i = 0; i < NUM_KEYS; i++)
   {
+    matrix_bank_status[i].last_state = 0;
     matrix_bank_status[i].is_pressed = 0;
     matrix_bank_status[i].last_handled_time = 0;
     matrix_bank_status[i].last_update_time = 0;
@@ -92,20 +93,12 @@ bool matrix_task(void)
   {
     for (uint8_t i = A1; i <= T6; i++)
     {
+      matrix_bank_status[i - A1].last_state = matrix_bank_status[i - A1].is_pressed;
       matrix_bank_status[i - A1].is_pressed = ((current >> (i)) & 1);
       matrix_bank_status[i - A1].last_update_time = now;
     }
   }
-  // for(int i=0; i<64; i++)
-  // {
-  //   if ((changes >> i) & 1)
-  //   {
-  //     // action_exec(MAKE_KEYEVENT(row, col, key_pressed));
-  //     button = i;
-  //   }
-  // }
 
-  // switch_events(row, col, key_pressed);
   matrix_previous = current;
 
   return changes;

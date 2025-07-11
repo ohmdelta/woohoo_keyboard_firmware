@@ -272,7 +272,6 @@ void tud_resume_cb(void)
 //--------------------------------------------------------------------+
 // USB HID
 //--------------------------------------------------------------------+
-static void send_hid_report_mod(uint8_t report_id, uint8_t modifier, uint32_t btn);
 
 static void encoder_task()
 {
@@ -323,32 +322,6 @@ static void encoder_task()
   //   }
   //   has_consumer_key = true;
   // }
-}
-
-static void send_hid_report_mod(uint8_t report_id, uint8_t modifier, uint32_t btn)
-{
-  // skip if hid is not ready yet
-  if (!tud_hid_ready())
-    return;
-
-  // use to avoid send multiple consecutive zero report for keyboard
-  // if (btn)
-  // {
-  uint8_t keycode[6] = {0, 0, 0, 0, 0, 0};
-  keycode[0] = btn;
-
-  tud_hid_keyboard_report(REPORT_ID_KEYBOARD, modifier, keycode);
-}
-
-static void send_hid_report(uint8_t report_id, uint32_t btn)
-{
-  // skip if hid is not ready yet
-  if (!tud_hid_ready())
-    return;
-
-  uint8_t keycode[6] = {0};
-  keycode[0] = btn;
-  tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
 }
 
 static uint8_t const keycode2ascii[128][2] = {HID_KEYCODE_TO_ASCII};
@@ -409,7 +382,10 @@ void hid_task(void)
     }
   }
 
-  if ((matrix_bank_status[LAYER_MOD_KEY].is_pressed) && (current_time > (matrix_bank_status[LAYER_MOD_KEY].last_handled_time + 2 * TAPHOLD_TIMEOUT)))
+  if (
+      (matrix_bank_status[LAYER_MOD_KEY].is_pressed) &&
+      (!matrix_bank_status[LAYER_MOD_KEY].last_state) && 
+      (current_time > (matrix_bank_status[LAYER_MOD_KEY].last_handled_time + TAPHOLD_TIMEOUT)))
   {
 #if KEYBOARD_SIDE == LEFT
     update_layer(LAYER_UP);
@@ -420,6 +396,7 @@ void hid_task(void)
 #endif
     set_indicator_leds();
     matrix_bank_status[LAYER_MOD_KEY].last_handled_time = current_time;
+    matrix_bank_status[LAYER_MOD_KEY].last_state = true;
   }
 
   uint8_t keycode[6] = {0, 0, 0, 0, 0, 0};
@@ -455,19 +432,11 @@ void hid_task(void)
 
   key_queue.size = 0;
 
-  // if (registered){
   if (tud_hid_ready())
   {
     tud_hid_keyboard_report(REPORT_ID_KEYBOARD, ((shift_pressed * KEYBOARD_MODIFIER_LEFTSHIFT) | (ctrl_pressed * KEYBOARD_MODIFIER_LEFTCTRL) | (alt_pressed * KEYBOARD_MODIFIER_LEFTALT) | (gui_pressed * KEYBOARD_MODIFIER_LEFTGUI)), keycode);
     tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
   }
-
-  // Remote wakeup
-  //} else {
-  //  // Send the 1st of report chain, the rest will be sent by
-  //  // tud_hid_report_complete_cb()
-  //  send_hid_report(REPORT_ID_KEYBOARD, buttons_queue);
-  //}
 }
 
 // Invoked when sent REPORT successfully to host
