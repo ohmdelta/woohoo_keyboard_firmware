@@ -1,3 +1,5 @@
+#include "keyboard_led.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -7,19 +9,20 @@
 #include "hardware/clocks.h"
 #include "ws2812.pio.h"
 
-#include "keyboard_led.h"
 
 void pattern_snakes(PIO pio, uint sm, uint len, uint t);
 void pattern_random(PIO pio, uint sm, uint len, uint t);
 void pattern_sparkle(PIO pio, uint sm, uint len, uint t);
 void pattern_greys(PIO pio, uint sm, uint len, uint t);
 void pattern_dull(PIO pio, uint sm, uint len, uint t);
+void pattern_ripple(PIO pio, uint sm, uint len, uint t);
 
 const struct
 {
     pattern pat;
     const char *name;
 } pattern_table[] = {
+    {pattern_ripple, "Ripple"},
     {pattern_snakes, "Snakes!"},
     {pattern_random, "Random data"},
     {pattern_sparkle, "Sparkles"},
@@ -110,5 +113,117 @@ void pattern_dull(PIO pio, uint sm, uint len, uint t){
     for (uint i = 0; i < len; ++i)
     {
         put_pixel(pio, sm, urgb_u32(0b10, 0b10, 0b10));
+    }
+}
+
+#define KERNEL_SIZE 5
+#define RIPPLE_STEPS 3
+const uint8_t ripple_kernel[KERNEL_SIZE][KERNEL_SIZE] = {
+    {0, 1, 2, 1, 0},
+    {1, 3, 7, 3, 1},
+    {2, 7, 11, 7, 2},
+    {1, 3, 7, 3, 1},
+    {0, 1, 2, 1, 0}};
+
+const uint8_t translation_kernel[KERNEL_SIZE][KERNEL_SIZE] = {
+    {-12, -7, -2, 3, 8},
+    {-11, -6, -1, 4, 9},
+    {-10, -5, 0, 5, 10},
+    {-9, -4, 1, 6, 11},
+    {-8, -3, 2, 7, 12}};
+
+inline int8_t min(int8_t a, int8_t b) {
+    return a < b ? a : b;
+}
+
+inline int8_t max(int8_t a, int8_t b) {
+    return a > b ? a : b;
+}
+
+typedef struct
+{
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+} rgb_led_t;
+
+void pattern_ripple(PIO pio, uint sm, uint len, uint t)
+{
+    static uint32_t last_time = 0;
+    uint32_t current_time = timer_read_fast();
+
+    if (current_time < (last_time + LED_TIMEOUT * 10))
+        return;
+
+    last_time = current_time;
+    static uint8_t matrix_led_state[NUM_KEYS] = {0};
+
+    rgb_led_t current_matrix_led_state[NUM_KEYS] = {0};
+
+    for (uint8_t i = 0; i < NUM_KEYS; i++)
+    {
+        if (matrix_bank_status[i].is_pressed && (matrix_led_state[i] == 0))
+        {
+            matrix_led_state[i] = RIPPLE_STEPS;
+        }
+        else if (matrix_led_state[i] > 0)
+        {
+            matrix_led_state[i]--;
+        }
+
+        int8_t x = i / MATRIX_ROWS;
+        int8_t y = i % MATRIX_ROWS;
+        if (y >= MATRIX_COLS)
+            continue;
+
+        if (matrix_led_state[i] == 3)
+        {
+            current_matrix_led_state[i].r += 0b11;
+        }
+        else if (matrix_led_state[i] == 2)
+        {
+            for (int8_t a = -1; a < 2; a++)
+            {
+                for (int8_t b = -1; b < 2; b++)
+                {
+                    if ((a == 0) && (b == 0))
+                        continue;
+
+                    int8_t a_ = x + a;
+                    int8_t b_ = y + b;
+                    if ((a_ < 0) || (a_ >= MATRIX_COLS) || (b_ < 0) || (b_ >= MATRIX_ROWS))
+                    {
+                        continue;
+                    }
+                    int8_t offset = translation_kernel[b + 2][a + 2];
+                    current_matrix_led_state[i + offset].g += ripple_kernel[b + 2][a + 2];
+                }
+            }
+        }
+        else if (matrix_led_state[i] == 1)
+        {
+            for (int8_t a = -2; a < 3; a++)
+            {
+                for (int8_t b = -2; b < 3; b++)
+                {
+                    if ((a >= -1) && (a <= 1) && (b >= -1) && (b <= 1))
+                        continue;
+
+                    int8_t a_ = x + a;
+                    int8_t b_ = y + b;
+                    if ((a_ < 0) || (a_ >= MATRIX_COLS) || (b_ < 0) || (b_ >= MATRIX_ROWS))
+                    {
+                        continue;
+                    }
+                    int8_t offset = translation_kernel[b + 2][a + 2];
+                    current_matrix_led_state[i + offset].b += ripple_kernel[b + 2][a + 2];
+                }
+            }
+        }
+    }
+
+    for (uint8_t i = 0; i < NUM_KEYS; i++)
+    {
+        put_pixel(pio, sm, urgb_u32(current_matrix_led_state[i].r, current_matrix_led_state[i].g, current_matrix_led_state[i].b));
     }
 }
