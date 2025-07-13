@@ -12,6 +12,8 @@
 
 void led_cycle_pattern();
 
+void brightness_update(int8_t val);
+
 void run_pattern(PIO pio, uint sm, uint len);
 
 inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b)

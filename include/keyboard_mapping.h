@@ -243,7 +243,7 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
 //      * └─────┴─────┴─────┘ 
 //      *  
 //      */ 
-        HID_KEY_EQUAL,         //  A1
+        HID_KEY_MINUS,         //  A1
         HID_KEY_BACKSLASH,     //  A2
         HID_KEY_ENTER,         //  A3
         HID_KEY_SHIFT_RIGHT,   //  A4

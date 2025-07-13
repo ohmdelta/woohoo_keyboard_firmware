@@ -282,15 +282,26 @@ static void encoder_task()
   static bool has_consumer_key = false;
   if (encoder_has_action())
   {
-    // if (encoder_a)
-    // {
-    //   // uint16_t volume_down = HID_USAGE_CONSUMER_VOLUME_DECREMENT;
-    //   // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_down, 2);
-    //   send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
-    //   tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-    //   encoder_a = false;
-    //   has_consumer_key = true;
-    // }
+    if (encoder_a)
+    {
+      // uint16_t volume_down = HID_USAGE_CONSUMER_VOLUME_DECREMENT;
+      // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_down, 2);
+      // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
+      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+      brightness_update(1);
+      encoder_a = false;
+      has_consumer_key = true;
+    }
+    if (encoder_b)
+    {
+      // uint16_t volume_down = HID_USAGE_CONSUMER_VOLUME_DECREMENT;
+      // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_down, 2);
+      // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
+      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+      brightness_update(-1);
+      encoder_b = false;
+      has_consumer_key = true;
+    }
     // if (encoder_b)
     // {
     //   // uint8_t volume_up[2] = {0x00, 0xE9};

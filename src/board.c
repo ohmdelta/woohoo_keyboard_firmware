@@ -27,10 +27,16 @@ static void isr_handler(uint buf, uint32_t events)
     switch (buf)
     {
     case ENCODER_A:
-        encoder_a = true; 
+        if ((!encoder_a) && !(encoder_b))
+        {
+            encoder_a = 1;
+        }
         break;
     case ENCODER_B:
-        encoder_b = true; 
+        if ((!encoder_a) && !(encoder_b))
+        {
+            encoder_b = 1;
+        }
         break;
     case ENCODER_BUTTON:
         encoder_button = true; 
@@ -91,6 +97,6 @@ void setup_board(void)
     GPIO_INPUT_PULLDOWN(ENCODER_B)
 
     gpio_set_irq_enabled_with_callback(ENCODER_BUTTON, GPIO_IRQ_EDGE_FALL, true, &isr_handler);
-    // gpio_set_irq_enabled(ENCODER_A, GPIO_IRQ_LEVEL_LOW, true);
-    // gpio_set_irq_enabled(ENCODER_B, GPIO_IRQ_LEVEL_LOW, true);
+    gpio_set_irq_enabled(ENCODER_A, GPIO_IRQ_EDGE_FALL, true);
+    gpio_set_irq_enabled(ENCODER_B, GPIO_IRQ_EDGE_FALL, true);
 }

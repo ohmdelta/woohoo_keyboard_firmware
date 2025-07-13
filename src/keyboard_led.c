@@ -30,6 +30,18 @@ const struct
     {pattern_dull, "Dull"},
 };
 
+uint8_t brightess = 7;
+
+void brightness_update(int8_t val) {
+    int8_t v = brightess + val;
+    if (v < 0) {
+        v = 0;
+    }
+    if (v > 8) {
+        v = 8;
+    }
+    brightess = v;
+}
 
 static inline void put_pixel(PIO pio, uint sm, uint32_t pixel_grb)
 {
@@ -71,11 +83,11 @@ void pattern_snakes(PIO pio, uint sm, uint len, uint t)
     {
         uint x = (i + (t >> 1)) % 64;
         if (x < 10)
-            put_pixel(pio, sm, urgb_u32(0xff, 0, 0));
+            put_pixel(pio, sm, urgb_u32(0x1 << brightess, 0, 0));
         else if (x >= 15 && x < 25)
-            put_pixel(pio, sm, urgb_u32(0, 0xff, 0));
+            put_pixel(pio, sm, urgb_u32(0, 0x1 << brightess, 0));
         else if (x >= 30 && x < 40)
-            put_pixel(pio, sm, urgb_u32(0, 0, 0xff));
+            put_pixel(pio, sm, urgb_u32(0, 0, 0x1 << brightess));
         else
             put_pixel(pio, sm, 0);
     }
