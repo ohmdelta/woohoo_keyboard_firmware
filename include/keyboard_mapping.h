@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include "keyboard_config.h"
 
-
 // A1, B1, C1, D1, E1, F1,
 // A2, B2, C2, D2, E2, F2,
 // A3, B3, C3, D3, E3, F3,
@@ -49,16 +48,16 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
     [0] = {
         //     /* LAYER
         //      * ┌─────┬─────┬─────┬─────┬─────┬─────┐
-        //      * │ `   │  1  │  2  │  3  │  4  │  5  │
+        //      * │ =   │  1  │  2  │  3  │  4  │  5  │
         //      * │     │     │     │     │     │     │
         //      * ├─────┼─────┼─────┼─────┼─────┼─────┤
         //      * │ TAB │  Q  │  W  │  E  │  R  │  T  │
         //      * │     │     │     │     │     │     │
         //      * ├─────┼─────┼─────┼─────┼─────┼─────┤
-        //      * │CAPS │  A  │  S  │  D  │  F  │  G  │
-        //      * │     │     │     │     │     │     │
-        //      * ├─────┼─────┼─────┼─────┼─────┼─────┤
-        //      * │SHIFT│  \  │  Z  │  X  │  C  │  V  │
+        //      * │ ESC │  A  │  S  │  D  │  F  │  G  ├─────┐
+        //      * │     │     │     │     │     │     | F5  │
+        //      * ├─────┼─────┼─────┼─────┼─────┼─────┤     │
+        //      * │SHIFT│  Z  │  X  │  C  │  V  |  B  ├─────┘
         //      * │     │     │     │     │     │     │
         //      * ├─────┼─────┼─────┼─────┼─────┼─────┘
         //      * │CTRL │ SYS │ ALT │LOWER│SPACE│
@@ -66,17 +65,17 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
         //      * └─────┴─────┴─────┴─────┴─────┘       │ T6  │ T5  │
         //      *                                       │     │     │
         //      *                                 ┌─────┼─────┼─────┤
-        //      *                                 │     │     │ T3  │
+        //      *                                 │     │     │HOME │
         //      *                                 │     │     │     │
-        //      *                                 |SPACE| T2  ├─────┤
-        //      *                                 │     │     │ T4  │
+        //      *                                 |BSPC | DEL ├─────┤
+        //      *                                 │     │     │ END │
         //      *                                 │     │     │     │
         //      *                                 └─────┴─────┴─────┘
         //      */
         //      */
-        HID_KEY_GRAVE,        //  A1
+        HID_KEY_EQUAL,        //  A1
         HID_KEY_TAB,          //  A2
-        HID_KEY_CAPS_LOCK,    //  A3
+        HID_KEY_ESCAPE,       //  A3
         HID_KEY_SHIFT_LEFT,   //  A4
         HID_KEY_CONTROL_LEFT, //  A5
         HID_KEY_1,            //  B1
@@ -105,10 +104,10 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
         HID_KEY_B,            //  F4
         HID_KEY_NONE,         //  F5
         /* THUMB CLUSTER */
-        HID_KEY_SPACE,       //  T1
-        HID_KEY_ESCAPE,      //  T2
-        HID_KEY_ARROW_DOWN,  //  T3
-        HID_KEY_DELETE,      //  T4
+        HID_KEY_BACKSPACE,   //  T1
+        HID_KEY_DELETE,      //  T2
+        HID_KEY_HOME,        //  T3
+        HID_KEY_END,         //  T4
         HID_KEY_ARROW_UP,    //  T5
         HID_KEY_KEYPAD_ENTER //  T6
     },
@@ -121,10 +120,10 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
         //      * │ TAB │  Q  │  W  │ VOL │ VOL │ VOL │
         //      * │     │     │     │ MUTE│ DOWN│ UP  │
         //      * ├─────┼─────┼─────┼─────┼─────┼─────┤
-        //      * │CAPS │  A  │  S  │  D  │  F  │  G  │
-        //      * │     │     │     │     │     │     │
-        //      * ├─────┼─────┼─────┼─────┼─────┼─────┤
-        //      * │SHIFT│  \  │  Z  │  X  │  C  │  V  │
+        //      * │CAPS │  A  │  S  │  D  │  F  │  G  ├─────┐
+        //      * │     │     │     │     │     │     | F5  │
+        //      * ├─────┼─────┼─────┼─────┼─────┼─────┤     │
+        //      * │SHIFT│  Z  │  X  │  C  │  V  |  B  ├─────┘
         //      * │     │     │     │     │     │     │
         //      * ├─────┼─────┼─────┼─────┼─────┼─────┘
         //      * │CTRL │ SYS │ ALT │LOWER│SPACE│
@@ -134,7 +133,7 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
         //      *                                 ┌─────┼─────┼─────┤
         //      *                                 │     │     │ T3  │
         //      *                                 │     │     │     │
-        //      *                                 |SPACE| T2  ├─────┤
+        //      *                                 |BSPC | DEL ├─────┤
         //      *                                 │     │     │ T4  │
         //      *                                 │     │     │     │
         //      *                                 └─────┴─────┴─────┘
@@ -142,7 +141,7 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
         //      */
         HID_KEY_F1,           //  A1
         HID_KEY_TAB,          //  A2
-        HID_KEY_CAPS_LOCK,    //  A3
+        HID_KEY_ESCAPE,       //  A3
         HID_KEY_SHIFT_LEFT,   //  A4
         HID_KEY_CONTROL_LEFT, //  A5
         HID_KEY_F2,           //  B1
@@ -171,10 +170,10 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
         HID_KEY_B,            //  F4
         HID_KEY_NONE,         //  F5
         /* THUMB CLUSTER */
-        HID_KEY_SPACE,       //  T1
-        HID_KEY_ESCAPE,      //  T2
-        HID_KEY_ARROW_DOWN,  //  T3
-        HID_KEY_DELETE,      //  T4
+        HID_KEY_BACKSPACE,   //  T1
+        HID_KEY_DELETE,      //  T2
+        HID_KEY_HOME,        //  T3
+        HID_KEY_END,         //  T4
         HID_KEY_ARROW_UP,    //  T5
         HID_KEY_KEYPAD_ENTER //  T6
     }};
@@ -188,27 +187,63 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
 //  T3,
 //  T4, T2, T1
 
+//     /* LAYER
+//      *               ┌─────┬─────┬─────┬─────┬─────┬─────┐
+//      *               │ F1  │ E1  │ D1  │ C1  │ B1  │ A1  │
+//      *               │     │     │     │     │     │     │
+//      *               ├─────┼─────┼─────┼─────┼─────┼─────┤
+//      *               │ F2  │ E2  │ D2  │ C2  │ B2  │ A2  │
+//      *               │     │     │     │     │     │     │
+//      *               ├─────┼─────┼─────┼─────┼─────┼─────┤
+//      *         ┌─────┤ F3  │ E3  │ D3  │ C3  │ B3  │ A3  |
+//      *         │ F5  │     │     │     │     │     │     |
+//      *         │     ├─────┼─────┼─────┼─────┼─────┼─────┤
+//      *         └─────┤ F4  │ E4  │ D4  │ C4  │ B4  │ A4  |
+//      *               │     │     │     │     │     │     |
+//      *               └─────┼─────┼─────┼─────┼─────┼─────┤
+//      *                     │ E5  │ D5  │ C5  │ B5  │ A5  │
+//      * ┌─────┬─────┐       │     │     │     │     │     │
+//      * │ T5  │ T6  │       └─────┴─────┴─────┴─────┴─────┘
+//      * │     │     │       
+//      ^ ├─────┼─────┼─────┐ 
+//      * │ T3  │     │     │ 
+//      * │     │     │     │ 
+//      * ├─────┤ T2  ┤ T1  | 
+//      * │ T4  │     │     │ 
+//      * │     │     │     │ 
+//      * └─────┴─────┴─────┘ 
+//      *  
+//      */ 
 const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
     [0] = {
-        //     /* Layer
-        //      * ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┐
-        //      * │  6  │  7  │  8  │  9  │  0  │  -  │ BS  │
-        //      * │     │     │     │     │     │     │     │
-        //      * ├─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-        //      * │  Y  │  U  │  I  │  O  │  P  │  [  │  ]  │
-        //      * │     │     │     │     │     │     │     │
-        //      * ├─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-        //      * │  H  │  J  │  K  │  L  │  ;  │  '  │ENTER│
-        //      * │     │     │     │     │     │     │     │
-        //      * ├─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-        //      * │  B  │  N  │  M  │  ,  │  .  │  /  │SHIFT│
-        //      * │     │     │     │     │     │     │     │
-        //      * ├─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-        //      * │     │SPACE│RAISE│ ALT │ SYS │     │CTRL │
-        //      * │     │     │     │     │     │     │     │
-        //      * └─────┴─────┴─────┴─────┴─────┴─────┴─────┘
-        //      */
-        HID_KEY_BACKSPACE,     //  A1
+//     /* LAYER
+//      *               ┌─────┬─────┬─────┬─────┬─────┬─────┐
+//      *               │ 6   │ 7   │ 8   │ 9   │ 0   │ -   │
+//      *               │     │     │     │     │     │     │
+//      *               ├─────┼─────┼─────┼─────┼─────┼─────┤
+//      *               │ y   │ u   │ i   │ o   │ p   │ #   │
+//      *               │     │     │     │     │     │     │
+//      *               ├─────┼─────┼─────┼─────┼─────┼─────┤
+//      *         ┌─────┤ h   │ j   │ k   │ l   │ ;   │ENTER|
+//      *         │     │     │     │     │     │     │     |
+//      *         │     ├─────┼─────┼─────┼─────┼─────┼─────┤
+//      *         └─────┤ n   │ m   │ ,   │ .   │ /   │SHIFT|
+//      *               │     │     │     │     │     │     |
+//      *               └─────┼─────┼─────┼─────┼─────┼─────┤
+//      *                     │SPACE│UPPER│ ALT │ GUI │CTRL │
+//      * ┌─────┬─────┐       │     │     │     │     │     │
+//      * │ T5  │ T6  │       └─────┴─────┴─────┴─────┴─────┘
+//      * │     │     │       
+//      ^ ├─────┼─────┼─────┐ 
+//      * │ T3  │     │     │ 
+//      * │     │     │     │ 
+//      * ├─────┤ENTER|SPACE| 
+//      * │ T4  │     │     │ 
+//      * │     │     │     │ 
+//      * └─────┴─────┴─────┘ 
+//      *  
+//      */ 
+        HID_KEY_EQUAL,         //  A1
         HID_KEY_BACKSLASH,     //  A2
         HID_KEY_ENTER,         //  A3
         HID_KEY_SHIFT_RIGHT,   //  A4
@@ -240,9 +275,9 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
         HID_KEY_NONE,          //  F5
         /* THUMB CLUSTER */
         HID_KEY_SPACE,       //  T1
-        HID_KEY_BACKSPACE,   //  T2
-        HID_KEY_ARROW_DOWN,  //  T3
-        HID_KEY_DELETE,      //  T4
+        HID_KEY_ENTER,       //  T2
+        HID_KEY_PAGE_UP,     //  T3
+        HID_KEY_PAGE_DOWN,   //  T4
         HID_KEY_ARROW_UP,    //  T5
         HID_KEY_KEYPAD_ENTER //  T6
     },
@@ -289,32 +324,3 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
 #endif
 
 #endif
-// const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-
-//     /* LAYER
-//      * ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
-//      * │ ESC │  1  │  2  │  3  │  4  │  5  │  6  │  7  │  8  │  9  │  0  │  -  │ BS  │
-//      * │     │     │     │     │     │     │     │     │     │     │     │     │     │
-//      * ├─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-//      * │ TAB │  Q  │  W  │  E  │  R  │  T  │  Y  │  U  │  I  │  O  │  P  │  [  │  ]  │
-//      * │     │     │     │     │     │     │     │     │     │     │     │     │     │
-//      * ├─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-//      * │CAPS │  A  │  S  │  D  │  F  │  G  │  H  │  J  │  K  │  L  │  ;  │  '  │ENTER│
-//      * │     │     │     │     │     │     │     │     │     │     │     │     │     │
-//      * ├─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-//      * │SHIFT│  \  │  Z  │  X  │  C  │  V  │  B  │  N  │  M  │  ,  │  .  │  /  │SHIFT│
-//      * │     │     │     │     │     │     │     │     │     │     │     │     │     │
-//      * ├─────┼─────┼─────┼─────┼─────┼─────┴─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-//      * │CTRL │     │ SYS │ ALT │LOWER│   SPACE   │SPACE│RAISE│ ALT │ SYS │     │CTRL │
-//      * │     │     │     │     │     │           │     │     │     │     │     │     │
-//      * └─────┴─────┴─────┴─────┴─────┴───────────┴─────┴─────┴─────┴─────┴─────┴─────┘
-//      */
-
-//     [0] = LAYOUT(
-//         //******** ********** ********** ********** ********** ********** ********** ********** ********** ********** ********** ********** ********** ********** ********** **********
-//         KC_ESC,    KC_1,      KC_2,      KC_3,      KC_4,      KC_5,      KC_6,      KC_7,      KC_8,      KC_9,      KC_0,      KC_MINS,   KC_BSPC,   KC_INS,    KC_HOME,   KC_PGUP,
-//         KC_TAB,    KC_Q,      KC_W,      KC_E,      KC_R,      KC_T,      KC_Y,      KC_U,      KC_I,      KC_O,      KC_P,      KC_LBRC,   KC_RBRC,   KC_DEL,    KC_END,    KC_PGDN,
-//         KC_CAPS,   KC_A,      KC_S,      KC_D,      KC_F,      KC_G,      KC_H,      KC_J,      KC_K,      KC_L,      KC_SCLN,   KC_QUOT,   KC_ENT,
-//         KC_LSFT,   KC_BSLS,   KC_Z,      KC_X,      KC_C,      KC_V,      KC_B,      KC_N,      KC_M,      KC_COMM,   KC_DOT,    KC_SLSH,   KC_RSFT,              KC_UP,
-//         KC_LCTL,   KC_NO,     KC_LGUI,   KC_LALT,   MO(1),            KC_SPC,        KC_SPC,    MO(2),     KC_RALT,   KC_RGUI,   KC_NO,     KC_RCTL,   KC_LEFT,   KC_DOWN,   KC_RGHT
-//     ),
