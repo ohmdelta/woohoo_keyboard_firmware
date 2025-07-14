@@ -349,15 +349,15 @@ uint8_t previous_btn = 0xff;
 void hid_task(void)
 {
   // Poll every 10ms
-  const uint32_t interval_ms = 10;
-  static uint32_t start_ms = 0;
+  const fast_timer_t interval_ms = 10000;
+  static fast_timer_t start_ms = 0;
+  const fast_timer_t current_time = timer_read_fast();
 
-  if (board_millis() - start_ms < interval_ms)
+  if (current_time - start_ms < interval_ms)
     return; // not enough time
 
   start_ms += interval_ms;
 
-  const uint32_t current_time = timer_read_fast();
   bool registered = false;
 
   bool shift_pressed = false;

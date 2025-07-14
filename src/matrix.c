@@ -22,8 +22,8 @@ matrix_status matrix_bank_status[NUM_KEYS] = {0};
  * internal QMK state machine.
  */
 static inline void generate_tick_event(void) {
-    static uint32_t last_tick = 0;
-    const uint32_t  now       = timer_read_fast();
+    static fast_timer_t last_tick = 0;
+    const fast_timer_t  now       = timer_read_fast();
     if (TIMER_DIFF_32(now, last_tick) != 0) {
         // action_exec(MAKE_TICK_EVENT);
         last_tick = now;
@@ -81,7 +81,7 @@ bool matrix_task(void)
   // }
 
   matrix_scan();
-  const uint32_t now = timer_read_fast();
+  const fast_timer_t now = timer_read_fast();
 
   // const bool process_keypress = should_process_keypress();
 

@@ -65,8 +65,8 @@ void led_cycle_pattern()
 
 void run_pattern(PIO pio, uint sm, uint len)
 {
-    static uint32_t last_time = 0;
-    uint32_t current_time = timer_read_fast();
+    static fast_timer_t last_time = 0;
+    fast_timer_t current_time = timer_read_fast();
 
     static int t = 0;
     if (current_time > last_time + LED_TIMEOUT)
@@ -161,8 +161,8 @@ typedef struct
 
 void pattern_ripple(PIO pio, uint sm, uint len, uint t)
 {
-    static uint32_t last_time = 0;
-    uint32_t current_time = timer_read_fast();
+    static fast_timer_t last_time = 0;
+    fast_timer_t current_time = timer_read_fast();
 
     if (current_time < (last_time + LED_TIMEOUT * 10))
         return;
