@@ -117,6 +117,8 @@ PIO pio_2;
 uint sm_2;
 uint offset_2;
 
+void uart_read_task();
+
 void led_task()
 {
   run_pattern(pio, sm, NUM_KEYS);
@@ -129,25 +131,29 @@ static inline void put_pixel(PIO pio, uint sm, uint32_t pixel_grb)
 
 void set_indicator_leds()
 {
-  int8_t layer = get_layer();
-
-  uint8_t caps_lock = 0b100 * keyboard_indicator_state.caps_lock;
-  uint8_t num_lock = 0b100 * keyboard_indicator_state.num_lock;
-  uint8_t scroll_lock = 0b100 * keyboard_indicator_state.scroll_lock;
+  const int8_t layer = get_layer();
+  const uint8_t caps_lock = 0x4 * keyboard_indicator_state.caps_lock;
+  const uint8_t num_lock = 0x4 * keyboard_indicator_state.num_lock;
+  const uint8_t scroll_lock = 0x4 * keyboard_indicator_state.scroll_lock;
 
   uint8_t red_addition = 0;
   uint8_t green_addition = 0;
   uint8_t blue_addition = 0;
-  if (layer == 1) {
-    red_addition += 0b01;
-  }
-  else if (layer == 2) {
-    blue_addition += 0b1;
+  switch (layer)
+  {
+  case LAYER_SYMBOL:
+    red_addition += 0x1;
+    break;
+  case LAYER_CONTROL:
+    blue_addition += 0x1;
+    break;
+  default:
+    break;
   }
 
-  put_pixel(pio_2, sm_2, urgb_u32(red_addition + caps_lock, green_addition + caps_lock, blue_addition + caps_lock >> 1));
-  put_pixel(pio_2, sm_2, urgb_u32(red_addition + num_lock, green_addition + num_lock, blue_addition + num_lock >> 1));
-  put_pixel(pio_2, sm_2, urgb_u32(red_addition + scroll_lock, green_addition + scroll_lock, blue_addition + scroll_lock >> 1));
+  put_pixel(pio_2, sm_2, white_offset_urgb_u32(caps_lock, red_addition, green_addition, blue_addition));
+  put_pixel(pio_2, sm_2, white_offset_urgb_u32(num_lock, red_addition, green_addition, blue_addition));
+  put_pixel(pio_2, sm_2, white_offset_urgb_u32(scroll_lock, red_addition, green_addition, blue_addition));
 }
 
 /*------------- MAIN -------------*/
@@ -205,45 +211,47 @@ int main(void)
 
   set_indicator_leds();
 
-  uint8_t p = 0;
-  while (!tud_hid_ready()) // WAIT;
+  while (1)
+  {
+    // changed = debounce(raw_matrix, matrix, ROWS_PER_HAND, changed);
+    bool changed = matrix_task();
+    tud_task(); // tinyusb device task
 
-    while (1)
-    {
-      // changed = debounce(raw_matrix, matrix, ROWS_PER_HAND, changed);
-      bool changed = matrix_task();
-      tud_task(); // tinyusb device task
+    uart_read_task();
 
-      while (uart_is_readable(UART_ID))
-      {
-        uint8_t c = uart_getc(UART_ID);
-        if ((c == LAYER_DOWN_CODE) || (c == LAYER_UP_CODE))
-        {
-          if (c == LAYER_DOWN_CODE)
-          {
-            update_layer(LAYER_DOWN);
-          }
-          else
-          {
-            update_layer(LAYER_UP);
-          }
-          set_indicator_leds();
-        }
-        else
-        {
-          key_queue.ch[key_queue.size++] = c;
-        }
-      }
+    hid_task();
+    led_task();
+    encoder_task();
 
-      hid_task();
-      led_task();
-      encoder_task();
-
-      if (tud_suspended())
-        tud_remote_wakeup();
-    }
+    if (tud_suspended())
+      tud_remote_wakeup();
+  }
 
   pio_remove_program_and_unclaim_sm(&ws2812_program, pio, sm, offset);
+}
+
+void uart_read_task()
+{
+  while (uart_is_readable(UART_ID))
+  {
+    uint8_t c = uart_getc(UART_ID);
+    if ((c == LAYER_DOWN_CODE) || (c == LAYER_UP_CODE))
+    {
+      if (c == LAYER_DOWN_CODE)
+      {
+        update_layer(LAYER_DOWN);
+      }
+      else
+      {
+        update_layer(LAYER_UP);
+      }
+      set_indicator_leds();
+    }
+    else
+    {
+      key_queue.ch[key_queue.size++] = c;
+    }
+  }
 }
 
 //--------------------------------------------------------------------+
@@ -318,24 +326,14 @@ static void encoder_task()
       // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MUTE);
       // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
       led_cycle_pattern();
+      // uint8_t keycode[6] = {HID_KEY_A, HID_KEY_B, HID_KEY_C, HID_KEY_D, HID_KEY_E, HID_KEY_F};
+      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
+      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
       encoder_button = false;
       has_consumer_key = true;
     }
-    // uint16_t empty_key = 0;
-    // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &empty_key, 2);
   }
-  // else
-  // {
-  //   if (has_consumer_key)
-  //   {
-  //     uint16_t empty_key = 0;
-  //     if (has_consumer_key)
-  //   }
-  //   has_consumer_key = true;
-  // }
 }
-
-static uint8_t const keycode2ascii[128][2] = {HID_KEYCODE_TO_ASCII};
 
 bool is_modifier(uint8_t code)
 {
@@ -395,7 +393,7 @@ void hid_task(void)
 
   if (
       (matrix_bank_status[LAYER_MOD_KEY].is_pressed) &&
-      (!matrix_bank_status[LAYER_MOD_KEY].last_state) && 
+      (!matrix_bank_status[LAYER_MOD_KEY].last_state) &&
       (current_time > (matrix_bank_status[LAYER_MOD_KEY].last_handled_time + TAPHOLD_TIMEOUT)))
   {
 #if KEYBOARD_SIDE == LEFT

@@ -16,14 +16,16 @@ void pattern_sparkle(PIO pio, uint sm, uint len, uint t);
 void pattern_greys(PIO pio, uint sm, uint len, uint t);
 void pattern_dull(PIO pio, uint sm, uint len, uint t);
 void pattern_ripple(PIO pio, uint sm, uint len, uint t);
+void pattern_neutral(PIO pio, uint sm, uint len, uint t);
 
 const struct
 {
     pattern pat;
     const char *name;
 } pattern_table[] = {
+    {pattern_neutral, "Neutral"},
     {pattern_ripple, "Ripple"},
-    {pattern_snakes, "Snakes!"},
+    {pattern_snakes, "Snakes"},
     {pattern_random, "Random data"},
     {pattern_sparkle, "Sparkles"},
     {pattern_greys, "Greys"},
@@ -237,5 +239,20 @@ void pattern_ripple(PIO pio, uint sm, uint len, uint t)
     for (uint8_t i = 0; i < NUM_KEYS; i++)
     {
         put_pixel(pio, sm, urgb_u32(current_matrix_led_state[i].r, current_matrix_led_state[i].g, current_matrix_led_state[i].b));
+    }
+}
+
+void pattern_neutral(PIO pio, uint sm, uint len, uint t)
+{
+    for (uint8_t i = 0; i < NUM_KEYS; i++)
+    {
+        if (matrix_bank_status[i].is_pressed)
+        {
+            put_pixel(pio, sm, white_offset_urgb_u32(0xff, 0x0, 0x0, 0x0));
+        }
+        else
+        {
+            put_pixel(pio, sm, urgb_u32(0x0, 0x1, 0x4));
+        }
     }
 }

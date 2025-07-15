@@ -53,7 +53,7 @@
 
 #define ROWS_PER_HAND (MATRIX_ROWS)
 
-#define SWITCH_MASK (       \
+#define SWITCH_MASK (         \
     (((uint64_t)(1)) << A1) | \
     (((uint64_t)(1)) << A2) | \
     (((uint64_t)(1)) << A3) | \
@@ -114,7 +114,7 @@
 #define BAUD_RATE 115200
 #define DATA_BITS 8
 #define STOP_BITS 1
-#define PARITY    UART_PARITY_NONE
+#define PARITY UART_PARITY_NONE
 
 #define PICO_UART_ENABLE_CRLF_SUPPORT 0
 
@@ -125,6 +125,6 @@
 #define ENCODER_B 47
 
 #define KEYBOARD_LAYERS 2
-#define LAYER_MODIFIER_KEY D5
+#define LAYER_MODIFIER_KEY F5
 
 #endif
