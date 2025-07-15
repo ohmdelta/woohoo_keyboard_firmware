@@ -439,6 +439,30 @@ void hid_task(void)
       if (keycode_count < 6)
         keycode[keycode_count++] = key;
     }
+    else
+    {
+      switch (key)
+      {
+      case HID_KEY_SHIFT_LEFT:
+      case HID_KEY_SHIFT_RIGHT:
+        shift_pressed = true;
+        break;
+      case HID_KEY_CONTROL_LEFT:
+      case HID_KEY_CONTROL_RIGHT:
+        ctrl_pressed = true;
+        break;
+      case HID_KEY_GUI_LEFT:
+      case HID_KEY_GUI_RIGHT:
+        gui_pressed = true;
+        break;
+      case HID_KEY_ALT_LEFT:
+      case HID_KEY_ALT_RIGHT:
+        alt_pressed = true;
+        break;
+      default:
+        break;
+      }
+    }
   }
 
   key_queue.size = 0;

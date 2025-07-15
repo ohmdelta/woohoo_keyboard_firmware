@@ -2,5 +2,5 @@
 #include "hardware/timer.h"
 
 fast_timer_t inline timer_read_fast() {
-    return time_us_32();
+    return (time_us_64());
 }

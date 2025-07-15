@@ -5,6 +5,6 @@
 #include <stdlib.h>
 
 typedef uint32_t matrix_row_t;
-typedef uint32_t fast_timer_t;
+typedef uint64_t fast_timer_t;
 
 #endif // !DEBUG STRUCTS_H
