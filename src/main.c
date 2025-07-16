@@ -426,12 +426,12 @@ void hid_task(void)
   // Handle Keyboard strokes
   for (uint8_t i = 0; i < NUM_KEYS; i++)
   {
-    const matrix_status state = matrix_bank_status[i];
-    if ((state.is_pressed))
+    matrix_status *const state = &matrix_bank_status[i];
+    if (state->is_pressed)
     {
       if (
-          // ((current_time > matrix_bank_status[i].last_update_time + INITIAL_HOLD_TIMEOUT) &&
-           (current_time > (state.last_handled_time + TAPHOLD_TIMEOUT)))
+          !state->responded ||
+          (current_time > (state->last_handled_time + TAPHOLD_TIMEOUT)))
       {
         const uint8_t key = keymaps_layers[get_layer()][i];
         if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) && (key != HID_KEY_NONE))
@@ -442,7 +442,12 @@ void hid_task(void)
           }
         }
         uart_putc(UART_ID, key);
-        matrix_bank_status[i].last_handled_time = current_time;
+        state->last_handled_time = current_time;
+        if (!state->responded)
+        {
+          state->responded = true;
+          state->last_handled_time += INITIAL_HOLD_TIMEOUT;
+        }
       }
     }
   }
