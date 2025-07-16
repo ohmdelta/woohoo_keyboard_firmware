@@ -355,18 +355,19 @@ void hid_task(void)
   const fast_timer_t current_time = timer_read_fast();
   static bool last_sent = false;
 
-  if ((current_time - start_ms < interval_ms) || !tud_hid_ready())
+  if ((current_time - start_ms < interval_ms))
   {
     return; // not enough time
   }
 
-  if (last_sent)
+  start_ms += interval_ms;
+
+  if (last_sent && tud_hid_ready())
   {
     tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
     last_sent = false;
+    return;
   }
-
-  start_ms += interval_ms;
 
   bool registered = false;
 
@@ -429,24 +430,32 @@ void hid_task(void)
     matrix_status *const state = &matrix_bank_status[i];
     if (state->is_pressed)
     {
-      if (
-          !state->responded ||
-          (current_time > (state->last_handled_time + TAPHOLD_TIMEOUT)))
+      const uint8_t key = keymaps_layers[get_layer()][i];
+      if (key == HID_KEY_NONE) {
+        continue;
+      }
+
+      if (((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) )
       {
-        const uint8_t key = keymaps_layers[get_layer()][i];
-        if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) && (key != HID_KEY_NONE))
+        uart_putc(UART_ID, key);
+      }
+      else 
+      {
+        if (
+            !state->responded ||
+            (current_time > (state->last_handled_time + TAPHOLD_TIMEOUT)))
         {
           if (keycode_count < 6)
           {
             keycode[keycode_count++] = key;
           }
-        }
-        uart_putc(UART_ID, key);
-        state->last_handled_time = current_time;
-        if (!state->responded)
-        {
-          state->responded = true;
-          state->last_handled_time += INITIAL_HOLD_TIMEOUT;
+          uart_putc(UART_ID, key);
+          state->last_handled_time = current_time;
+          if (!state->responded)
+          {
+            state->responded = true;
+            state->last_handled_time += INITIAL_HOLD_TIMEOUT;
+          }
         }
       }
     }
@@ -489,9 +498,10 @@ void hid_task(void)
 
   key_queue.size = 0;
 
-  if (tud_hid_ready() && keycode_count)
+  if (tud_hid_ready() )
   {
-    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, ((shift_pressed * KEYBOARD_MODIFIER_LEFTSHIFT) | (ctrl_pressed * KEYBOARD_MODIFIER_LEFTCTRL) | (alt_pressed * KEYBOARD_MODIFIER_LEFTALT) | (gui_pressed * KEYBOARD_MODIFIER_LEFTGUI)), keycode);
+    uint8_t modifier = ((shift_pressed * KEYBOARD_MODIFIER_LEFTSHIFT) | (ctrl_pressed * KEYBOARD_MODIFIER_LEFTCTRL) | (alt_pressed * KEYBOARD_MODIFIER_LEFTALT) | (gui_pressed * KEYBOARD_MODIFIER_LEFTGUI));
+    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, modifier, keycode);
     last_sent = true;
   }
 }
