@@ -82,7 +82,7 @@ typedef struct
 } queue_t;
 
 other_board_t ch = {.ch = 0, .done = 1};
-queue_t key_queue = {0, 0};
+queue_t key_queue = {.size=0, .ch={0}};
 
 static void encoder_task();
 
@@ -249,7 +249,10 @@ void uart_read_task()
     }
     else
     {
-      key_queue.ch[key_queue.size++] = c;
+      if (key_queue.size < QUEUE_SIZE)
+      {
+        key_queue.ch[key_queue.size++] = c;
+      }
     }
   }
 }
@@ -350,9 +353,18 @@ void hid_task(void)
   const fast_timer_t interval_ms = 10000;
   static fast_timer_t start_ms = 0;
   const fast_timer_t current_time = timer_read_fast();
+  static bool last_sent = false;
 
-  if (current_time - start_ms < interval_ms)
+  if ((current_time - start_ms < interval_ms) || !tud_hid_ready())
+  {
     return; // not enough time
+  }
+
+  if (last_sent)
+  {
+    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+    last_sent = false;
+  }
 
   start_ms += interval_ms;
 
@@ -394,7 +406,7 @@ void hid_task(void)
   if (
       (matrix_bank_status[LAYER_MOD_KEY].is_pressed) &&
       (!matrix_bank_status[LAYER_MOD_KEY].last_state) &&
-      (current_time > (matrix_bank_status[LAYER_MOD_KEY].last_handled_time + TAPHOLD_TIMEOUT)))
+      (current_time > (matrix_bank_status[LAYER_MOD_KEY].last_handled_time + 30000ul)))
   {
 #if KEYBOARD_SIDE == LEFT
     update_layer(LAYER_UP);
@@ -410,25 +422,32 @@ void hid_task(void)
 
   uint8_t keycode[6] = {0, 0, 0, 0, 0, 0};
   uint8_t keycode_count = 0;
+
+  // Handle Keyboard strokes
   for (uint8_t i = 0; i < NUM_KEYS; i++)
   {
-    if ((matrix_bank_status[i].is_pressed))
+    const matrix_status state = matrix_bank_status[i];
+    if ((state.is_pressed))
     {
-      if ((current_time > (matrix_bank_status[i].last_handled_time + TAPHOLD_TIMEOUT)))
+      if (
+          // ((current_time > matrix_bank_status[i].last_update_time + INITIAL_HOLD_TIMEOUT) &&
+           (current_time > (state.last_handled_time + TAPHOLD_TIMEOUT)))
       {
         const uint8_t key = keymaps_layers[get_layer()][i];
         if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) && (key != HID_KEY_NONE))
         {
           if (keycode_count < 6)
+          {
             keycode[keycode_count++] = key;
+          }
         }
         uart_putc(UART_ID, key);
         matrix_bank_status[i].last_handled_time = current_time;
-        // previous_btn = buttons_queue;
       }
     }
   }
 
+  // Handle UART
   for (uint8_t i = 0; i < key_queue.size; i++)
   {
     const uint8_t key = key_queue.ch[i];
@@ -465,10 +484,10 @@ void hid_task(void)
 
   key_queue.size = 0;
 
-  if (tud_hid_ready())
+  if (tud_hid_ready() && keycode_count)
   {
     tud_hid_keyboard_report(REPORT_ID_KEYBOARD, ((shift_pressed * KEYBOARD_MODIFIER_LEFTSHIFT) | (ctrl_pressed * KEYBOARD_MODIFIER_LEFTCTRL) | (alt_pressed * KEYBOARD_MODIFIER_LEFTALT) | (gui_pressed * KEYBOARD_MODIFIER_LEFTGUI)), keycode);
-    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+    last_sent = true;
   }
 }
 

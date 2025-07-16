@@ -45,6 +45,7 @@ void matrix_init(void)
   {
     matrix_bank_status[i].last_state = 0;
     matrix_bank_status[i].is_pressed = 0;
+    matrix_bank_status[i].responded = 0;
     matrix_bank_status[i].last_handled_time = 0;
     matrix_bank_status[i].last_update_time = 0;
   }
@@ -93,9 +94,17 @@ bool matrix_task(void)
   {
     for (uint8_t i = A1; i <= T6; i++)
     {
-      matrix_bank_status[i - A1].last_state = matrix_bank_status[i - A1].is_pressed;
-      matrix_bank_status[i - A1].is_pressed = ((current >> (i)) & 1);
-      matrix_bank_status[i - A1].last_update_time = now;
+      matrix_status *status = &matrix_bank_status[i - A1];
+      status->last_state = status->is_pressed;
+      status->is_pressed = ((current >> (i)) & 1);
+      if (status->is_pressed && !status->last_state)
+      {
+        status->last_update_time = now;
+      }
+      else
+      {
+        status->responded = false;
+      }
     }
   }
 
