@@ -340,6 +340,55 @@ bool is_modifier(uint8_t code)
   return 0;
 }
 
+typedef union 
+{
+  struct {
+    bool left_ctrl : 1;   ///< left control
+    bool left_shift : 1;  ///< left shift
+    bool left_alt : 1;    ///< left alt
+    bool left_gui : 1;    ///< left window
+    bool right_ctrl : 1;  ///< right control
+    bool right_shift : 1; ///< right shift
+    bool right_alt : 1;   ///< right alt
+    bool right_gui : 1;   ///< right window
+  } modifiers;
+  uint8_t bits;
+} modifier_t;
+
+void update_modifier(modifier_t *modifier, uint8_t key)
+{
+  switch (key)
+  {
+  case HID_KEY_CONTROL_LEFT:
+    modifier->modifiers.left_ctrl = 1;
+    break;
+  case HID_KEY_SHIFT_LEFT:
+    modifier->modifiers.left_shift = 1;
+    break;
+  case HID_KEY_ALT_LEFT:
+    modifier->modifiers.left_alt = 1;
+    break;
+  case HID_KEY_GUI_LEFT:
+    modifier->modifiers.left_gui = 1;
+    break;
+  case HID_KEY_CONTROL_RIGHT:
+    modifier->modifiers.right_ctrl = 1;
+    break;
+  case HID_KEY_SHIFT_RIGHT:
+    modifier->modifiers.right_shift = 1;
+    break;
+  case HID_KEY_ALT_RIGHT:
+    modifier->modifiers.right_alt = 1;
+    break;
+  case HID_KEY_GUI_RIGHT:
+    modifier->modifiers.right_gui = 1;
+    break;
+
+  default:
+    break;
+  }
+}
+
 // Every 10ms, we will sent 1 report for each HID profile (keyboard, mouse etc
 // ..) tud_hid_report_complete_cb() is used to send the next report after
 // previous one is complete
@@ -358,38 +407,7 @@ void hid_task(void)
 
   bool registered = false;
 
-  bool shift_pressed = false;
-  bool ctrl_pressed = false;
-  bool gui_pressed = false;
-  bool alt_pressed = false;
-
-  for (int i = 0; i < NUM_KEYS; i++)
-  {
-    if ((matrix_bank_status[i].is_pressed))
-    {
-      switch (keymaps_layers[0][i])
-      {
-      case HID_KEY_SHIFT_LEFT:
-      case HID_KEY_SHIFT_RIGHT:
-        shift_pressed = true;
-        break;
-      case HID_KEY_CONTROL_LEFT:
-      case HID_KEY_CONTROL_RIGHT:
-        ctrl_pressed = true;
-        break;
-      case HID_KEY_GUI_LEFT:
-      case HID_KEY_GUI_RIGHT:
-        gui_pressed = true;
-        break;
-      case HID_KEY_ALT_LEFT:
-      case HID_KEY_ALT_RIGHT:
-        alt_pressed = true;
-        break;
-      default:
-        break;
-      }
-    }
-  }
+  modifier_t modifier = {.bits=0};
 
   if (
       (matrix_bank_status[LAYER_MOD_KEY].is_pressed) &&
@@ -408,22 +426,31 @@ void hid_task(void)
     matrix_bank_status[LAYER_MOD_KEY].last_state = true;
   }
 
+  for (int i = 0; i < NUM_KEYS; i++)
+  {
+    if ((matrix_bank_status[i].is_pressed))
+    {
+      update_modifier(&modifier, keymaps_layers[0][i]);
+    }
+  }
+
   uint8_t keycode[6] = {0, 0, 0, 0, 0, 0};
   uint8_t keycode_count = 0;
   for (uint8_t i = 0; i < NUM_KEYS; i++)
   {
-    if ((matrix_bank_status[i].is_pressed))
+    matrix_status *status = &matrix_bank_status[i];
+    const uint8_t key = keymaps_layers[get_layer()][i];
+    if ((status->is_pressed))
     {
-      if ((current_time > (matrix_bank_status[i].last_handled_time + TAPHOLD_TIMEOUT)))
+      if ((current_time > (status->last_handled_time + TAPHOLD_TIMEOUT)))
       {
-        const uint8_t key = keymaps_layers[get_layer()][i];
         if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) && (key != HID_KEY_NONE))
         {
           if (keycode_count < 6)
             keycode[keycode_count++] = key;
         }
         uart_putc(UART_ID, key);
-        matrix_bank_status[i].last_handled_time = current_time;
+        status->last_handled_time = current_time;
         // previous_btn = buttons_queue;
       }
     }
@@ -439,27 +466,7 @@ void hid_task(void)
     }
     else
     {
-      switch (key)
-      {
-      case HID_KEY_SHIFT_LEFT:
-      case HID_KEY_SHIFT_RIGHT:
-        shift_pressed = true;
-        break;
-      case HID_KEY_CONTROL_LEFT:
-      case HID_KEY_CONTROL_RIGHT:
-        ctrl_pressed = true;
-        break;
-      case HID_KEY_GUI_LEFT:
-      case HID_KEY_GUI_RIGHT:
-        gui_pressed = true;
-        break;
-      case HID_KEY_ALT_LEFT:
-      case HID_KEY_ALT_RIGHT:
-        alt_pressed = true;
-        break;
-      default:
-        break;
-      }
+      update_modifier(&modifier, key);
     }
   }
 
@@ -467,7 +474,7 @@ void hid_task(void)
 
   if (tud_hid_ready())
   {
-    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, ((shift_pressed * KEYBOARD_MODIFIER_LEFTSHIFT) | (ctrl_pressed * KEYBOARD_MODIFIER_LEFTCTRL) | (alt_pressed * KEYBOARD_MODIFIER_LEFTALT) | (gui_pressed * KEYBOARD_MODIFIER_LEFTGUI)), keycode);
+    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, modifier.bits, keycode);
     tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
   }
 }
