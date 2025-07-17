@@ -85,6 +85,7 @@ other_board_t ch = {.ch = 0, .done = 1};
 queue_t key_queue = {0, 0};
 
 static void encoder_task();
+static void layer_key_task();
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
@@ -283,11 +284,6 @@ void tud_resume_cb(void)
 
 static void encoder_task()
 {
-  // skip if hid is not ready yet
-  // if (!tud_hid_ready())
-  //   return;
-
-  static bool has_consumer_key = false;
   if (encoder_has_action())
   {
     if (encoder_a)
@@ -298,7 +294,6 @@ static void encoder_task()
       // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
       brightness_update(1);
       encoder_a = false;
-      has_consumer_key = true;
     }
     if (encoder_b)
     {
@@ -308,7 +303,6 @@ static void encoder_task()
       // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
       brightness_update(-1);
       encoder_b = false;
-      has_consumer_key = true;
     }
     // if (encoder_b)
     // {
@@ -330,7 +324,6 @@ static void encoder_task()
       // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
       // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
       encoder_button = false;
-      has_consumer_key = true;
     }
   }
 }
@@ -389,26 +382,9 @@ void update_modifier(modifier_t *modifier, uint8_t key)
   }
 }
 
-// Every 10ms, we will sent 1 report for each HID profile (keyboard, mouse etc
-// ..) tud_hid_report_complete_cb() is used to send the next report after
-// previous one is complete
-uint8_t previous_btn = 0xff;
-void hid_task(void)
+void layer_key_task()
 {
-  // Poll every 10ms
-  const fast_timer_t interval_ms = 10000;
-  static fast_timer_t start_ms = 0;
   const fast_timer_t current_time = timer_read_fast();
-
-  if (current_time - start_ms < interval_ms)
-    return; // not enough time
-
-  start_ms += interval_ms;
-
-  bool registered = false;
-
-  modifier_t modifier = {.bits=0};
-
   if (
       (matrix_bank_status[LAYER_MOD_KEY].is_pressed) &&
       (!matrix_bank_status[LAYER_MOD_KEY].last_state) &&
@@ -425,6 +401,26 @@ void hid_task(void)
     matrix_bank_status[LAYER_MOD_KEY].last_handled_time = current_time;
     matrix_bank_status[LAYER_MOD_KEY].last_state = true;
   }
+}
+
+// Every 10ms, we will sent 1 report for each HID profile (keyboard, mouse etc
+// ..) tud_hid_report_complete_cb() is used to send the next report after
+// previous one is complete
+void hid_task(void)
+{
+  // Poll every 10ms
+  const fast_timer_t interval_ms = 10000;
+  static fast_timer_t start_ms = 0;
+  const fast_timer_t current_time = timer_read_fast();
+
+  if (current_time - start_ms < interval_ms)
+    return; // not enough time
+
+  start_ms += interval_ms;
+
+  modifier_t modifier = {.bits=0};
+
+  layer_key_task();
 
   for (int i = 0; i < NUM_KEYS; i++)
   {
@@ -451,7 +447,6 @@ void hid_task(void)
         }
         uart_putc(UART_ID, key);
         status->last_handled_time = current_time;
-        // previous_btn = buttons_queue;
       }
     }
   }

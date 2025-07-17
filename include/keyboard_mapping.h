@@ -55,12 +55,12 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
         //      * │     │     │     │     │     │     │
         //      * ├─────┼─────┼─────┼─────┼─────┼─────┤
         //      * │ ESC │  A  │  S  │  D  │  F  │  G  ├─────┐
-        //      * │     │     │     │     │     │     | F5  │
+        //      * │     │     │     │     │     │     |LOWER│
         //      * ├─────┼─────┼─────┼─────┼─────┼─────┤     │
         //      * │SHIFT│  Z  │  X  │  C  │  V  |  B  ├─────┘
         //      * │     │     │     │     │     │     │
         //      * ├─────┼─────┼─────┼─────┼─────┼─────┘
-        //      * │CTRL │ SYS │ ALT │LOWER│SPACE│
+        //      * │CTRL │ SYS │ ALT │Down │Up   |
         //      * │     │     │     │     │     │       ┌─────┬─────┐
         //      * └─────┴─────┴─────┴─────┴─────┘       │ T6  │ T5  │
         //      *                                       │     │     │
@@ -92,12 +92,12 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
         HID_KEY_E,            //  D2
         HID_KEY_D,            //  D3
         HID_KEY_C,            //  D4
-        HID_KEY_NONE,         //  D5
+        HID_KEY_ARROW_DOWN,   //  D5
         HID_KEY_4,            //  E1
         HID_KEY_R,            //  E2
         HID_KEY_F,            //  E3
         HID_KEY_V,            //  E4
-        HID_KEY_SPACE,        //  E5
+        HID_KEY_ARROW_UP,     //  E5
         HID_KEY_5,            //  F1
         HID_KEY_T,            //  F2
         HID_KEY_G,            //  F3
@@ -158,12 +158,12 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
         HID_KEY_MUTE,         //  D2
         HID_KEY_D,            //  D3
         HID_KEY_C,            //  D4
-        HID_KEY_NONE,         //  D5
+        HID_KEY_ARROW_DOWN,   //  D5
         HID_KEY_F5,           //  E1
         HID_KEY_VOLUME_DOWN,  //  E2
         HID_KEY_F,            //  E3
         HID_KEY_V,            //  E4
-        HID_KEY_SPACE,        //  E5
+        HID_KEY_ARROW_UP,   //  D5
         HID_KEY_F6,           //  F1
         HID_KEY_VOLUME_UP,    //  F2
         HID_KEY_G,            //  F3
@@ -225,12 +225,12 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
         //      *               │     │     │     │     │     │     │
         //      *               ├─────┼─────┼─────┼─────┼─────┼─────┤
         //      *         ┌─────┤ h   │ j   │ k   │ l   │ ;   │ENTER|
-        //      *         │     │     │     │     │     │     │     |
+        //      *         │UPPER│     │     │     │     │     │     |
         //      *         │     ├─────┼─────┼─────┼─────┼─────┼─────┤
         //      *         └─────┤ n   │ m   │ ,   │ .   │ /   │SHIFT|
         //      *               │     │     │     │     │     │     |
         //      *               └─────┼─────┼─────┼─────┼─────┼─────┤
-        //      *                     │SPACE│UPPER│ ALT │ GUI │CTRL │
+        //      *                     │Left │Right│ ALT │ GUI │CTRL │
         //      * ┌─────┬─────┐       │     │     │     │     │     │
         //      * │ T5  │ T6  │       └─────┴─────┴─────┴─────┴─────┘
         //      * │     │     │
@@ -262,12 +262,12 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
         HID_KEY_I,             //  D2
         HID_KEY_K,             //  D3
         HID_KEY_COMMA,         //  D4
-        HID_KEY_NONE,          //  D5
+        HID_KEY_ARROW_RIGHT,   //  D5
         HID_KEY_7,             //  E1
         HID_KEY_U,             //  E2
         HID_KEY_J,             //  E3
         HID_KEY_M,             //  E4
-        HID_KEY_SPACE,         //  E5
+        HID_KEY_ARROW_LEFT,    //  E5
         HID_KEY_6,             //  F1
         HID_KEY_Y,             //  F2
         HID_KEY_H,             //  F3
@@ -301,12 +301,12 @@ const uint16_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
         HID_KEY_I,             //  D2
         HID_KEY_ARROW_UP,      //  D3
         HID_KEY_COMMA,         //  D4
-        HID_KEY_NONE,          //  D5
+        HID_KEY_ARROW_RIGHT,   //  D5
         HID_KEY_F8,            //  E1
         HID_KEY_U,             //  E2
         HID_KEY_ARROW_DOWN,    //  E3
         HID_KEY_M,             //  E4
-        HID_KEY_SPACE,         //  E5
+        HID_KEY_ARROW_LEFT,    //  E5
         HID_KEY_F7,            //  F1
         HID_KEY_Y,             //  F2
         HID_KEY_ARROW_LEFT,    //  F3
