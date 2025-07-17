@@ -24,6 +24,7 @@
  */
 
 #include "keyboard_config.h"
+#include "usb_descriptors.h"
 
 #include "hardware/gpio.h"
 #include "hardware/timer.h"
@@ -37,10 +38,10 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <tusb.h>
+#include <class/hid/hid.h>
 #include "bsp/board_api.h"
-#include "tusb.h"
 
-#include "usb_descriptors.h"
 #include "structs.h"
 #include "matrix_status.h"
 
@@ -334,55 +335,6 @@ bool is_modifier(uint8_t code)
   return 0;
 }
 
-typedef union 
-{
-  struct {
-    bool left_ctrl : 1;   ///< left control
-    bool left_shift : 1;  ///< left shift
-    bool left_alt : 1;    ///< left alt
-    bool left_gui : 1;    ///< left window
-    bool right_ctrl : 1;  ///< right control
-    bool right_shift : 1; ///< right shift
-    bool right_alt : 1;   ///< right alt
-    bool right_gui : 1;   ///< right window
-  } modifiers;
-  uint8_t bits;
-} modifier_t;
-
-void update_modifier(modifier_t *modifier, uint8_t key)
-{
-  switch (key)
-  {
-  case HID_KEY_CONTROL_LEFT:
-    modifier->modifiers.left_ctrl = 1;
-    break;
-  case HID_KEY_SHIFT_LEFT:
-    modifier->modifiers.left_shift = 1;
-    break;
-  case HID_KEY_ALT_LEFT:
-    modifier->modifiers.left_alt = 1;
-    break;
-  case HID_KEY_GUI_LEFT:
-    modifier->modifiers.left_gui = 1;
-    break;
-  case HID_KEY_CONTROL_RIGHT:
-    modifier->modifiers.right_ctrl = 1;
-    break;
-  case HID_KEY_SHIFT_RIGHT:
-    modifier->modifiers.right_shift = 1;
-    break;
-  case HID_KEY_ALT_RIGHT:
-    modifier->modifiers.right_alt = 1;
-    break;
-  case HID_KEY_GUI_RIGHT:
-    modifier->modifiers.right_gui = 1;
-    break;
-
-  default:
-    break;
-  }
-}
-
 void layer_key_task()
 {
   const fast_timer_t current_time = timer_read_fast();
@@ -421,7 +373,7 @@ void hid_task(void)
 
   start_ms += interval_ms;
 
-  modifier_t modifier = {.bits=0};
+  modifier_t modifier = {.bits = 0};
 
   layer_key_task();
 
@@ -469,8 +421,8 @@ void hid_task(void)
 
   if (tud_hid_ready())
   {
-    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, modifier.bits, keycode_buffer.keycodes);
-    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
+    keycode_buffer.completed += 6;
   }
 }
 
@@ -485,9 +437,16 @@ void tud_hid_report_complete_cb(uint8_t instance, uint8_t const *report,
 
   uint8_t next_report_id = report[0] + 1u;
 
-  if (next_report_id < REPORT_ID_COUNT)
+  if (next_report_id == REPORT_ID_KEYBOARD)
   {
-    // send_hid_report(next_report_id, board_button_read());
+    if (keycode_buffer.size > keycode_buffer.completed)
+    {
+      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode_buffer.keycodes + keycode_buffer.completed);
+    }
+    else
+    {
+      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+    }
   }
 }
 
