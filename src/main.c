@@ -55,6 +55,7 @@
 #include "hardware/irq.h"
 
 #include "keyboard_led.h"
+#include "keycode_buffer.h"
 #include "layer.h"
 
 #define QUEUE_SIZE 128
@@ -403,6 +404,8 @@ void layer_key_task()
   }
 }
 
+keycode_buffer_t keycode_buffer = {0};
+
 // Every 10ms, we will sent 1 report for each HID profile (keyboard, mouse etc
 // ..) tud_hid_report_complete_cb() is used to send the next report after
 // previous one is complete
@@ -430,8 +433,7 @@ void hid_task(void)
     }
   }
 
-  uint8_t keycode[6] = {0, 0, 0, 0, 0, 0};
-  uint8_t keycode_count = 0;
+  reset_keycode_buffer(&keycode_buffer);
   for (uint8_t i = 0; i < NUM_KEYS; i++)
   {
     matrix_status *status = &matrix_bank_status[i];
@@ -442,8 +444,7 @@ void hid_task(void)
       {
         if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) && (key != HID_KEY_NONE))
         {
-          if (keycode_count < 6)
-            keycode[keycode_count++] = key;
+          add_keycode(&keycode_buffer, key);
         }
         uart_putc(UART_ID, key);
         status->last_handled_time = current_time;
@@ -456,8 +457,7 @@ void hid_task(void)
     const uint8_t key = key_queue.ch[i];
     if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) && (key != HID_KEY_NONE))
     {
-      if (keycode_count < 6)
-        keycode[keycode_count++] = key;
+      add_keycode(&keycode_buffer, key);
     }
     else
     {
@@ -469,7 +469,7 @@ void hid_task(void)
 
   if (tud_hid_ready())
   {
-    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, modifier.bits, keycode);
+    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, modifier.bits, keycode_buffer.keycodes);
     tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
   }
 }

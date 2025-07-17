@@ -22,6 +22,7 @@ target_sources(left_firmware PUBLIC
   src/board.c
   src/usb_descriptors.c
   src/sym_defer_pk.c
+  src/keycode_buffer.c
   src/keyboard_led.c
   src/firmware_timer.c
   src/layer.c
@@ -54,6 +55,7 @@ target_sources(right_firmware PUBLIC
   src/board.c
   src/usb_descriptors.c
   src/sym_defer_pk.c
+  src/keycode_buffer.c
   src/keyboard_led.c
   src/firmware_timer.c
   src/layer.c
