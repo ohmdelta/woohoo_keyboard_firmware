@@ -373,19 +373,17 @@ void hid_task(void)
 
   start_ms += interval_ms;
 
-  modifier_t modifier = {.bits = 0};
-
   layer_key_task();
+  reset_keycode_buffer(&keycode_buffer);
 
   for (int i = 0; i < NUM_KEYS; i++)
   {
     if ((matrix_bank_status[i].is_pressed))
     {
-      update_modifier(&modifier, keymaps_layers[0][i]);
+      update_modifier(&keycode_buffer.modifier, keymaps_layers[0][i]);
     }
   }
 
-  reset_keycode_buffer(&keycode_buffer);
   for (uint8_t i = 0; i < NUM_KEYS; i++)
   {
     matrix_status *status = &matrix_bank_status[i];
@@ -413,7 +411,7 @@ void hid_task(void)
     }
     else
     {
-      update_modifier(&modifier, key);
+      update_modifier(&keycode_buffer.modifier, key);
     }
   }
 
@@ -421,7 +419,7 @@ void hid_task(void)
 
   if (tud_hid_ready())
   {
-    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
+    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
     keycode_buffer.completed += 6;
   }
 }
@@ -441,7 +439,7 @@ void tud_hid_report_complete_cb(uint8_t instance, uint8_t const *report,
   {
     if (keycode_buffer.size > keycode_buffer.completed)
     {
-      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode_buffer.keycodes + keycode_buffer.completed);
+      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
     }
     else
     {

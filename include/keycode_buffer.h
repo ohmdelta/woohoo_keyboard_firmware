@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define KEYCODE_BUFFER_LENGTH 126
+#define KEYCODE_BUFFER_LENGTH 125
 
 typedef union
 {
@@ -26,6 +26,7 @@ typedef struct
 {
     uint8_t size;
     uint8_t completed;
+    modifier_t modifier;
     uint8_t keycodes[KEYCODE_BUFFER_LENGTH];
 } keycode_buffer_t;
 
