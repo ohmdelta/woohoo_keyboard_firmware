@@ -124,9 +124,10 @@ void pattern_greys(PIO pio, uint sm, uint len, uint t)
 }
 
 void pattern_dull(PIO pio, uint sm, uint len, uint t){
+    (void)t;
     for (uint i = 0; i < len; ++i)
     {
-        put_pixel(pio, sm, urgb_u32(0b10, 0b10, 0b10));
+        put_pixel(pio, sm, urgb_u32(0x2, 0x2, 0x2));
     }
 }
 
@@ -163,6 +164,8 @@ typedef struct
 
 void pattern_ripple(PIO pio, uint sm, uint len, uint t)
 {
+    (void)len;
+    (void)t;
     static fast_timer_t last_time = 0;
     fast_timer_t current_time = timer_read_fast();
 
@@ -192,7 +195,7 @@ void pattern_ripple(PIO pio, uint sm, uint len, uint t)
 
         if (matrix_led_state[i] == 3)
         {
-            current_matrix_led_state[i].r += 0b11;
+            current_matrix_led_state[i].r += 0x3;
         }
         else if (matrix_led_state[i] == 2)
         {
@@ -244,6 +247,9 @@ void pattern_ripple(PIO pio, uint sm, uint len, uint t)
 
 void pattern_neutral(PIO pio, uint sm, uint len, uint t)
 {
+    (void)len;
+    (void)t;
+
     for (uint8_t i = 0; i < NUM_KEYS; i++)
     {
         if (matrix_bank_status[i].is_pressed)

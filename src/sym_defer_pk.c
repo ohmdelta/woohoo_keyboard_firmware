@@ -65,7 +65,7 @@ void debounce_free(void)
   debounce_counters = NULL;
 }
 
-bool debounce(uint64_t raw, uint64_t cooked,
+bool debounce(uint64_t* raw, uint64_t* cooked,
               bool changed)
 {
   bool updated_last = false;
@@ -97,7 +97,7 @@ bool debounce(uint64_t raw, uint64_t cooked,
       last_time = timer_read_fast();
     }
 
-    start_debounce_counters(raw, cooked);
+    start_debounce_counters(*raw, *cooked);
   }
 
   return cooked_changed;

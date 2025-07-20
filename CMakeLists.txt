@@ -15,6 +15,7 @@ pico_generate_pio_header(left_firmware ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio 
 
 # Add pico_stdlib library which aggregates commonly used features
 target_link_libraries(left_firmware PUBLIC pico_stdlib hardware_pio pico_unique_id tinyusb_device tinyusb_board)
+target_compile_options(left_firmware PRIVATE -Wall -Wextra -Werror)
 
 target_sources(left_firmware PUBLIC
   src/main.c
@@ -49,6 +50,8 @@ pico_generate_pio_header(right_firmware ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio
 # Add pico_stdlib library which aggregates commonly used features
 target_link_libraries(right_firmware PUBLIC pico_stdlib hardware_pio pico_unique_id tinyusb_device tinyusb_board)
 set_target_properties(right_firmware PROPERTIES COMPILE_DEFINITIONS "KEYBOARD_SIDE=1")
+target_compile_options(left_firmware PRIVATE -Wall -Wextra -Werror)
+
 target_sources(right_firmware PUBLIC
   src/main.c
   src/matrix.c

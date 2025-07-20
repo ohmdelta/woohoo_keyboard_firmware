@@ -1,6 +1,7 @@
 #include "firmware_timer.h"
 #include "hardware/timer.h"
 
-fast_timer_t inline timer_read_fast() {
+inline fast_timer_t timer_read_fast()
+{
     return (time_us_64());
 }

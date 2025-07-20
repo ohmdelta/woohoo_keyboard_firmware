@@ -84,7 +84,7 @@ typedef struct
 } queue_t;
 
 other_board_t ch = {.ch = 0, .done = 1};
-queue_t key_queue = {0, 0};
+queue_t key_queue = {.size = 0, .ch = {0}};
 
 static void encoder_task();
 static void layer_key_task();
@@ -205,11 +205,11 @@ int main(void)
   // Set up a RX interrupt
   // We need to set up the handler first
   // Select correct interrupt for the UART we are using
-  int UART_IRQ = UART_ID == uart0 ? UART0_IRQ : UART1_IRQ;
+  // int UART_IRQ = UART_ID == uart0 ? UART0_IRQ : UART1_IRQ;
 
   for (size_t i = A1; i <= T6; i++)
   {
-    put_pixel(pio, sm, urgb_u32(0b100 + 0b11, 0b100 + 0b11, 0b100 + 0b11));
+    put_pixel(pio, sm, urgb_u32(0x7, 0x7, 0x7));
   }
 
   set_indicator_leds();
@@ -217,7 +217,7 @@ int main(void)
   while (1)
   {
     // changed = debounce(raw_matrix, matrix, ROWS_PER_HAND, changed);
-    bool changed = matrix_task();
+    matrix_task();
     tud_task(); // tinyusb device task
 
     uart_read_task();
@@ -332,6 +332,7 @@ static void encoder_task()
 
 bool is_modifier(uint8_t code)
 {
+  (void)code;
   return 0;
 }
 

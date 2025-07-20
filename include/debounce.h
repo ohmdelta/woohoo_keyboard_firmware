@@ -18,7 +18,7 @@
  * @return true Cooked has new keychanges after debouncing
  * @return false Cooked is the same as before
  */
-bool debounce(uint64_t raw, uint64_t cooked,
+bool debounce(uint64_t *raw, uint64_t *cooked,
               bool changed);
 
 void debounce_init(uint8_t num_rows);

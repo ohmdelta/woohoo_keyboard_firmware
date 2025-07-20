@@ -24,6 +24,7 @@ bool encoder_has_action()
 
 static void isr_handler(uint buf, uint32_t events)
 {
+    (void)events;
     switch (buf)
     {
     case ENCODER_A:
