@@ -25,7 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "keyboard_config.h"
 #include "matrix_status.h"
 
-
 extern matrix_status matrix_bank_status[NUM_KEYS];
 
 /* diode directions */
@@ -35,50 +34,51 @@ extern matrix_status matrix_bank_status[NUM_KEYS];
 #define MATRIX_ROW_SHIFTER ((matrix_row_t)1)
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/* number of matrix rows */
-uint8_t matrix_rows(void);
-/* number of matrix columns */
-uint8_t matrix_cols(void);
-/* should be called at early stage of startup before matrix_init.(optional) */
-void matrix_setup(void);
-/* intialize matrix for scaning. */
-void matrix_init(void);
-/* scan all key states on matrix */
-uint8_t matrix_scan(void);
-/* whether matrix scanning operations should be executed */
-bool matrix_can_read(void);
-/* whether a switch is on */
-bool matrix_is_on(uint8_t row, uint8_t col);
-/* matrix state on row */
-matrix_row_t matrix_get_row(uint8_t row);
-uint64_t get_keys(void);
-/* print matrix for debug */
-void matrix_print(void);
-/* delay between changing matrix pin state and reading values */
-void matrix_output_select_delay(void);
-void matrix_output_unselect_delay(uint8_t line, bool key_pressed);
-/* only for backwards compatibility. delay between changing matrix pin state and reading values */
-void matrix_io_delay(void);
+    /* number of matrix rows */
+    uint8_t matrix_rows(void);
+    /* number of matrix columns */
+    uint8_t matrix_cols(void);
+    /* should be called at early stage of startup before matrix_init.(optional) */
+    void matrix_setup(void);
+    /* intialize matrix for scaning. */
+    void matrix_init(void);
+    /* scan all key states on matrix */
+    uint8_t matrix_scan(void);
+    /* whether matrix scanning operations should be executed */
+    bool matrix_can_read(void);
+    /* whether a switch is on */
+    bool matrix_is_on(uint8_t row, uint8_t col);
+    /* matrix state on row */
+    matrix_row_t matrix_get_row(uint8_t row);
+    uint64_t get_keys(void);
+    /* print matrix for debug */
+    void matrix_print(void);
+    /* delay between changing matrix pin state and reading values */
+    void matrix_output_select_delay(void);
+    void matrix_output_unselect_delay(uint8_t line, bool key_pressed);
+    /* only for backwards compatibility. delay between changing matrix pin state and reading values */
+    void matrix_io_delay(void);
 
-/* power control */
-void matrix_power_up(void);
-void matrix_power_down(void);
+    /* power control */
+    void matrix_power_up(void);
+    void matrix_power_down(void);
 
-void matrix_init_kb(void);
-void matrix_scan_kb(void);
+    void matrix_init_kb(void);
+    void matrix_scan_kb(void);
 
-void matrix_init_user(void);
-void matrix_scan_user(void);
+    void matrix_init_user(void);
+    void matrix_scan_user(void);
 
-bool matrix_task(void);
+    bool matrix_task(void);
 
 #ifdef SPLIT_KEYBOARD
-bool matrix_post_scan(void);
-void matrix_slave_scan_kb(void);
-void matrix_slave_scan_user(void);
+    bool matrix_post_scan(void);
+    void matrix_slave_scan_kb(void);
+    void matrix_slave_scan_user(void);
 #endif
 
 #ifdef __cplusplus

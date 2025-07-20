@@ -6,7 +6,7 @@
 #include "structs.h"
 #include "keyboard_config.h"
 
-typedef struct 
+typedef struct
 {
     bool is_pressed : 1;
     bool last_state : 1;
