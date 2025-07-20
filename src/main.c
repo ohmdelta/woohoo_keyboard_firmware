@@ -390,14 +390,43 @@ void hid_task(void)
     const uint8_t key = keymaps_layers[get_layer()][i];
     if ((status->is_pressed))
     {
-      if ((current_time > (status->last_handled_time + TAPHOLD_TIMEOUT)))
+      switch (status->held)
       {
+      case NO_TOUCH:
         if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) && (key != HID_KEY_NONE))
         {
           add_keycode(&keycode_buffer, key);
         }
         uart_putc(UART_ID, key);
         status->last_handled_time = current_time;
+        status->held = FIRST_TOUCH;
+        break;
+      case FIRST_TOUCH:
+        if ((current_time > (status->last_handled_time + INITIAL_TAPHOLD_TIMEOUT)))
+        {
+          if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) && (key != HID_KEY_NONE))
+          {
+            add_keycode(&keycode_buffer, key);
+          }
+          uart_putc(UART_ID, key);
+          status->last_handled_time = current_time;
+          status->held = CONTINUOUS_TOUCH;
+        }
+        break;
+      case CONTINUOUS_TOUCH:
+        if ((current_time > (status->last_handled_time + TAPHOLD_TIMEOUT)))
+        {
+          if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) && (key != HID_KEY_NONE))
+          {
+            add_keycode(&keycode_buffer, key);
+          }
+          uart_putc(UART_ID, key);
+          status->last_handled_time = current_time;
+          status->held = CONTINUOUS_TOUCH;
+        }
+        break;
+      default:
+        break;
       }
     }
   }

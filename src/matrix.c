@@ -11,7 +11,6 @@
 
 #include "matrix_status.h"
 
-
 uint64_t raw_matrix = 0;
 uint64_t matrix = 0;
 
@@ -21,13 +20,15 @@ matrix_status matrix_bank_status[NUM_KEYS] = {0};
  * @brief Generates a tick event at a maximum rate of 1KHz that drives the
  * internal QMK state machine.
  */
-static inline void generate_tick_event(void) {
-    static fast_timer_t last_tick = 0;
-    const fast_timer_t  now       = timer_read_fast();
-    if (TIMER_DIFF_32(now, last_tick) != 0) {
-        // action_exec(MAKE_TICK_EVENT);
-        last_tick = now;
-    }
+static inline void generate_tick_event(void)
+{
+  static fast_timer_t last_tick = 0;
+  const fast_timer_t now = timer_read_fast();
+  if (TIMER_DIFF_32(now, last_tick) != 0)
+  {
+    // action_exec(MAKE_TICK_EVENT);
+    last_tick = now;
+  }
 }
 
 void matrix_scan_kb(void)
@@ -35,7 +36,6 @@ void matrix_scan_kb(void)
 }
 
 void matrix_init_kb() {}
-
 
 void matrix_init(void)
 {
@@ -45,6 +45,7 @@ void matrix_init(void)
   {
     matrix_bank_status[i].last_state = 0;
     matrix_bank_status[i].is_pressed = 0;
+    matrix_bank_status[i].held = 0;
     matrix_bank_status[i].last_handled_time = 0;
     matrix_bank_status[i].last_update_time = 0;
   }
@@ -74,6 +75,16 @@ uint64_t get_keys(void)
 uint64_t matrix_previous = 0;
 bool matrix_task(void)
 {
+
+  static fast_timer_t last_time = 0;
+  static fast_timer_t timeout = 1000;
+  const fast_timer_t now = timer_read_fast();
+  if (now < last_time + timeout)
+  {
+    return 0;
+  }
+  last_time = now;
+
   changes = 0;
   // if (!matrix_can_read()) {
   //     generate_tick_event();
@@ -81,7 +92,6 @@ bool matrix_task(void)
   // }
 
   matrix_scan();
-  const fast_timer_t now = timer_read_fast();
 
   // const bool process_keypress = should_process_keypress();
 
@@ -93,9 +103,17 @@ bool matrix_task(void)
   {
     for (uint8_t i = A1; i <= T6; i++)
     {
-      matrix_bank_status[i - A1].last_state = matrix_bank_status[i - A1].is_pressed;
-      matrix_bank_status[i - A1].is_pressed = ((current >> (i)) & 1);
-      matrix_bank_status[i - A1].last_update_time = now;
+      const uint8_t index = (i - A1);
+      if ((changes >> i) & 1)
+      {
+        matrix_bank_status[index].last_state = matrix_bank_status[index].is_pressed;
+        matrix_bank_status[index].is_pressed = ((current >> (i)) & 1);
+        matrix_bank_status[index].last_update_time = now;
+        if (!matrix_bank_status[index].is_pressed)
+        {
+          matrix_bank_status[index].held = 0;
+        }
+      }
     }
   }
 
