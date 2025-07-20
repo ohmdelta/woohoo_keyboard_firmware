@@ -8,67 +8,37 @@ include(pico-sdk/pico_sdk_init.cmake)
 pico_sdk_init()
 project(firmware)
 
-add_executable(left_firmware)
-
 file(MAKE_DIRECTORY generated)
-pico_generate_pio_header(left_firmware ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/generated)
 
-# Add pico_stdlib library which aggregates commonly used features
-target_link_libraries(left_firmware PUBLIC pico_stdlib hardware_pio pico_unique_id tinyusb_device tinyusb_board)
-target_compile_options(left_firmware PRIVATE -Wall -Wextra -Werror)
+function (setup_side FIRMWARE)
+  add_executable(${FIRMWARE})
+  pico_generate_pio_header(${FIRMWARE} ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/generated)
 
-target_sources(left_firmware PUBLIC
-  src/main.c
-  src/matrix.c
-  src/board.c
-  src/usb_descriptors.c
-  src/sym_defer_pk.c
-  src/keycode_buffer.c
-  src/keyboard_led.c
-  src/firmware_timer.c
-  src/layer.c
-)
+  # Add pico_stdlib library which aggregates commonly used features
+  target_link_libraries(${FIRMWARE} PUBLIC pico_stdlib hardware_pio pico_unique_id tinyusb_device tinyusb_board)
+  target_compile_options(${FIRMWARE} PRIVATE -Wall -Wextra -Werror)
 
-# create map/bin/hex/uf2 file in addition to ELF.
-pico_add_extra_outputs(left_firmware)
+  target_sources(${FIRMWARE} PUBLIC
+    src/main.c
+    src/matrix.c
+    src/board.c
+    src/usb_descriptors.c
+    src/sym_defer_pk.c
+    src/keycode_buffer.c
+    src/keyboard_led.c
+    src/firmware_timer.c
+    src/layer.c
+  )
 
-# Make sure TinyUSB can find tusb_config.h
-target_include_directories(left_firmware PUBLIC
-  include
-)
-#
-#
-# Uncomment this line to enable fix for Errata RP2040-E5 (the fix requires use of GPIO 15)
-#target_compile_definitions(firmware PUBLIC PICO_RP2040_USB_DEVICE_ENUMERATION_FIX=1)
+  # create map/bin/hex/uf2 file in addition to ELF.
+  pico_add_extra_outputs(${FIRMWARE})
 
-# pico_add_extra_outputs(firmware)
+  # Make sure TinyUSB can find tusb_config.h
+  target_include_directories(${FIRMWARE} PUBLIC
+    include
+  )
+endfunction()
 
+setup_side(left_firmware)
+setup_side(right_firmware)
 
-add_executable(right_firmware)
-
-pico_generate_pio_header(right_firmware ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/generated)
-# Add pico_stdlib library which aggregates commonly used features
-target_link_libraries(right_firmware PUBLIC pico_stdlib hardware_pio pico_unique_id tinyusb_device tinyusb_board)
-set_target_properties(right_firmware PROPERTIES COMPILE_DEFINITIONS "KEYBOARD_SIDE=1")
-target_compile_options(left_firmware PRIVATE -Wall -Wextra -Werror)
-
-target_sources(right_firmware PUBLIC
-  src/main.c
-  src/matrix.c
-  src/board.c
-  src/usb_descriptors.c
-  src/sym_defer_pk.c
-  src/keycode_buffer.c
-  src/keyboard_led.c
-  src/firmware_timer.c
-  src/layer.c
-)
-
-# create map/bin/hex/uf2 file in addition to ELF.
-pico_add_extra_outputs(right_firmware)
-
-# Make sure TinyUSB can find tusb_config.h
-target_include_directories(right_firmware PUBLIC
-  include
-)
-pico_add_extra_outputs(right_firmware)
