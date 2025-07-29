@@ -128,4 +128,7 @@
 #define KEYBOARD_LAYERS 2
 #define LAYER_MODIFIER_KEY F5
 
+#define SCREEN_SDA 2
+#define SCREEN_SCL 3
+
 #endif
