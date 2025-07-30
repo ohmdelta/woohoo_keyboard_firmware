@@ -4,6 +4,11 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+
+// #define PICO_DEFAULT_I2C 1
+#define PICO_DEFAULT_I2C_SDA_PIN 40
+#define PICO_DEFAULT_I2C_SCL_PIN 41
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -38,7 +43,7 @@
 // Define the size of the display we have attached. This can vary, make sure you
 // have the right size defined or the output will look rather odd!
 // Code has been tested on 128x32 and 128x64 OLED displays
-#define SSD1306_HEIGHT              32
+#define SSD1306_HEIGHT              64
 #define SSD1306_WIDTH               128
 
 #define SSD1306_I2C_ADDR            _u(0x3C)
@@ -305,6 +310,7 @@ static void WriteString(uint8_t *buf, int16_t x, int16_t y, char *str) {
 
 
 #endif
+
 
 int main() {
     stdio_init_all();

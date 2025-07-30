@@ -42,3 +42,12 @@ endfunction()
 setup_side(left_firmware)
 setup_side(right_firmware)
 
+add_executable(ssd1306_i2c
+        ssd1306_i2c/ssd1306_i2c.c
+)
+target_include_directories(ssd1306_i2c PUBLIC
+  ssd1306_i2c
+)
+target_link_libraries(ssd1306_i2c pico_stdlib hardware_i2c)
+
+pico_add_extra_outputs(ssd1306_i2c)
