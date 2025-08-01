@@ -8,9 +8,6 @@
 #ifndef SSD1306_I2C_H
 #define SSD1306_I2C_H
 
-// #define PICO_DEFAULT_I2C 1
-#define PICO_DEFAULT_I2C_SDA_PIN 40
-#define PICO_DEFAULT_I2C_SCL_PIN 41
 
 #include <stdio.h>
 #include <string.h>
@@ -19,8 +16,6 @@
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
 #include "hardware/i2c.h"
-#include "raspberry26x32.h"
-#include "ssd1306_font.h"
 
 /* Example code to talk to an SSD1306-based OLED display
 
@@ -52,6 +47,14 @@
 
 #ifndef SSD1306_WIDTH
 #define SSD1306_WIDTH               128
+#endif
+
+#ifndef SSD1306_DEFAULT_I2C_SDA_PIN
+#define SSD1306_DEFAULT_I2C_SDA_PIN 40
+#endif
+
+#ifndef SSD1306_DEFAULT_I2C_SCL_PIN
+#define SSD1306_DEFAULT_I2C_SCL_PIN 41
 #endif
 
 #define SSD1306_I2C_ADDR            _u(0x3C)
@@ -125,7 +128,7 @@ void SetPixel(uint8_t *buf, int x, int y, bool on);
 // Basic Bresenhams.
 void DrawLine(uint8_t *buf, int x0, int y0, int x1, int y1, bool on);
 
-inline int GetFontIndex(uint8_t ch);
+int GetFontIndex(uint8_t ch);
 void WriteChar(uint8_t *buf, int16_t x, int16_t y, uint8_t ch);
 void WriteString(uint8_t *buf, int16_t x, int16_t y, char *str) ;
 

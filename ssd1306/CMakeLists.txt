@@ -7,6 +7,11 @@ add_library(
         STATIC
         src/ssd1306_i2c.c
 )
+target_include_directories(
+        ssd1306
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        lib)
 
 # pull in common dependencies and additional i2c hardware support
 target_link_libraries(ssd1306 pico_stdlib hardware_i2c)

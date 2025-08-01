@@ -1,14 +1,19 @@
 #include "ssd1306_i2c.h"
 
+#define IMG_WIDTH 26
+#define IMG_HEIGHT 32
+
+static uint8_t raspberry26x32[] = { 0x0, 0x0, 0xe, 0x7e, 0xfe, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfe, 0xfe, 0xfc, 0xf8, 0xfc, 0xfe, 0xfe, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfe, 0x7e, 0x1e, 0x0, 0x0, 0x0, 0x80, 0xe0, 0xf8, 0xfd, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfd, 0xf8, 0xe0, 0x80, 0x0, 0x0, 0x1e, 0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f, 0x1e, 0x0, 0x0, 0x0, 0x3, 0x7, 0xf, 0x1f, 0x1f, 0x3f, 0x3f, 0x7f, 0xff, 0xff, 0xff, 0xff, 0x7f, 0x7f, 0x3f, 0x3f, 0x1f, 0x1f, 0xf, 0x7, 0x3, 0x0, 0x0};
+
 int main() {
     stdio_init_all();
 
-#if !defined(i2c_default) || !defined(PICO_DEFAULT_I2C_SDA_PIN) || !defined(PICO_DEFAULT_I2C_SCL_PIN)
+#if !defined(i2c_default) || !defined(SSD1306_DEFAULT_I2C_SDA_PIN) || !defined(SSD1306_DEFAULT_I2C_SCL_PIN)
 #warning i2c / SSD1306_i2d example requires a board with I2C pins
     puts("Default I2C pins were not defined");
 #else
     // useful information for picotool
-    bi_decl(bi_2pins_with_func(PICO_DEFAULT_I2C_SDA_PIN, PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C));
+    bi_decl(bi_2pins_with_func(SSD1306_DEFAULT_I2C_SDA_PIN, SSD1306_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C));
     bi_decl(bi_program_description("SSD1306 OLED driver I2C example for the Raspberry Pi Pico"));
 
     printf("Hello, SSD1306 OLED display! Look at my raspberries..\n");
@@ -16,10 +21,10 @@ int main() {
     // I2C is "open drain", pull ups to keep signal high when no data is being
     // sent
     i2c_init(i2c_default, SSD1306_I2C_CLK * 1000);
-    gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
-    gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
-    gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
-    gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
+    gpio_set_function(SSD1306_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
+    gpio_set_function(SSD1306_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
+    gpio_pull_up(SSD1306_DEFAULT_I2C_SDA_PIN);
+    gpio_pull_up(SSD1306_DEFAULT_I2C_SCL_PIN);
 
     // run through the complete initialization process
     SSD1306_init();

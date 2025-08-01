@@ -59,6 +59,8 @@
 #include "keycode_buffer.h"
 #include "layer.h"
 
+#include "ssd1306.h"
+
 #define QUEUE_SIZE 128
 #define LAYER_MOD_KEY ((uint8_t)(LAYER_MODIFIER_KEY - A1))
 
@@ -164,6 +166,15 @@ int main(void)
 {
   // board_init();
   stdio_init_all();
+
+  i2c_init(i2c_default, SSD1306_I2C_CLK * 1000);
+  gpio_set_function(SSD1306_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
+  gpio_set_function(SSD1306_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
+  gpio_pull_up(SSD1306_DEFAULT_I2C_SDA_PIN);
+  gpio_pull_up(SSD1306_DEFAULT_I2C_SCL_PIN);
+
+  SSD1306_init();
+
   setup_board();
 
   matrix_init();
@@ -202,11 +213,23 @@ int main(void)
   // Turn off FIFO's - we want to do this character by character
   uart_set_fifo_enabled(UART_ID, false);
 
-  // Set up a RX interrupt
-  // We need to set up the handler first
-  // Select correct interrupt for the UART we are using
-  // int UART_IRQ = UART_ID == uart0 ? UART0_IRQ : UART1_IRQ;
 
+  // Initialize render area for entire frame (SSD1306_WIDTH pixels by SSD1306_NUM_PAGES pages)
+  struct render_area frame_area = {
+      start_col: 0,
+      end_col : SSD1306_WIDTH - 1,
+      start_page : 0,
+      end_page : SSD1306_NUM_PAGES - 1
+      };
+
+  calc_render_area_buflen(&frame_area);
+
+  // zero the entire display
+  uint8_t buf[SSD1306_BUF_LEN];
+  memset(buf, 0, SSD1306_BUF_LEN);
+  render(buf, &frame_area);
+
+  SSD1306_send_cmd(SSD1306_SET_ALL_ON);    // Set all pixels on
   for (size_t i = A1; i <= T6; i++)
   {
     put_pixel(pio, sm, urgb_u32(0x7, 0x7, 0x7));

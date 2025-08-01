@@ -10,12 +10,14 @@ project(firmware)
 
 file(MAKE_DIRECTORY generated)
 
+add_subdirectory(ssd1306)
+
 function (setup_side FIRMWARE)
   add_executable(${FIRMWARE})
   pico_generate_pio_header(${FIRMWARE} ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/generated)
 
   # Add pico_stdlib library which aggregates commonly used features
-  target_link_libraries(${FIRMWARE} PUBLIC pico_stdlib hardware_pio pico_unique_id tinyusb_device tinyusb_board)
+  target_link_libraries(${FIRMWARE} PUBLIC pico_stdlib hardware_pio pico_unique_id tinyusb_device tinyusb_board ssd1306)
   target_compile_options(${FIRMWARE} PRIVATE -Wall -Wextra -Werror)
 
   target_sources(${FIRMWARE} PUBLIC
@@ -42,7 +44,6 @@ endfunction()
 setup_side(left_firmware)
 setup_side(right_firmware)
 
-add_subdirectory(ssd1306)
 
 # add_executable(ssd1306_i2c
 #         ssd1306/ssd1306_i2c.c

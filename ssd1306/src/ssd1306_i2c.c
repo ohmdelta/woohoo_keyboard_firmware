@@ -7,6 +7,7 @@
 
 // #define PICO_DEFAULT_I2C 1
 #include "ssd1306_i2c.h"
+#include "ssd1306_font.h"
 
 /* Example code to talk to an SSD1306-based OLED display
 
@@ -204,7 +205,7 @@ void DrawLine(uint8_t *buf, int x0, int y0, int x1, int y1, bool on) {
     }
 }
 
-inline int GetFontIndex(uint8_t ch) {
+int GetFontIndex(uint8_t ch) {
     if (ch >= 'A' && ch <='Z') {
         return  ch - 'A' + 1;
     }

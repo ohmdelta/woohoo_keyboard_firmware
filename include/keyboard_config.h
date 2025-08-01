@@ -131,4 +131,10 @@
 #define SCREEN_SDA 2
 #define SCREEN_SCL 3
 
+#define SSD1306_I2C_CLK             1000
+
+// #define PICO_DEFAULT_I2C 1
+#define SSD1306_DEFAULT_I2C_SDA_PIN 40
+#define SSD1306_DEFAULT_I2C_SCL_PIN 41
+
 #endif
