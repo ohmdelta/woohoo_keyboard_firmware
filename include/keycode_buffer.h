@@ -33,6 +33,7 @@ typedef struct
 void reset_keycode_buffer(keycode_buffer_t *keycode_buffer);
 
 bool add_keycode(keycode_buffer_t *keycode_buffer, uint8_t keycode);
+bool add_keycodes(keycode_buffer_t *keycode_buffer, const uint8_t* keycode);
 bool valid(keycode_buffer_t *keycode_buffer);
 
 void update_modifier(modifier_t *modifier, uint8_t key);

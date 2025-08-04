@@ -17,6 +17,15 @@ bool add_keycode(keycode_buffer_t *keycode_buffer, uint8_t keycode)
     return false;
 }
 
+bool add_keycodes(keycode_buffer_t *keycode_buffer, const uint8_t * keycode)
+{
+    while ((keycode_buffer->size < KEYCODE_BUFFER_LENGTH) && (*keycode))
+    {
+        keycode_buffer->keycodes[keycode_buffer->size++] = *(keycode++);
+    }
+    return true;
+}
+
 bool valid(keycode_buffer_t *keycode_buffer)
 {
     return (keycode_buffer->size <= KEYCODE_BUFFER_LENGTH) && (keycode_buffer->completed <= keycode_buffer->size);

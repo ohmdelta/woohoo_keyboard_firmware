@@ -444,35 +444,35 @@ void hid_task(void)
   {
     if ((matrix_bank_status[i].is_pressed))
     {
-      update_modifier(&keycode_buffer.modifier, keymaps_layers[0][i]);
+      update_modifier(&keycode_buffer.modifier, keymaps_layers[0][i][0]);
     }
   }
 
   for (uint8_t i = 0; i < NUM_KEYS; i++)
   {
     matrix_status *status = &matrix_bank_status[i];
-    const uint8_t key = keymaps_layers[get_layer()][i];
     if ((status->is_pressed))
     {
+      const uint8_t* key = keymaps_layers[get_layer()][i];
       switch (status->held)
       {
       case NO_TOUCH:
-        if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) && (key != HID_KEY_NONE))
+        if (!((*key >= HID_KEY_CONTROL_LEFT) && (*key <= HID_KEY_GUI_RIGHT)) && (*key != HID_KEY_NONE))
         {
-          add_keycode(&keycode_buffer, key);
+          add_keycodes(&keycode_buffer, key);
         }
-        uart_putc(UART_ID, key);
+        uart_putc(UART_ID, *key);
         status->last_handled_time = current_time;
         status->held = FIRST_TOUCH;
         break;
       case FIRST_TOUCH:
         if ((current_time > (status->last_handled_time + INITIAL_TAPHOLD_TIMEOUT)))
         {
-          if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) && (key != HID_KEY_NONE))
+          if (!((*key >= HID_KEY_CONTROL_LEFT) && (*key <= HID_KEY_GUI_RIGHT)) && (*key != HID_KEY_NONE))
           {
-            add_keycode(&keycode_buffer, key);
+            add_keycodes(&keycode_buffer, key);
           }
-          uart_putc(UART_ID, key);
+          uart_putc(UART_ID, *key);
           status->last_handled_time = current_time;
           status->held = CONTINUOUS_TOUCH;
         }
@@ -480,11 +480,11 @@ void hid_task(void)
       case CONTINUOUS_TOUCH:
         if ((current_time > (status->last_handled_time + TAPHOLD_TIMEOUT)))
         {
-          if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) && (key != HID_KEY_NONE))
+          if (!((*key >= HID_KEY_CONTROL_LEFT) && (*key <= HID_KEY_GUI_RIGHT)) && (*key != HID_KEY_NONE))
           {
-            add_keycode(&keycode_buffer, key);
+            add_keycodes(&keycode_buffer, key);
           }
-          uart_putc(UART_ID, key);
+          uart_putc(UART_ID, *key);
           status->last_handled_time = current_time;
           status->held = CONTINUOUS_TOUCH;
         }
@@ -525,19 +525,16 @@ void tud_hid_report_complete_cb(uint8_t instance, uint8_t const *report,
 {
   (void)instance;
   (void)len;
+  (void)report;
 
-  uint8_t next_report_id = report[0] + 1u;
-
-  if (next_report_id == REPORT_ID_KEYBOARD)
+  if (keycode_buffer.size > keycode_buffer.completed)
   {
-    if (keycode_buffer.size > keycode_buffer.completed)
-    {
-      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
-    }
-    else
-    {
-      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-    }
+    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
+    keycode_buffer.completed += 6;
+  }
+  else
+  {
+    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, NULL);
   }
 }
 
