@@ -90,6 +90,7 @@ queue_t key_queue = {.size = 0, .ch = {0}};
 
 static void encoder_task();
 static void layer_key_task();
+void display_task();
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
@@ -161,6 +162,14 @@ void set_indicator_leds()
   put_pixel(pio_2, sm_2, white_offset_urgb_u32(scroll_lock, red_addition, green_addition, blue_addition));
 }
 
+uint8_t buf[SSD1306_BUF_LEN];
+struct render_area frame_area = {
+    start_col: 0,
+    end_col : SSD1306_WIDTH - 1,
+    start_page : 0,
+    end_page : SSD1306_NUM_PAGES - 1
+    };
+
 /*------------- MAIN -------------*/
 int main(void)
 {
@@ -215,27 +224,23 @@ int main(void)
 
 
   // Initialize render area for entire frame (SSD1306_WIDTH pixels by SSD1306_NUM_PAGES pages)
-  struct render_area frame_area = {
-      start_col: 0,
-      end_col : SSD1306_WIDTH - 1,
-      start_page : 0,
-      end_page : SSD1306_NUM_PAGES - 1
-      };
 
   calc_render_area_buflen(&frame_area);
 
   // zero the entire display
-  uint8_t buf[SSD1306_BUF_LEN];
   memset(buf, 0, SSD1306_BUF_LEN);
   render(buf, &frame_area);
 
   SSD1306_send_cmd(SSD1306_SET_ALL_ON);    // Set all pixels on
+  // SSD1306_send_cmd(SSD1306_SET_ALL_OFF);    // Set all pixels on
+
   for (size_t i = A1; i <= T6; i++)
   {
     put_pixel(pio, sm, urgb_u32(0x7, 0x7, 0x7));
   }
 
   set_indicator_leds();
+  SSD1306_send_cmd(SSD1306_SET_ENTIRE_ON); // go back to following RAM for pixel state
 
   while (1)
   {
@@ -248,6 +253,7 @@ int main(void)
     hid_task();
     led_task();
     encoder_task();
+    display_task();
 
     if (tud_suspended())
       tud_remote_wakeup();
@@ -280,6 +286,40 @@ void uart_read_task()
   }
 }
 
+void display_task()
+{
+  const fast_timer_t interval_us = 10000;
+  static fast_timer_t start_us = 0;
+  const fast_timer_t current_time = timer_read_fast();
+
+  if (current_time - start_us < interval_us)
+    return; // not enough time
+
+  start_us = current_time;
+
+  char text[] = "00:00:00";
+  fast_timer_t ms = current_time / 1000;
+  fast_timer_t s = ms / 1000;
+  uint8_t _s = s % 60;
+
+  fast_timer_t mins = s / 60;
+  uint8_t _mins = mins % 60;
+
+  fast_timer_t hours = mins / 60;
+  uint8_t _hours = hours % 100;
+
+  text[0] = (_hours / 10 % 10) + '0';
+  text[1] = (_hours % 10) + '0';
+
+  text[3] = (_mins / 10 % 10) + '0';
+  text[4] = (_mins % 10) + '0';
+
+  text[6] = (_s / 10 % 10) + '0';
+  text[7] = (_s % 10) + '0';
+
+  WriteString(buf, 5, 8 * 3, text);
+  render(buf, &frame_area);
+}
 //--------------------------------------------------------------------+
 // Device callbacks
 //--------------------------------------------------------------------+
