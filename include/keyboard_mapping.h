@@ -44,7 +44,7 @@
 //      *                                 └─────┴─────┴─────┘
 //      */
 #if KEYBOARD_SIDE == LEFT
-const uint8_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS][10] = {
+const uint8_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS][20] = {
     [0] = {
         //     /* LAYER
         //      * ┌─────┬─────┬─────┬─────┬─────┬─────┐
@@ -205,36 +205,36 @@ const uint8_t __in_flash("keymaps") keymaps_layers[][NUM_KEYS][10] = {
         //      *                                 └─────┴─────┴─────┘
         //      */
         //      */
-        {HID_KEY_F1},                                                                                                              //  A1
-        {HID_KEY_TAB},                                                                                                             //  A2
-        {HID_KEY_ESCAPE},                                                                                                          //  A3
-        {HID_KEY_SHIFT_LEFT},                                                                                                      //  A4
-        {HID_KEY_CONTROL_LEFT},                                                                                                    //  A5
-        {HID_KEY_F2},                                                                                                              //  B1
-        {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_P, HID_KEY_U, HID_KEY_S, HID_KEY_H, HID_KEY_ENTER, HID_KEY_NONE}, //  B2
-        {HID_KEY_A},                                                                                                               //  B3
-        {HID_KEY_Z},                                                                                                               //  B4
-        {HID_KEY_GUI_LEFT},                                                                                                        //  B5
-        {HID_KEY_F3},                                                                                                              //  C1
-        {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_P, HID_KEY_U, HID_KEY_L, HID_KEY_L, HID_KEY_ENTER, HID_KEY_NONE}, //  B2
-        {HID_KEY_S},                                                                                                               //  C3
-        {HID_KEY_X},                                                                                                               //  C4
-        {HID_KEY_ALT_LEFT},                                                                                                        //  C5
-        {HID_KEY_F4},                                                                                                              //  D1
-        {HID_KEY_MUTE},                                                                                                            //  D2
-        {HID_KEY_D},                                                                                                               //  D3
-        {HID_KEY_C},                                                                                                               //  D4
-        {HID_KEY_ARROW_DOWN},                                                                                                      //  D5
-        {HID_KEY_F5},                                                                                                              //  E1
-        {HID_KEY_VOLUME_DOWN},                                                                                                     //  E2
-        {HID_KEY_F},                                                                                                               //  E3
-        {HID_KEY_V},                                                                                                               //  E4
-        {HID_KEY_ARROW_UP},                                                                                                        //  D5
-        {HID_KEY_F6},                                                                                                              //  F1
-        {HID_KEY_VOLUME_UP},                                                                                                       //  F2
-        {HID_KEY_G},                                                                                                               //  F3
-        {HID_KEY_B},                                                                                                               //  F4
-        {HID_KEY_NONE},                                                                                                            //  F5
+        {HID_KEY_F1},                                                                                                                                                                                //  A1
+        {HID_KEY_TAB},                                                                                                                                                                               //  A2
+        {HID_KEY_ESCAPE},                                                                                                                                                                            //  A3
+        {HID_KEY_SHIFT_LEFT},                                                                                                                                                                        //  A4
+        {HID_KEY_CONTROL_LEFT},                                                                                                                                                                      //  A5
+        {HID_KEY_F2},                                                                                                                                                                                //  B1
+        {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_P, HID_KEY_U, HID_KEY_S, HID_KEY_H, HID_KEY_ENTER, HID_KEY_NONE},                                                                   //  B2
+        {HID_KEY_A},                                                                                                                                                                                 //  B3
+        {HID_KEY_Z},                                                                                                                                                                                 //  B4
+        {HID_KEY_GUI_LEFT},                                                                                                                                                                          //  B5
+        {HID_KEY_F3},                                                                                                                                                                                //  C1
+        {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_P, HID_KEY_U, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_ENTER, HID_KEY_NONE}, //  B2
+        {HID_KEY_S},                                                                                                                                                                                 //  C3
+        {HID_KEY_X},                                                                                                                                                                                 //  C4
+        {HID_KEY_ALT_LEFT},                                                                                                                                                                          //  C5
+        {HID_KEY_F4},                                                                                                                                                                                //  D1
+        {HID_KEY_MUTE},                                                                                                                                                                              //  D2
+        {HID_KEY_D},                                                                                                                                                                                 //  D3
+        {HID_KEY_C},                                                                                                                                                                                 //  D4
+        {HID_KEY_ARROW_DOWN},                                                                                                                                                                        //  D5
+        {HID_KEY_F5},                                                                                                                                                                                //  E1
+        {HID_KEY_VOLUME_DOWN},                                                                                                                                                                       //  E2
+        {HID_KEY_F},                                                                                                                                                                                 //  E3
+        {HID_KEY_V},                                                                                                                                                                                 //  E4
+        {HID_KEY_ARROW_UP},                                                                                                                                                                          //  D5
+        {HID_KEY_F6},                                                                                                                                                                                //  F1
+        {HID_KEY_VOLUME_UP},                                                                                                                                                                         //  F2
+        {HID_KEY_G},                                                                                                                                                                                 //  F3
+        {HID_KEY_B},                                                                                                                                                                                 //  F4
+        {HID_KEY_NONE},                                                                                                                                                                              //  F5
         /* THUMB CLUSTER */
         {HID_KEY_BACKSPACE},   //  T1
         {HID_KEY_DELETE},      //  T2

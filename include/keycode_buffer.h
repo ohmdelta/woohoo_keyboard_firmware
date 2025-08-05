@@ -26,6 +26,7 @@ typedef struct
 {
     uint8_t size;
     uint8_t completed;
+    bool null_sent;
     modifier_t modifier;
     uint8_t keycodes[KEYCODE_BUFFER_LENGTH];
 } keycode_buffer_t;

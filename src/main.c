@@ -428,7 +428,7 @@ keycode_buffer_t keycode_buffer = {0};
 void hid_task(void)
 {
   // Poll every 10ms
-  const fast_timer_t interval_ms = 10000;
+  const fast_timer_t interval_ms = 50000;
   static fast_timer_t start_ms = 0;
   const fast_timer_t current_time = timer_read_fast();
 
@@ -514,6 +514,7 @@ void hid_task(void)
   {
     tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
     keycode_buffer.completed += 6;
+    keycode_buffer.null_sent = false;
   }
 }
 
@@ -527,14 +528,16 @@ void tud_hid_report_complete_cb(uint8_t instance, uint8_t const *report,
   (void)len;
   (void)report;
 
-  if (keycode_buffer.size > keycode_buffer.completed)
+  if (!keycode_buffer.null_sent)
+  {
+    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, NULL);
+    keycode_buffer.null_sent = true;
+  }
+  else if (keycode_buffer.size > keycode_buffer.completed)
   {
     tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
     keycode_buffer.completed += 6;
-  }
-  else
-  {
-    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, NULL);
+    keycode_buffer.null_sent = false;
   }
 }
 
