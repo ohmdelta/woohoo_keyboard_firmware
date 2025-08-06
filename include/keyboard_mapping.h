@@ -110,7 +110,6 @@ uint8_t L0_T4[] = {HID_KEY_END, HID_KEY_NONE};          //  T4
 uint8_t L0_T5[] = {HID_KEY_ARROW_UP, HID_KEY_NONE};     //  T5
 uint8_t L0_T6[] = {HID_KEY_KEYPAD_ENTER, HID_KEY_NONE}; //  T6
 
-
 //     /* LAYER
 //      * ┌─────┬─────┬─────┬─────┬─────┬─────┐
 //      * │ F1  │ F2  │ F3  │ F4  │ F5  │ F6  │
@@ -169,11 +168,11 @@ uint8_t L1_F3[] = {HID_KEY_G, HID_KEY_NONE};            //  F3
 uint8_t L1_F4[] = {HID_KEY_B, HID_KEY_NONE};            //  F4
 uint8_t L1_F5[] = {HID_KEY_NONE, HID_KEY_NONE};         //  F5
 /* THUMB CLUSTER */
-uint8_t L1_T1[] = {HID_KEY_BACKSPACE, HID_KEY_NONE};   //  T1
-uint8_t L1_T2[] = {HID_KEY_DELETE, HID_KEY_NONE};      //  T2
-uint8_t L1_T3[] = {HID_KEY_HOME, HID_KEY_NONE};        //  T3
-uint8_t L1_T4[] = {HID_KEY_END, HID_KEY_NONE};         //  T4
-uint8_t L1_T5[] = {HID_KEY_ARROW_UP, HID_KEY_NONE};    //  T5
+uint8_t L1_T1[] = {HID_KEY_BACKSPACE, HID_KEY_NONE};    //  T1
+uint8_t L1_T2[] = {HID_KEY_DELETE, HID_KEY_NONE};       //  T2
+uint8_t L1_T3[] = {HID_KEY_HOME, HID_KEY_NONE};         //  T3
+uint8_t L1_T4[] = {HID_KEY_END, HID_KEY_NONE};          //  T4
+uint8_t L1_T5[] = {HID_KEY_ARROW_UP, HID_KEY_NONE};     //  T5
 uint8_t L1_T6[] = {HID_KEY_KEYPAD_ENTER, HID_KEY_NONE}; //  T6
 
 //     /* LAYER
@@ -203,36 +202,36 @@ uint8_t L1_T6[] = {HID_KEY_KEYPAD_ENTER, HID_KEY_NONE}; //  T6
 //      *                                 └─────┴─────┴─────┘
 //      */
 //      */
-uint8_t L2_A1[] = {HID_KEY_F1, HID_KEY_NONE};                                                                                                                                                                                //  A1
-uint8_t L2_A2[] = {HID_KEY_TAB, HID_KEY_NONE};                                                                                                                                                                               //  A2
-uint8_t L2_A3[] = {HID_KEY_ESCAPE, HID_KEY_NONE};                                                                                                                                                                            //  A3
-uint8_t L2_A4[] = {HID_KEY_SHIFT_LEFT, HID_KEY_NONE};                                                                                                                                                                        //  A4
-uint8_t L2_A5[] = {HID_KEY_CONTROL_LEFT, HID_KEY_NONE};                                                                                                                                                                      //  A5
-uint8_t L2_B1[] = {HID_KEY_F2, HID_KEY_NONE};                                                                                                                                                                                //  B1
-uint8_t L2_B2[] = {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_P, HID_KEY_U, HID_KEY_S, HID_KEY_H, HID_KEY_ENTER, HID_KEY_NONE, HID_KEY_NONE};                                                                   //  B2
-uint8_t L2_B3[] = {HID_KEY_A, HID_KEY_NONE};                                                                                                                                                                                 //  B3
-uint8_t L2_B4[] = {HID_KEY_Z, HID_KEY_NONE};                                                                                                                                                                                 //  B4
-uint8_t L2_B5[] = {HID_KEY_GUI_LEFT, HID_KEY_NONE};                                                                                                                                                                          //  B5
-uint8_t L2_C1[] = {HID_KEY_F3, HID_KEY_NONE};                                                                                                                                                                                //  C1
-uint8_t L2_C2[] = {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_P, HID_KEY_U, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_ENTER, HID_KEY_NONE, HID_KEY_NONE}; //  B2
-uint8_t L2_C3[] = {HID_KEY_S, HID_KEY_NONE};                                                                                                                                                                                 //  C3
-uint8_t L2_C4[] = {HID_KEY_X, HID_KEY_NONE};                                                                                                                                                                                 //  C4
-uint8_t L2_C5[] = {HID_KEY_ALT_LEFT, HID_KEY_NONE};                                                                                                                                                                          //  C5
-uint8_t L2_D1[] = {HID_KEY_F4, HID_KEY_NONE};                                                                                                                                                                                //  D1
-uint8_t L2_D2[] = {HID_KEY_MUTE, HID_KEY_NONE};                                                                                                                                                                              //  D2
-uint8_t L2_D3[] = {HID_KEY_D, HID_KEY_NONE};                                                                                                                                                                                 //  D3
-uint8_t L2_D4[] = {HID_KEY_C, HID_KEY_NONE};                                                                                                                                                                                 //  D4
-uint8_t L2_D5[] = {HID_KEY_ARROW_DOWN, HID_KEY_NONE};                                                                                                                                                                        //  D5
-uint8_t L2_E1[] = {HID_KEY_F5, HID_KEY_NONE};                                                                                                                                                                                //  E1
-uint8_t L2_E2[] = {HID_KEY_VOLUME_DOWN, HID_KEY_NONE};                                                                                                                                                                       //  E2
-uint8_t L2_E3[] = {HID_KEY_F, HID_KEY_NONE};                                                                                                                                                                                 //  E3
-uint8_t L2_E4[] = {HID_KEY_V, HID_KEY_NONE};                                                                                                                                                                                 //  E4
-uint8_t L2_E5[] = {HID_KEY_ARROW_UP, HID_KEY_NONE};                                                                                                                                                                          //  D5
-uint8_t L2_F1[] = {HID_KEY_F6, HID_KEY_NONE};                                                                                                                                                                                //  F1
-uint8_t L2_F2[] = {HID_KEY_VOLUME_UP, HID_KEY_NONE};                                                                                                                                                                         //  F2
-uint8_t L2_F3[] = {HID_KEY_G, HID_KEY_NONE};                                                                                                                                                                                 //  F3
-uint8_t L2_F4[] = {HID_KEY_B, HID_KEY_NONE};                                                                                                                                                                                 //  F4
-uint8_t L2_F5[] = {HID_KEY_NONE, HID_KEY_NONE};                                                                                                                                                                              //  F5
+uint8_t L2_A1[] = {HID_KEY_F1, HID_KEY_NONE};                                                                                                                                                   //  A1
+uint8_t L2_A2[] = {HID_KEY_TAB, HID_KEY_NONE};                                                                                                                                                  //  A2
+uint8_t L2_A3[] = {HID_KEY_ESCAPE, HID_KEY_NONE};                                                                                                                                               //  A3
+uint8_t L2_A4[] = {HID_KEY_SHIFT_LEFT, HID_KEY_NONE};                                                                                                                                           //  A4
+uint8_t L2_A5[] = {HID_KEY_CONTROL_LEFT, HID_KEY_NONE};                                                                                                                                         //  A5
+uint8_t L2_B1[] = {HID_KEY_F2, HID_KEY_NONE};                                                                                                                                                   //  B1
+uint8_t L2_B2[] = {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_P, HID_KEY_U, HID_KEY_S, HID_KEY_H, HID_KEY_NONE};                                                                   //  B2
+uint8_t L2_B3[] = {HID_KEY_A, HID_KEY_NONE};                                                                                                                                                    //  B3
+uint8_t L2_B4[] = {HID_KEY_Z, HID_KEY_NONE};                                                                                                                                                    //  B4
+uint8_t L2_B5[] = {HID_KEY_GUI_LEFT, HID_KEY_NONE};                                                                                                                                             //  B5
+uint8_t L2_C1[] = {HID_KEY_F3, HID_KEY_NONE};                                                                                                                                                   //  C1
+uint8_t L2_C2[] = {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_P, HID_KEY_U, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_L, HID_KEY_NONE}; //  B2
+uint8_t L2_C3[] = {HID_KEY_S, HID_KEY_NONE};                                                                                                                                                    //  C3
+uint8_t L2_C4[] = {HID_KEY_X, HID_KEY_NONE};                                                                                                                                                    //  C4
+uint8_t L2_C5[] = {HID_KEY_ALT_LEFT, HID_KEY_NONE};                                                                                                                                             //  C5
+uint8_t L2_D1[] = {HID_KEY_F4, HID_KEY_NONE};                                                                                                                                                   //  D1
+uint8_t L2_D2[] = {HID_KEY_MUTE, HID_KEY_NONE};                                                                                                                                                 //  D2
+uint8_t L2_D3[] = {HID_KEY_D, HID_KEY_NONE};                                                                                                                                                    //  D3
+uint8_t L2_D4[] = {HID_KEY_C, HID_KEY_NONE};                                                                                                                                                    //  D4
+uint8_t L2_D5[] = {HID_KEY_ARROW_DOWN, HID_KEY_NONE};                                                                                                                                           //  D5
+uint8_t L2_E1[] = {HID_KEY_F5, HID_KEY_NONE};                                                                                                                                                   //  E1
+uint8_t L2_E2[] = {HID_KEY_VOLUME_DOWN, HID_KEY_NONE};                                                                                                                                          //  E2
+uint8_t L2_E3[] = {HID_KEY_F, HID_KEY_NONE};                                                                                                                                                    //  E3
+uint8_t L2_E4[] = {HID_KEY_V, HID_KEY_NONE};                                                                                                                                                    //  E4
+uint8_t L2_E5[] = {HID_KEY_ARROW_UP, HID_KEY_NONE};                                                                                                                                             //  D5
+uint8_t L2_F1[] = {HID_KEY_F6, HID_KEY_NONE};                                                                                                                                                   //  F1
+uint8_t L2_F2[] = {HID_KEY_VOLUME_UP, HID_KEY_NONE};                                                                                                                                            //  F2
+uint8_t L2_F3[] = {HID_KEY_G, HID_KEY_NONE};                                                                                                                                                    //  F3
+uint8_t L2_F4[] = {HID_KEY_B, HID_KEY_NONE};                                                                                                                                                    //  F4
+uint8_t L2_F5[] = {HID_KEY_NONE, HID_KEY_NONE};                                                                                                                                                 //  F5
 /* THUMB CLUSTER */
 uint8_t L2_T1[] = {HID_KEY_BACKSPACE, HID_KEY_NONE};    //  T1
 uint8_t L2_T2[] = {HID_KEY_DELETE, HID_KEY_NONE};       //  T2
@@ -418,42 +417,14 @@ uint8_t L2_T6[] = {HID_KEY_KEYPAD_ENTER, HID_KEY_NONE}; //  T6
 const uint8_t *
     __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
         [0] = {
-            L0_A1,
-            L0_A2,
-            L0_A3,
-            L0_A4,
-            L0_A5,
-            L0_B1,
-            L0_B2,
-            L0_B3,
-            L0_B4,
-            L0_B5,
-            L0_C1,
-            L0_C2,
-            L0_C3,
-            L0_C4,
-            L0_C5,
-            L0_D1,
-            L0_D2,
-            L0_D3,
-            L0_D4,
-            L0_D5,
-            L0_E1,
-            L0_E2,
-            L0_E3,
-            L0_E4,
-            L0_E5,
-            L0_F1,
-            L0_F2,
-            L0_F3,
-            L0_F4,
-            L0_F5,
-            L0_T1,
-            L0_T2,
-            L0_T3,
-            L0_T4,
-            L0_T5,
-            L0_T6},
+            L0_A1, L0_A2, L0_A3, L0_A4, L0_A5,
+            L0_B1, L0_B2, L0_B3, L0_B4, L0_B5,
+            L0_C1, L0_C2, L0_C3, L0_C4, L0_C5,
+            L0_D1, L0_D2, L0_D3, L0_D4, L0_D5,
+            L0_E1, L0_E2, L0_E3, L0_E4, L0_E5,
+            L0_F1, L0_F2, L0_F3, L0_F4, L0_F5,
+            L0_T1, L0_T2, L0_T3,
+            L0_T4, L0_T5, L0_T6},
         [1] = {L1_A1, L1_A2, L1_A3, L1_A4, L1_A5, L1_B1, L1_B2, L1_B3, L1_B4, L1_B5, L1_C1, L1_C2, L1_C3, L1_C4, L1_C5, L1_D1, L1_D2, L1_D3, L1_D4, L1_D5, L1_E1, L1_E2, L1_E3, L1_E4, L1_E5, L1_F1, L1_F2, L1_F3, L1_F4, L1_F5, L1_T1, L1_T2, L1_T3, L1_T4, L1_T5, L1_T6},
         [2] = {L2_A1, L2_A2, L2_A3, L2_A4, L2_A5, L2_B1, L2_B2, L2_B3, L2_B4, L2_B5, L2_C1, L2_C2, L2_C3, L2_C4, L2_C5, L2_D1, L2_D2, L2_D3, L2_D4, L2_D5, L2_E1, L2_E2, L2_E3, L2_E4, L2_E5, L2_F1, L2_F2, L2_F3, L2_F4, L2_F5, L2_T1, L2_T2, L2_T3, L2_T4, L2_T5, L2_T6},
 };
