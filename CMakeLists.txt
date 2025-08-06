@@ -42,15 +42,6 @@ function (setup_side FIRMWARE)
 endfunction()
 
 setup_side(left_firmware)
+
 setup_side(right_firmware)
-
-
-# add_executable(ssd1306_i2c
-#         ssd1306/ssd1306_i2c.c
-# )
-# target_include_directories(ssd1306_i2c PUBLIC
-#   ssd1306
-# )
-# target_link_libraries(ssd1306_i2c pico_stdlib hardware_i2c)
-
-# pico_add_extra_outputs(ssd1306_i2c)
+set_target_properties(right_firmware PROPERTIES COMPILE_DEFINITIONS "KEYBOARD_SIDE=1")
