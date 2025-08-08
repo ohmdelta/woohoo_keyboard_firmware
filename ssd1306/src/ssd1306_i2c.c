@@ -248,7 +248,7 @@ void WriteChar(uint8_t *buf, int16_t x, int16_t y, uint8_t ch)
 
     for (int i = 0; i < 8; i++)
     {
-        buf[fb_idx++] = font[idx * 8 + i];
+        buf[fb_idx++] = font[idx][i];
     }
 }
 
