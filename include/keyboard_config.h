@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define PICO_UART_ENABLE_CRLF_SUPPORT 0
+
 #define A1 4
 #define A2 5
 #define A3 6

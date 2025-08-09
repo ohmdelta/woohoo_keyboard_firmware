@@ -83,10 +83,15 @@ typedef struct
 {
   uint8_t size;
   uint8_t ch[QUEUE_SIZE];
+  modifier_t modifiers;
 } queue_t;
 
 other_board_t ch = {.ch = 0, .done = 1};
-queue_t key_queue = {.size = 0, .ch = {0}};
+queue_t key_queue = {
+    .size = 0,
+    .ch = {0},
+    .modifiers = {.bits = 0},
+};
 
 static void encoder_task();
 static void layer_key_task();
@@ -281,9 +286,17 @@ void uart_read_task()
     }
     else
     {
-      key_queue.ch[key_queue.size++] = c;
+      if (!((c >= HID_KEY_CONTROL_LEFT) && (c <= HID_KEY_GUI_RIGHT)) && (c != HID_KEY_NONE))
+      {
+        key_queue.ch[key_queue.size++] = c;
+      }
+      else
+      {
+        update_modifier(&key_queue.modifiers, c);
+      }
     }
   }
+  key_queue.ch[key_queue.size++] = 0;
 }
 
 void display_task()
@@ -461,7 +474,7 @@ void hid_task(void)
         {
           add_keycodes(&keycode_buffer, key);
         }
-        uart_putc(UART_ID, *key);
+        uart_puts(UART_ID, (const char *)key);
         status->last_handled_time = current_time;
         status->held = FIRST_TOUCH;
         break;
@@ -472,7 +485,7 @@ void hid_task(void)
           {
             add_keycodes(&keycode_buffer, key);
           }
-          uart_putc(UART_ID, *key);
+          uart_puts(UART_ID, (const char *)key);
           status->last_handled_time = current_time;
           status->held = CONTINUOUS_TOUCH;
         }
@@ -484,7 +497,7 @@ void hid_task(void)
           {
             add_keycodes(&keycode_buffer, key);
           }
-          uart_putc(UART_ID, *key);
+          uart_puts(UART_ID, (const char *)key);
           status->last_handled_time = current_time;
           status->held = CONTINUOUS_TOUCH;
         }
@@ -495,19 +508,10 @@ void hid_task(void)
     }
   }
 
-  for (uint8_t i = 0; i < key_queue.size; i++)
-  {
-    const uint8_t key = key_queue.ch[i];
-    if (!((key >= HID_KEY_CONTROL_LEFT) && (key <= HID_KEY_GUI_RIGHT)) && (key != HID_KEY_NONE))
-    {
-      add_keycode(&keycode_buffer, key);
-    }
-    else
-    {
-      update_modifier(&keycode_buffer.modifier, key);
-    }
-  }
 
+  add_keycodes(&keycode_buffer, key_queue.ch);
+  keycode_buffer.modifier.bits |= key_queue.modifiers.bits;
+  key_queue.modifiers.bits = 0;
   key_queue.size = 0;
 
   if (tud_hid_ready())
