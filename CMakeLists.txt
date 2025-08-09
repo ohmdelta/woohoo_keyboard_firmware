@@ -20,7 +20,7 @@ function (setup_side FIRMWARE)
   target_link_libraries(${FIRMWARE} PUBLIC pico_stdlib hardware_pio pico_unique_id tinyusb_device tinyusb_board ssd1306)
   target_compile_options(${FIRMWARE} PRIVATE -Wall -Wextra -Werror)
 
-  set_target_properties(${FIRMWARE} PROPERTIES COMPILE_DEFINITIONS "PICO_PLATFORM=rp2350 PICO_BOARD=pico2_xl")
+  set_target_properties(${FIRMWARE} PROPERTIES COMPILE_DEFINITIONS "PICO_PLATFORM=rp2350 PICO_BOARD=pico2_xl PICO_UART_ENABLE_CRLF_SUPPORT=0")
 
   target_sources(${FIRMWARE} PUBLIC
     src/main.c

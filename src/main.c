@@ -169,11 +169,11 @@ void set_indicator_leds()
 
 uint8_t buf[SSD1306_BUF_LEN];
 struct render_area frame_area = {
-    start_col: 0,
-    end_col : SSD1306_WIDTH - 1,
-    start_page : 0,
-    end_page : SSD1306_NUM_PAGES - 1
-    };
+  start_col : 0,
+  end_col : SSD1306_WIDTH - 1,
+  start_page : 0,
+  end_page : SSD1306_NUM_PAGES - 1
+};
 
 /*------------- MAIN -------------*/
 int main(void)
@@ -226,7 +226,14 @@ int main(void)
 
   // Turn off FIFO's - we want to do this character by character
   uart_set_fifo_enabled(UART_ID, false);
+  int UART_IRQ = UART_ID == uart0 ? UART0_IRQ : UART1_IRQ;
 
+  // And set up and enable the interrupt handlers
+  irq_set_exclusive_handler(UART_IRQ, uart_read_task);
+  irq_set_enabled(UART_IRQ, true);
+
+  // Now enable the UART to send interrupts - RX only
+  uart_set_irq_enables(UART_ID, true, false);
 
   // Initialize render area for entire frame (SSD1306_WIDTH pixels by SSD1306_NUM_PAGES pages)
 
@@ -236,7 +243,7 @@ int main(void)
   memset(buf, 0, SSD1306_BUF_LEN);
   render(buf, &frame_area);
 
-  SSD1306_send_cmd(SSD1306_SET_ALL_ON);    // Set all pixels on
+  SSD1306_send_cmd(SSD1306_SET_ALL_ON); // Set all pixels on
   // SSD1306_send_cmd(SSD1306_SET_ALL_OFF);    // Set all pixels on
 
   for (size_t i = A1; i <= T6; i++)
@@ -252,8 +259,6 @@ int main(void)
     // changed = debounce(raw_matrix, matrix, ROWS_PER_HAND, changed);
     matrix_task();
     tud_task(); // tinyusb device task
-
-    uart_read_task();
 
     hid_task();
     led_task();
@@ -288,7 +293,8 @@ void uart_read_task()
     {
       if (!((c >= HID_KEY_CONTROL_LEFT) && (c <= HID_KEY_GUI_RIGHT)) && (c != HID_KEY_NONE))
       {
-        key_queue.ch[key_queue.size++] = c;
+        key_queue.ch[key_queue.size] = c;
+        key_queue.size++;
       }
       else
       {
@@ -296,7 +302,6 @@ void uart_read_task()
       }
     }
   }
-  key_queue.ch[key_queue.size++] = 0;
 }
 
 void display_task()
@@ -466,7 +471,7 @@ void hid_task(void)
     matrix_status *status = &matrix_bank_status[i];
     if ((status->is_pressed))
     {
-      const uint8_t* key = keymaps_layers[get_layer()][i];
+      const uint8_t *key = keymaps_layers[get_layer()][i];
       switch (status->held)
       {
       case NO_TOUCH:
@@ -508,11 +513,12 @@ void hid_task(void)
     }
   }
 
-
+  key_queue.ch[key_queue.size + 1] = HID_KEY_NONE;
   add_keycodes(&keycode_buffer, key_queue.ch);
   keycode_buffer.modifier.bits |= key_queue.modifiers.bits;
   key_queue.modifiers.bits = 0;
   key_queue.size = 0;
+  memset(key_queue.ch, 0, QUEUE_SIZE);
 
   if (tud_hid_ready())
   {
