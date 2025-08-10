@@ -125,12 +125,16 @@ void SSD1306_scroll(bool on);
 
 void render(uint8_t *buf, struct render_area *area);
 void SetPixel(uint8_t *buf, int x, int y, bool on);
+
 // Basic Bresenhams.
 void DrawLine(uint8_t *buf, int x0, int y0, int x1, int y1, bool on);
 
 int GetFontIndex(uint8_t ch);
 void WriteChar(uint8_t *buf, int16_t x, int16_t y, uint8_t ch);
-void WriteString(uint8_t *buf, int16_t x, int16_t y, char *str) ;
+void WriteString(uint8_t *buf, int16_t x, int16_t y, char *str);
+
+void write_char_vertical(uint8_t *buf, int16_t x, int16_t y, uint8_t ch);
+void write_string_vertical(uint8_t *buf, int16_t x, int16_t y, char *str);
 
 #endif
 

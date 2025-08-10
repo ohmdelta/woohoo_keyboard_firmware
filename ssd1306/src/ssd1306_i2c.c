@@ -265,4 +265,43 @@ void WriteString(uint8_t *buf, int16_t x, int16_t y, char *str)
     }
 }
 
+void write_char_vertical(uint8_t *buf, int16_t x, int16_t y, uint8_t ch)
+{
+    if (x > SSD1306_WIDTH - 8 || y > SSD1306_HEIGHT - 8)
+        return;
+
+    // For the moment, only write on Y row boundaries (every 8 vertical pixels)
+    y = y / 8;
+
+    ch = toupper(ch);
+    int idx = GetFontIndex(ch);
+    int fb_idx = y * 128 + x;
+
+    uint8_t f[8] = {0};
+    for (uint8_t i = 0; i < 8; i++)
+    {
+        for (uint8_t j = 0; j < 8; j++ )
+        {
+            f[7 - i] |= ((uint8_t)(bool)(font[idx][j] & (1 << i))) << (j);
+        }
+    }
+    for (int i = 0; i < 8; i++)
+    {
+        buf[fb_idx++] = f[i];
+    }
+}
+
+void write_string_vertical(uint8_t *buf, int16_t x, int16_t y, char *str)
+{
+    // Cull out any string off the screen
+    if (x > SSD1306_WIDTH - 8 || y > SSD1306_HEIGHT - 8)
+        return;
+
+    while (*str)
+    {
+        write_char_vertical(buf, x, y, *str++);
+        y += 8;
+    }
+}
+
 #endif

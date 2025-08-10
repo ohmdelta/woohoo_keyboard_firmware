@@ -168,6 +168,7 @@ void set_indicator_leds()
 }
 
 uint8_t buf[SSD1306_BUF_LEN];
+
 struct render_area frame_area = {
   start_col : 0,
   end_col : SSD1306_WIDTH - 1,
@@ -335,7 +336,7 @@ void display_task()
   text[6] = (_s / 10 % 10) + '0';
   text[7] = (_s % 10) + '0';
 
-  WriteString(buf, 5, 8 * 3, text);
+  write_string_vertical(buf, 120, 0, text);
   render(buf, &frame_area);
 }
 //--------------------------------------------------------------------+
