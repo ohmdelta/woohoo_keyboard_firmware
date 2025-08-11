@@ -29,6 +29,7 @@
 #include "hardware/gpio.h"
 #include "hardware/timer.h"
 #include "pico/stdlib.h"
+#include "pico/multicore.h"
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
 #include "ws2812.pio.h"
@@ -176,12 +177,10 @@ struct render_area frame_area = {
   end_page : SSD1306_NUM_PAGES - 1
 };
 
-/*------------- MAIN -------------*/
-int main(void)
-{
-  // board_init();
-  stdio_init_all();
+#define FLAG_VALUE 123
 
+void core1_entry()
+{
   i2c_init(i2c_default, SSD1306_I2C_CLK * 1000);
   gpio_set_function(SSD1306_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
   gpio_set_function(SSD1306_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
@@ -190,11 +189,33 @@ int main(void)
 
   SSD1306_init();
 
+  calc_render_area_buflen(&frame_area);
+
+  // zero the entire display
+  memset(buf, 0, SSD1306_BUF_LEN);
+  render(buf, &frame_area);
+
+  SSD1306_send_cmd(SSD1306_SET_ALL_ON); // Set all pixels on
+
+  SSD1306_send_cmd(SSD1306_SET_ENTIRE_ON); // go back to following RAM for pixel state
+
+  while (1)
+  {
+    display_task();
+  }
+}
+/*------------- MAIN -------------*/
+int main(void)
+{
+  // board_init();
+  stdio_init_all();
+
   setup_board();
 
   matrix_init();
   debounce_init(ROWS_PER_HAND);
 
+  multicore_launch_core1(core1_entry);
   // init device stack on configured roothub port
   tud_init(BOARD_TUD_RHPORT);
 
@@ -237,23 +258,12 @@ int main(void)
   uart_set_irq_enables(UART_ID, true, false);
 
   // Initialize render area for entire frame (SSD1306_WIDTH pixels by SSD1306_NUM_PAGES pages)
-
-  calc_render_area_buflen(&frame_area);
-
-  // zero the entire display
-  memset(buf, 0, SSD1306_BUF_LEN);
-  render(buf, &frame_area);
-
-  SSD1306_send_cmd(SSD1306_SET_ALL_ON); // Set all pixels on
-  // SSD1306_send_cmd(SSD1306_SET_ALL_OFF);    // Set all pixels on
-
   for (size_t i = A1; i <= T6; i++)
   {
     put_pixel(pio, sm, urgb_u32(0x7, 0x7, 0x7));
   }
 
   set_indicator_leds();
-  SSD1306_send_cmd(SSD1306_SET_ENTIRE_ON); // go back to following RAM for pixel state
 
   while (1)
   {
@@ -264,7 +274,6 @@ int main(void)
     hid_task();
     led_task();
     encoder_task();
-    display_task();
 
     if (tud_suspended())
       tud_remote_wakeup();

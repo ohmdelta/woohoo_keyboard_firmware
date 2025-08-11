@@ -17,7 +17,7 @@ function (setup_side FIRMWARE)
   pico_generate_pio_header(${FIRMWARE} ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/generated)
 
   # Add pico_stdlib library which aggregates commonly used features
-  target_link_libraries(${FIRMWARE} PUBLIC pico_stdlib hardware_pio pico_unique_id tinyusb_device tinyusb_board ssd1306)
+  target_link_libraries(${FIRMWARE} PUBLIC pico_stdlib pico_multicore hardware_pio pico_unique_id tinyusb_device tinyusb_board ssd1306)
   target_compile_options(${FIRMWARE} PRIVATE -Wall -Wextra -Werror)
 
   set_target_properties(${FIRMWARE} PROPERTIES COMPILE_DEFINITIONS "PICO_PLATFORM=rp2350 PICO_BOARD=pico2_xl PICO_UART_ENABLE_CRLF_SUPPORT=0")
