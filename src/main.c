@@ -193,7 +193,6 @@ void core1_entry()
 
   // zero the entire display
   memset(buf, 0, SSD1306_BUF_LEN);
-  render(buf, &frame_area);
 
   SSD1306_send_cmd(SSD1306_SET_ALL_ON); // Set all pixels on
 
