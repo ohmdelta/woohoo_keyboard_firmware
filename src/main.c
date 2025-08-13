@@ -344,7 +344,8 @@ void display_task()
   text[6] = (_s / 10 % 10) + '0';
   text[7] = (_s % 10) + '0';
 
-  write_string_vertical(buf, 120, 0, text);
+  memset(buf, 0, SSD1306_BUF_LEN);
+  write_string_vertical(buf, 112, 0, text);
   render(buf, &frame_area);
 }
 //--------------------------------------------------------------------+

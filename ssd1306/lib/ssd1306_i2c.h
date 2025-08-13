@@ -228,13 +228,21 @@ void SSD1306_scroll(bool on)
 }
 
 void buf_swap(uint8_t* a, uint8_t* b) {
-    uint8_t c = *b;
-    *b = reverse(*a);
-    *a = reverse(c);
+    *a ^= *b;
+    *b ^= *a;
+    *a ^= *b;
+    *a = reverse(*a);
+    *b = reverse(*b);
 }
 
 void render(uint8_t *buf, struct render_area *area)
 {
+#if SSD1306_ORIENTATION == 1
+    for (uint16_t i = 0; i < (SSD1306_BUF_LEN >> 1); i++)
+    {
+        buf_swap(buf + i, buf + (SSD1306_BUF_LEN - 1 - i));
+    }
+#endif
     // update a portion of the display with a render area
     uint8_t cmds[] = {
         SSD1306_SET_COL_ADDR,
@@ -243,13 +251,6 @@ void render(uint8_t *buf, struct render_area *area)
         SSD1306_SET_PAGE_ADDR,
         area->start_page,
         area->end_page};
-
-    #if SSD1306_ORIENTATION == 1
-    for (uint16_t i = 0; i < (SSD1306_BUF_LEN >> 1); i++)
-    {
-        buf_swap(buf + i, buf + (SSD1306_BUF_LEN - 1 - i));
-    }
-    #endif
 
     SSD1306_send_cmd_list(cmds, count_of(cmds));
     SSD1306_send_buf(buf, area->buflen);
@@ -378,7 +379,7 @@ void write_char_vertical(uint8_t *buf, int16_t x, int16_t y, uint8_t ch)
     uint8_t f[8] = {0};
     for (uint8_t i = 0; i < 8; i++)
     {
-        for (uint8_t j = 0; j < 8; j++ )
+        for (uint8_t j = 0; j < 8; j++)
         {
             f[7 - i] |= ((uint8_t)(bool)(font[idx][j] & (1 << i))) << (j);
         }
