@@ -7,6 +7,27 @@ void reset_keycode_buffer(keycode_buffer_t *keycode_buffer)
   memset(keycode_buffer, 0, sizeof(keycode_buffer_t));
 }
 
+void shift_reset_keycode_buffer(keycode_buffer_t *keycode_buffer)
+{
+  if (keycode_buffer->size > keycode_buffer->completed)
+  {
+    keycode_buffer->size -= keycode_buffer->completed;
+  }
+  else
+  {
+    keycode_buffer->size = 0;
+  }
+  memmove(keycode_buffer->keycodes,
+          keycode_buffer->keycodes + keycode_buffer->completed,
+          keycode_buffer->size);
+  memset(keycode_buffer->keycodes + keycode_buffer->size,
+         0,
+         KEYCODE_BUFFER_LENGTH - keycode_buffer->size);
+  keycode_buffer->modifier.bits = 0;
+  // keycode_buffer->keycodes[keycode_buffer->size] = 0;
+  keycode_buffer->completed = 0;
+}
+
 bool add_keycode(keycode_buffer_t *keycode_buffer, uint8_t keycode)
 {
   if (keycode_buffer->size < KEYCODE_BUFFER_LENGTH)
@@ -25,17 +46,20 @@ bool add_keycodes(keycode_buffer_t *keycode_buffer, const uint8_t *keycode)
     uint8_t phrase_start = (keycode_buffer->size / 6) * 6;
     for (uint8_t s = phrase_start; s < keycode_buffer->size; s++)
     {
-      if (keycode_buffer->keycodes[s] == *keycode) {
+      if (keycode_buffer->keycodes[s] == *keycode)
+      {
         repeated = true;
         break;
       }
     }
 
-    if (repeated) {
+    if (repeated)
+    {
       memset(keycode_buffer->keycodes + keycode_buffer->size, 0, phrase_start + 6 - keycode_buffer->size);
       keycode_buffer->size = phrase_start + 6;
     }
-    else {
+    else
+    {
       keycode_buffer->keycodes[keycode_buffer->size++] = *(keycode++);
     }
   }

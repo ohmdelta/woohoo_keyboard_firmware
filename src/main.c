@@ -73,6 +73,7 @@ typedef struct
 } indicator_state_t;
 
 indicator_state_t keyboard_indicator_state = {0, 0, 0};
+keycode_buffer_t keycode_buffer = {0};
 
 typedef struct
 {
@@ -272,6 +273,19 @@ int main(void)
     tud_task(); // tinyusb device task
 
     hid_task();
+    if (tud_mounted())
+    {
+      if (tud_hid_ready())
+      {
+        tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
+        keycode_buffer.completed += 6;
+        keycode_buffer.null_sent = false;
+      }
+    } else
+    {
+      reset_keycode_buffer(&keycode_buffer);
+    }
+
     led_task();
     encoder_task();
 
@@ -280,6 +294,7 @@ int main(void)
   }
 
   pio_remove_program_and_unclaim_sm(&ws2812_program, pio, sm, offset);
+  pio_remove_program_and_unclaim_sm(&ws2812_program, pio_2, sm_2, offset_2);
 }
 
 void uart_read_task()
@@ -352,7 +367,6 @@ void display_task()
   if (tud_mounted())
   {
     write_string_vertical(buf, 112, 0, "MOUNTED");
-
   }
   else
     write_string_vertical(buf, 112, 0, "N/A CONN");
@@ -460,7 +474,25 @@ void layer_key_task()
   }
 }
 
-keycode_buffer_t keycode_buffer = {0};
+void send_modifier_uart(modifier_t *modifier)
+{
+  if (modifier->modifiers.left_ctrl)
+    uart_putc(UART_ID, HID_KEY_CONTROL_LEFT);
+  if (modifier->modifiers.left_shift)
+    uart_putc(UART_ID, HID_KEY_SHIFT_LEFT);
+  if (modifier->modifiers.left_alt)
+    uart_putc(UART_ID, HID_KEY_ALT_LEFT);
+  if (modifier->modifiers.left_gui)
+    uart_putc(UART_ID, HID_KEY_GUI_LEFT);
+  if (modifier->modifiers.right_ctrl)
+    uart_putc(UART_ID, HID_KEY_CONTROL_RIGHT);
+  if (modifier->modifiers.right_shift)
+    uart_putc(UART_ID, HID_KEY_SHIFT_RIGHT);
+  if (modifier->modifiers.right_alt)
+    uart_putc(UART_ID, HID_KEY_ALT_RIGHT);
+  if (modifier->modifiers.right_gui)
+    uart_putc(UART_ID, HID_KEY_GUI_RIGHT);
+}
 
 // Every 10ms, we will sent 1 report for each HID profile (keyboard, mouse etc
 // ..) tud_hid_report_complete_cb() is used to send the next report after
@@ -468,17 +500,17 @@ keycode_buffer_t keycode_buffer = {0};
 void hid_task(void)
 {
   // Poll every 10ms
-  const fast_timer_t interval_ms = 50000;
+  const fast_timer_t interval_ms = 10000;
   static fast_timer_t start_ms = 0;
   const fast_timer_t current_time = timer_read_fast();
 
   if (current_time - start_ms < interval_ms)
     return; // not enough time
 
-  start_ms += interval_ms;
+  start_ms = current_time;
 
   layer_key_task();
-  reset_keycode_buffer(&keycode_buffer);
+  shift_reset_keycode_buffer(&keycode_buffer);
 
   for (int i = 0; i < NUM_KEYS; i++)
   {
@@ -487,6 +519,7 @@ void hid_task(void)
       update_modifier(&keycode_buffer.modifier, keymaps_layers[0][i][0]);
     }
   }
+  send_modifier_uart(&keycode_buffer.modifier);
 
   for (uint8_t i = 0; i < NUM_KEYS; i++)
   {
@@ -500,8 +533,8 @@ void hid_task(void)
         if (!((*key >= HID_KEY_CONTROL_LEFT) && (*key <= HID_KEY_GUI_RIGHT)) && (*key != HID_KEY_NONE))
         {
           add_keycodes(&keycode_buffer, key);
+          uart_puts(UART_ID, (const char *)key);
         }
-        uart_puts(UART_ID, (const char *)key);
         status->last_handled_time = current_time;
         status->held = FIRST_TOUCH;
         break;
@@ -511,8 +544,8 @@ void hid_task(void)
           if (!((*key >= HID_KEY_CONTROL_LEFT) && (*key <= HID_KEY_GUI_RIGHT)) && (*key != HID_KEY_NONE))
           {
             add_keycodes(&keycode_buffer, key);
+            uart_puts(UART_ID, (const char *)key);
           }
-          uart_puts(UART_ID, (const char *)key);
           status->last_handled_time = current_time;
           status->held = CONTINUOUS_TOUCH;
         }
@@ -523,8 +556,8 @@ void hid_task(void)
           if (!((*key >= HID_KEY_CONTROL_LEFT) && (*key <= HID_KEY_GUI_RIGHT)) && (*key != HID_KEY_NONE))
           {
             add_keycodes(&keycode_buffer, key);
+            uart_puts(UART_ID, (const char *)key);
           }
-          uart_puts(UART_ID, (const char *)key);
           status->last_handled_time = current_time;
           status->held = CONTINUOUS_TOUCH;
         }
@@ -541,13 +574,6 @@ void hid_task(void)
   key_queue.modifiers.bits = 0;
   key_queue.size = 0;
   memset(key_queue.ch, 0, QUEUE_SIZE);
-
-  if (tud_hid_ready())
-  {
-    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
-    keycode_buffer.completed += 6;
-    keycode_buffer.null_sent = false;
-  }
 }
 
 // Invoked when sent REPORT successfully to host
