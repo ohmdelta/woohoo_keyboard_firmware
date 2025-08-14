@@ -183,8 +183,8 @@ uint8_t const L1_T6[] = {HID_KEY_KEYPAD_ENTER, HID_KEY_NONE}; //  T6
 //      * │ TAB │git  │git  │git  │git  │git  │
 //      * │     │push │pull │commi│add  │stat |
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┤
-//      * │ ESC │git  │  S  │  D  │  F  │ls   ├─────┐
-//      * │     │log  │     │     │     │-lrt | F5  │
+//      * │ ESC │git  │  S  │git  │  F  │ls   ├─────┐
+//      * │     │log  │     │diff │     │-lrt | F5  │
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┤     │
 //      * │SHIFT│vim  │make │clear│vim  |pytho├─────┘
 //      * │     │     │-j4  │     │     │     │
@@ -219,7 +219,7 @@ uint8_t const L2_C4[] = {HID_KEY_M, HID_KEY_A, HID_KEY_K, HID_KEY_E, HID_KEY_SPA
 uint8_t const L2_C5[] = {HID_KEY_ALT_LEFT, HID_KEY_NONE};                                                                                                         //  C5
 uint8_t const L2_D1[] = {HID_KEY_F4, HID_KEY_NONE};                                                                                                               //  D1
 uint8_t const L2_D2[] = {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_C, HID_KEY_O, HID_KEY_M, HID_KEY_M, HID_KEY_I, HID_KEY_T, HID_KEY_NONE};         //  D2
-uint8_t const L2_D3[] = {HID_KEY_D, HID_KEY_NONE};                                                                                                                //  D3
+uint8_t const L2_D3[] = {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_D, HID_KEY_I, HID_KEY_F, HID_KEY_F, HID_KEY_NONE};                               //  D3
 uint8_t const L2_D4[] = {HID_KEY_C, HID_KEY_L, HID_KEY_E, HID_KEY_A, HID_KEY_R, HID_KEY_NONE};                                                                    //  D4
 uint8_t const L2_D5[] = {HID_KEY_ARROW_DOWN, HID_KEY_NONE};                                                                                                       //  D5
 uint8_t const L2_E1[] = {HID_KEY_F5, HID_KEY_NONE};                                                                                                               //  E1
@@ -395,7 +395,7 @@ uint8_t const L1_F4[] = {HID_KEY_N, HID_KEY_NONE};                 //  F4
 uint8_t const L1_F5[] = {HID_KEY_NONE, HID_KEY_NONE};              //  F5
 /* THUMB CLUSTER */
 uint8_t const L1_T1[] = {HID_KEY_SPACE, HID_KEY_NONE};        //  T1
-uint8_t const L1_T2[] = {HID_KEY_DELETE, HID_KEY_NONE};       //  T2
+uint8_t const L1_T2[] = {HID_KEY_ENTER, HID_KEY_NONE};       //  T2
 uint8_t const L1_T3[] = {HID_KEY_ARROW_DOWN, HID_KEY_NONE};   //  T3
 uint8_t const L1_T4[] = {HID_KEY_DELETE, HID_KEY_NONE};       //  T4
 uint8_t const L1_T5[] = {HID_KEY_ARROW_UP, HID_KEY_NONE};     //  T5
@@ -425,7 +425,7 @@ uint8_t const L2_D5[] = {HID_KEY_ARROW_RIGHT, HID_KEY_NONE};   //  D5
 uint8_t const L2_E1[] = {HID_KEY_F8, HID_KEY_NONE};            //  E1
 uint8_t const L2_E2[] = {HID_KEY_U, HID_KEY_NONE};             //  E2
 uint8_t const L2_E3[] = {HID_KEY_ARROW_DOWN, HID_KEY_NONE};    //  E3
-uint8_t const L2_E4[] = {HID_KEY_M, HID_KEY_NONE};             //  E4
+uint8_t const L2_E4[] = {HID_KEY_M, HID_KEY_A, HID_KEY_K, HID_KEY_E, HID_KEY_SPACE, HID_KEY_MINUS, HID_KEY_J, HID_KEY_4, HID_KEY_NONE};             //  E4
 uint8_t const L2_E5[] = {HID_KEY_ARROW_LEFT, HID_KEY_NONE};    //  E5
 uint8_t const L2_F1[] = {HID_KEY_F7, HID_KEY_NONE};            //  F1
 uint8_t const L2_F2[] = {HID_KEY_Y, HID_KEY_NONE};             //  F2
@@ -434,7 +434,7 @@ uint8_t const L2_F4[] = {HID_KEY_N, HID_KEY_NONE};             //  F4
 uint8_t const L2_F5[] = {HID_KEY_NONE, HID_KEY_NONE};          //  F5
 /* THUMB CLUSTER */
 uint8_t const L2_T1[] = {HID_KEY_SPACE, HID_KEY_NONE};        //  T1
-uint8_t const L2_T2[] = {HID_KEY_DELETE, HID_KEY_NONE};       //  T2
+uint8_t const L2_T2[] = {HID_KEY_ENTER, HID_KEY_NONE};       //  T2
 uint8_t const L2_T3[] = {HID_KEY_ARROW_DOWN, HID_KEY_NONE};   //  T3
 uint8_t const L2_T4[] = {HID_KEY_DELETE, HID_KEY_NONE};       //  T4
 uint8_t const L2_T5[] = {HID_KEY_ARROW_UP, HID_KEY_NONE};     //  T5

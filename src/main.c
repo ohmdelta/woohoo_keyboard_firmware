@@ -187,6 +187,7 @@ void core1_entry()
   gpio_pull_up(SSD1306_DEFAULT_I2C_SDA_PIN);
   gpio_pull_up(SSD1306_DEFAULT_I2C_SCL_PIN);
 
+  sleep_ms(100);
   SSD1306_init();
 
   calc_render_area_buflen(&frame_area);
@@ -322,6 +323,8 @@ void display_task()
   if (current_time - start_us < interval_us)
     return; // not enough time
 
+  memset(buf, 0, SSD1306_BUF_LEN);
+
   start_us = current_time;
 
   char text[] = "00:00:00";
@@ -344,9 +347,18 @@ void display_task()
   text[6] = (_s / 10 % 10) + '0';
   text[7] = (_s % 10) + '0';
 
-  memset(buf, 0, SSD1306_BUF_LEN);
-  write_string_vertical(buf, 112, 0, text);
+  write_string_vertical(buf, 120, 0, text);
+
+  if (tud_mounted())
+  {
+    write_string_vertical(buf, 112, 0, "MOUNTED");
+
+  }
+  else
+    write_string_vertical(buf, 112, 0, "N/A CONN");
+
   render(buf, &frame_area);
+
 }
 //--------------------------------------------------------------------+
 // Device callbacks
