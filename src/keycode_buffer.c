@@ -66,6 +66,35 @@ bool add_keycodes(keycode_buffer_t *keycode_buffer, const uint8_t *keycode)
   return true;
 }
 
+bool add_keycodes_n(keycode_buffer_t *keycode_buffer, const uint8_t *keycode, uint8_t size)
+{
+  while ((keycode_buffer->size < KEYCODE_BUFFER_LENGTH) && (size))
+  {
+    bool repeated = false;
+    uint8_t phrase_start = (keycode_buffer->size / 6) * 6;
+    for (uint8_t s = phrase_start; s < keycode_buffer->size; s++)
+    {
+      if (keycode_buffer->keycodes[s] == *keycode)
+      {
+        repeated = true;
+        break;
+      }
+    }
+
+    if (repeated)
+    {
+      memset(keycode_buffer->keycodes + keycode_buffer->size, 0, phrase_start + 6 - keycode_buffer->size);
+      keycode_buffer->size = phrase_start + 6;
+    }
+    else
+    {
+      keycode_buffer->keycodes[keycode_buffer->size++] = *(keycode++);
+    }
+    size--;
+  }
+  return true;
+}
+
 bool valid(keycode_buffer_t *keycode_buffer)
 {
   return (keycode_buffer->size <= KEYCODE_BUFFER_LENGTH) && (keycode_buffer->completed <= keycode_buffer->size);

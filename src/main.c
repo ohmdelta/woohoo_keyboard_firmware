@@ -533,7 +533,7 @@ void hid_task(void)
       case NO_TOUCH:
         if (!((*key >= HID_KEY_CONTROL_LEFT) && (*key <= HID_KEY_GUI_RIGHT)) && (*key != HID_KEY_NONE))
         {
-          add_keycodes(&keycode_buffer, key);
+          add_keycodes_n(&keycode_buffer, key, key_layer_config.size);
           uart_puts(UART_ID, (const char *)key);
         }
         status->last_handled_time = current_time;
@@ -544,7 +544,7 @@ void hid_task(void)
         {
           if (!((*key >= HID_KEY_CONTROL_LEFT) && (*key <= HID_KEY_GUI_RIGHT)) && (*key != HID_KEY_NONE))
           {
-            add_keycodes(&keycode_buffer, key);
+            add_keycodes_n(&keycode_buffer, key, key_layer_config.size);
             uart_puts(UART_ID, (const char *)key);
           }
           status->last_handled_time = current_time;
@@ -556,7 +556,7 @@ void hid_task(void)
         {
           if (!((*key >= HID_KEY_CONTROL_LEFT) && (*key <= HID_KEY_GUI_RIGHT)) && (*key != HID_KEY_NONE))
           {
-            add_keycodes(&keycode_buffer, key);
+            add_keycodes_n(&keycode_buffer, key, key_layer_config.size);
             uart_puts(UART_ID, (const char *)key);
           }
           status->last_handled_time = current_time;
