@@ -9,4 +9,10 @@ The keyboard uses RP2350B as the microcontroller - directly connecting to keys:
 
 ![Left Keyboard schematic](doc/pcb_layout/left/split_keyboard.svg)
 
+## Left Board Rendering:
+![Left Board Rendering](doc/img/left_rendering.png)
+
+## Right Board Rendering:
+![Right Board Rendering](doc/img/right_rendering.png)
+
 
