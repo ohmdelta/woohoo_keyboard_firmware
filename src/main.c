@@ -516,7 +516,7 @@ void hid_task(void)
   {
     if ((matrix_bank_status[i].is_pressed))
     {
-      update_modifier(&keycode_buffer.modifier, keymaps_layers[0][i][0]);
+      update_modifier(&keycode_buffer.modifier, keymaps_layers[0][i].keys[0]);
     }
   }
   send_modifier_uart(&keycode_buffer.modifier);
@@ -526,7 +526,8 @@ void hid_task(void)
     matrix_status *status = &matrix_bank_status[i];
     if ((status->is_pressed))
     {
-      const uint8_t *key = keymaps_layers[get_layer()][i];
+      const key_layer_config_t key_layer_config = keymaps_layers[get_layer()][i];
+      const uint8_t* key = key_layer_config.keys;
       switch (status->held)
       {
       case NO_TOUCH:
