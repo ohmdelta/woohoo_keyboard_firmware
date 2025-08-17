@@ -494,6 +494,14 @@ void send_modifier_uart(modifier_t *modifier)
     uart_putc(UART_ID, HID_KEY_GUI_RIGHT);
 }
 
+inline void add_keycodes_n_composite(const key_layer_config_t *key)
+{
+  if (key->key_type == REPORT_ID_KEYBOARD)
+  {
+    add_keycodes_n(&keycode_buffer, key->keys, key->size);
+  }
+}
+
 // Every 10ms, we will sent 1 report for each HID profile (keyboard, mouse etc
 // ..) tud_hid_report_complete_cb() is used to send the next report after
 // previous one is complete
@@ -533,7 +541,7 @@ void hid_task(void)
       case NO_TOUCH:
         if (!((*key >= HID_KEY_CONTROL_LEFT) && (*key <= HID_KEY_GUI_RIGHT)) && (*key != HID_KEY_NONE))
         {
-          add_keycodes_n(&keycode_buffer, key, key_layer_config.size);
+          add_keycodes_n_composite(&key_layer_config);
           uart_puts(UART_ID, (const char *)key);
         }
         status->last_handled_time = current_time;
@@ -544,7 +552,7 @@ void hid_task(void)
         {
           if (!((*key >= HID_KEY_CONTROL_LEFT) && (*key <= HID_KEY_GUI_RIGHT)) && (*key != HID_KEY_NONE))
           {
-            add_keycodes_n(&keycode_buffer, key, key_layer_config.size);
+            add_keycodes_n_composite(&key_layer_config);
             uart_puts(UART_ID, (const char *)key);
           }
           status->last_handled_time = current_time;
@@ -556,7 +564,7 @@ void hid_task(void)
         {
           if (!((*key >= HID_KEY_CONTROL_LEFT) && (*key <= HID_KEY_GUI_RIGHT)) && (*key != HID_KEY_NONE))
           {
-            add_keycodes_n(&keycode_buffer, key, key_layer_config.size);
+            add_keycodes_n_composite(&key_layer_config);
             uart_puts(UART_ID, (const char *)key);
           }
           status->last_handled_time = current_time;
