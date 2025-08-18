@@ -89,9 +89,10 @@ bool add_keycodes_n(keycode_buffer_t *keycode_buffer, const uint8_t *keycode, ui
     else
     {
       keycode_buffer->keycodes[keycode_buffer->size++] = *(keycode++);
+      size--;
     }
-    size--;
   }
+  keycode_buffer->keycodes[keycode_buffer->size] = 0;
   return true;
 }
 
