@@ -74,6 +74,7 @@ typedef struct
 
 indicator_state_t keyboard_indicator_state = {0, 0, 0};
 keycode_buffer_t keycode_buffer = {0};
+keycode_buffer_t consumer_control_buffer = {0};
 
 typedef struct
 {

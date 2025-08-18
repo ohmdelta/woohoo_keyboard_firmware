@@ -18,6 +18,10 @@ typedef struct
 #define INIT_KEY_LAYER_CONFIG(key_type_, keys_) \
     (key_layer_config_t) { .key_type = (key_type_), .size = sizeof((keys_)), .keys = (keys_) }
 
+#define INIT_KEYBOARD_LAYER_CONFIG(layer_index, key_index, keys...) \
+    uint8_t const _L##layer_index ##key_index[] = {keys};            \
+    const key_layer_config_t L##layer_index##key_index = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L##layer_index##key_index);
+
 // A1, B1, C1, D1, E1, F1,
 // A2, B2, C2, D2, E2, F2,
 // A3, B3, C3, D3, E3, F3,
@@ -82,79 +86,43 @@ typedef struct
 //      *                                 └─────┴─────┴─────┘
 //      */
 //      */
-uint8_t const _L0_A1[] = {HID_KEY_EQUAL};        //  A1
-const key_layer_config_t L0_A1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_A1);
-uint8_t const _L0_A2[] = {HID_KEY_TAB};          //  A2
-const key_layer_config_t L0_A2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_A2);
-uint8_t const _L0_A3[] = {HID_KEY_ESCAPE};       //  A3
-const key_layer_config_t L0_A3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_A3);
-uint8_t const _L0_A4[] = {HID_KEY_SHIFT_LEFT};   //  A4
-const key_layer_config_t L0_A4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_A4);
-uint8_t const _L0_A5[] = {HID_KEY_CONTROL_LEFT}; //  A5
-const key_layer_config_t L0_A5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_A5);
-uint8_t const _L0_B1[] = {HID_KEY_1};            //  B1
-const key_layer_config_t L0_B1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_B1);
-uint8_t const _L0_B2[] = {HID_KEY_Q};            //  B2
-const key_layer_config_t L0_B2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_B2);
-uint8_t const _L0_B3[] = {HID_KEY_A};            //  B3
-const key_layer_config_t L0_B3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_B3);
-uint8_t const _L0_B4[] = {HID_KEY_Z};            //  B4
-const key_layer_config_t L0_B4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_B4);
-uint8_t const _L0_B5[] = {HID_KEY_GUI_LEFT};     //  B5
-const key_layer_config_t L0_B5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_B5);
-uint8_t const _L0_C1[] = {HID_KEY_2};            //  C1
-const key_layer_config_t L0_C1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_C1);
-uint8_t const _L0_C2[] = {HID_KEY_W};            //  C2
-const key_layer_config_t L0_C2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_C2);
-uint8_t const _L0_C3[] = {HID_KEY_S};            //  C3
-const key_layer_config_t L0_C3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_C3);
-uint8_t const _L0_C4[] = {HID_KEY_X};            //  C4
-const key_layer_config_t L0_C4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_C4);
-uint8_t const _L0_C5[] = {HID_KEY_ALT_LEFT};     //  C5
-const key_layer_config_t L0_C5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_C5);
-uint8_t const _L0_D1[] = {HID_KEY_3};            //  D1
-const key_layer_config_t L0_D1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_D1);
-uint8_t const _L0_D2[] = {HID_KEY_E};            //  D2
-const key_layer_config_t L0_D2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_D2);
-uint8_t const _L0_D3[] = {HID_KEY_D};            //  D3
-const key_layer_config_t L0_D3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_D3);
-uint8_t const _L0_D4[] = {HID_KEY_C};            //  D4
-const key_layer_config_t L0_D4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_D4);
-uint8_t const _L0_D5[] = {HID_KEY_ARROW_DOWN};   //  D5
-const key_layer_config_t L0_D5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_D5);
-uint8_t const _L0_E1[] = {HID_KEY_4};            //  E1
-const key_layer_config_t L0_E1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_E1);
-uint8_t const _L0_E2[] = {HID_KEY_R};            //  E2
-const key_layer_config_t L0_E2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_E2);
-uint8_t const _L0_E3[] = {HID_KEY_F};            //  E3
-const key_layer_config_t L0_E3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_E3);
-uint8_t const _L0_E4[] = {HID_KEY_V};            //  E4
-const key_layer_config_t L0_E4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_E4);
-uint8_t const _L0_E5[] = {HID_KEY_ARROW_UP};     //  E5
-const key_layer_config_t L0_E5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_E5);
-uint8_t const _L0_F1[] = {HID_KEY_5};            //  F1
-const key_layer_config_t L0_F1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_F1);
-uint8_t const _L0_F2[] = {HID_KEY_T};            //  F2
-const key_layer_config_t L0_F2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_F2);
-uint8_t const _L0_F3[] = {HID_KEY_G};            //  F3
-const key_layer_config_t L0_F3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_F3);
-uint8_t const _L0_F4[] = {HID_KEY_B};            //  F4
-const key_layer_config_t L0_F4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_F4);
-uint8_t const _L0_F5[] = {HID_KEY_NONE};         //  F5
-const key_layer_config_t L0_F5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_F5);
+INIT_KEYBOARD_LAYER_CONFIG(0, _A1, HID_KEY_EQUAL);
+INIT_KEYBOARD_LAYER_CONFIG(0, _A2, HID_KEY_TAB);
+INIT_KEYBOARD_LAYER_CONFIG(0, _A3, HID_KEY_ESCAPE);
+INIT_KEYBOARD_LAYER_CONFIG(0, _A4, HID_KEY_SHIFT_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(0, _A5, HID_KEY_CONTROL_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(0, _B1, HID_KEY_1);
+INIT_KEYBOARD_LAYER_CONFIG(0, _B2, HID_KEY_Q);
+INIT_KEYBOARD_LAYER_CONFIG(0, _B3, HID_KEY_A);
+INIT_KEYBOARD_LAYER_CONFIG(0, _B4, HID_KEY_Z);
+INIT_KEYBOARD_LAYER_CONFIG(0, _B5, HID_KEY_GUI_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(0, _C1, HID_KEY_2);
+INIT_KEYBOARD_LAYER_CONFIG(0, _C2, HID_KEY_W);
+INIT_KEYBOARD_LAYER_CONFIG(0, _C3, HID_KEY_S);
+INIT_KEYBOARD_LAYER_CONFIG(0, _C4, HID_KEY_X);
+INIT_KEYBOARD_LAYER_CONFIG(0, _C5, HID_KEY_ALT_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(0, _D1, HID_KEY_3);
+INIT_KEYBOARD_LAYER_CONFIG(0, _D2, HID_KEY_E);
+INIT_KEYBOARD_LAYER_CONFIG(0, _D3, HID_KEY_D);
+INIT_KEYBOARD_LAYER_CONFIG(0, _D4, HID_KEY_C);
+INIT_KEYBOARD_LAYER_CONFIG(0, _D5, HID_KEY_ARROW_DOWN);
+INIT_KEYBOARD_LAYER_CONFIG(0, _E1, HID_KEY_4);
+INIT_KEYBOARD_LAYER_CONFIG(0, _E2, HID_KEY_R);
+INIT_KEYBOARD_LAYER_CONFIG(0, _E3, HID_KEY_F);
+INIT_KEYBOARD_LAYER_CONFIG(0, _E4, HID_KEY_V);
+INIT_KEYBOARD_LAYER_CONFIG(0, _E5, HID_KEY_ARROW_UP);
+INIT_KEYBOARD_LAYER_CONFIG(0, _F1, HID_KEY_5);
+INIT_KEYBOARD_LAYER_CONFIG(0, _F2, HID_KEY_T);
+INIT_KEYBOARD_LAYER_CONFIG(0, _F3, HID_KEY_G);
+INIT_KEYBOARD_LAYER_CONFIG(0, _F4, HID_KEY_B);
+INIT_KEYBOARD_LAYER_CONFIG(0, _F5, HID_KEY_NONE);
 /* THUMB CLUSTER */
-uint8_t const _L0_T1[] = {HID_KEY_BACKSPACE};    //  T1
-const key_layer_config_t L0_T1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_T1);
-uint8_t const _L0_T2[] = {HID_KEY_DELETE};       //  T2
-const key_layer_config_t L0_T2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_T2);
-uint8_t const _L0_T3[] = {HID_KEY_HOME};         //  T3
-const key_layer_config_t L0_T3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_T3);
-uint8_t const _L0_T4[] = {HID_KEY_END};          //  T4
-const key_layer_config_t L0_T4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_T4);
-uint8_t const _L0_T5[] = {HID_KEY_ARROW_UP};     //  T5
-const key_layer_config_t L0_T5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_T5);
-uint8_t const _L0_T6[] = {HID_KEY_KEYPAD_ENTER}; //  T6
-const key_layer_config_t L0_T6 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_T6);
+INIT_KEYBOARD_LAYER_CONFIG(0, _T1, HID_KEY_BACKSPACE);
+INIT_KEYBOARD_LAYER_CONFIG(0, _T2, HID_KEY_DELETE);
+INIT_KEYBOARD_LAYER_CONFIG(0, _T3, HID_KEY_HOME);
+INIT_KEYBOARD_LAYER_CONFIG(0, _T4, HID_KEY_END);
+INIT_KEYBOARD_LAYER_CONFIG(0, _T5, HID_KEY_ARROW_UP);
+INIT_KEYBOARD_LAYER_CONFIG(0, _T6, HID_KEY_KEYPAD_ENTER);
 
 //     /* LAYER
 //      * ┌─────┬─────┬─────┬─────┬─────┬─────┐
@@ -183,79 +151,44 @@ const key_layer_config_t L0_T6 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_T
 //      *                                 └─────┴─────┴─────┘
 //      */
 //      */
-uint8_t const _L1_A1[] = {HID_KEY_F1};           //  A1
-const key_layer_config_t L1_A1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_A1);
-uint8_t const _L1_A2[] = {HID_KEY_TAB};          //  A2
-const key_layer_config_t L1_A2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_A2);
-uint8_t const _L1_A3[] = {HID_KEY_ESCAPE};       //  A3
-const key_layer_config_t L1_A3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_A3);
-uint8_t const _L1_A4[] = {HID_KEY_SHIFT_LEFT};   //  A4
-const key_layer_config_t L1_A4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_A4);
-uint8_t const _L1_A5[] = {HID_KEY_CONTROL_LEFT}; //  A5
-const key_layer_config_t L1_A5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_A5);
-uint8_t const _L1_B1[] = {HID_KEY_F2};           //  B1
-const key_layer_config_t L1_B1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_B1);
-uint8_t const _L1_B2[] = {HID_KEY_Q};            //  B2
-const key_layer_config_t L1_B2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_B2);
-uint8_t const _L1_B3[] = {HID_KEY_A};            //  B3
-const key_layer_config_t L1_B3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_B3);
-uint8_t const _L1_B4[] = {HID_KEY_Z};            //  B4
-const key_layer_config_t L1_B4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_B4);
-uint8_t const _L1_B5[] = {HID_KEY_GUI_LEFT};     //  B5
-const key_layer_config_t L1_B5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_B5);
-uint8_t const _L1_C1[] = {HID_KEY_F3};           //  C1
-const key_layer_config_t L1_C1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_C1);
+INIT_KEYBOARD_LAYER_CONFIG(1, _A1, HID_KEY_F1);
+INIT_KEYBOARD_LAYER_CONFIG(1, _A2, HID_KEY_TAB);
+INIT_KEYBOARD_LAYER_CONFIG(1, _A3, HID_KEY_ESCAPE);
+INIT_KEYBOARD_LAYER_CONFIG(1, _A4, HID_KEY_SHIFT_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(1, _A5, HID_KEY_CONTROL_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(1, _B1, HID_KEY_F2);
+INIT_KEYBOARD_LAYER_CONFIG(1, _B2, HID_KEY_Q);
+INIT_KEYBOARD_LAYER_CONFIG(1, _B3, HID_KEY_A);
+INIT_KEYBOARD_LAYER_CONFIG(1, _B4, HID_KEY_Z);
+INIT_KEYBOARD_LAYER_CONFIG(1, _B5, HID_KEY_GUI_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(1, _C1, HID_KEY_F3);
 uint8_t const _L1_C2[] = {0, HID_USAGE_CONSUMER_PLAY_PAUSE};        //  C2
-const key_layer_config_t L1_C2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_C2);
-uint8_t const _L1_C3[] = {HID_KEY_S};            //  C3
-const key_layer_config_t L1_C3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_C3);
-uint8_t const _L1_C4[] = {HID_KEY_X};            //  C4
-const key_layer_config_t L1_C4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_C4);
-uint8_t const _L1_C5[] = {HID_KEY_ALT_LEFT};     //  C5
-const key_layer_config_t L1_C5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_C5);
-uint8_t const _L1_D1[] = {HID_KEY_F4};           //  D1
-const key_layer_config_t L1_D1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_D1);
-uint8_t const _L1_D2[] = {HID_KEY_MUTE};         //  D2
-const key_layer_config_t L1_D2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_D2);
-uint8_t const _L1_D3[] = {HID_KEY_D};            //  D3
-const key_layer_config_t L1_D3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_D3);
-uint8_t const _L1_D4[] = {HID_KEY_C};            //  D4
-const key_layer_config_t L1_D4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_D4);
-uint8_t const _L1_D5[] = {HID_KEY_ARROW_DOWN};   //  D5
-const key_layer_config_t L1_D5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_D5);
-uint8_t const _L1_E1[] = {HID_KEY_F5};           //  E1
-const key_layer_config_t L1_E1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_E1);
-uint8_t const _L1_E2[] = {HID_KEY_VOLUME_DOWN};  //  E2
-const key_layer_config_t L1_E2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_E2);
-uint8_t const _L1_E3[] = {HID_KEY_F};            //  E3
-const key_layer_config_t L1_E3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_E3);
-uint8_t const _L1_E4[] = {HID_KEY_V};            //  E4
-const key_layer_config_t L1_E4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_E4);
-uint8_t const _L1_E5[] = {HID_KEY_ARROW_UP};     //  D5
-const key_layer_config_t L1_E5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_E5);
-uint8_t const _L1_F1[] = {HID_KEY_F6};           //  F1
-const key_layer_config_t L1_F1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_F1);
-uint8_t const _L1_F2[] = {HID_KEY_VOLUME_UP};    //  F2
-const key_layer_config_t L1_F2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_F2);
-uint8_t const _L1_F3[] = {HID_KEY_G};            //  F3
-const key_layer_config_t L1_F3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_F3);
-uint8_t const _L1_F4[] = {HID_KEY_B};            //  F4
-const key_layer_config_t L1_F4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_F4);
-uint8_t const _L1_F5[] = {HID_KEY_NONE};         //  F5
-const key_layer_config_t L1_F5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_F5);
+const key_layer_config_t L1_C2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_CONSUMER_CONTROL, _L1_C2);
+INIT_KEYBOARD_LAYER_CONFIG(1, _C3, HID_KEY_S);
+INIT_KEYBOARD_LAYER_CONFIG(1, _C4, HID_KEY_X);
+INIT_KEYBOARD_LAYER_CONFIG(1, _C5, HID_KEY_ALT_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(1, _D1, HID_KEY_F4);
+INIT_KEYBOARD_LAYER_CONFIG(1, _D2, HID_KEY_MUTE);
+INIT_KEYBOARD_LAYER_CONFIG(1, _D3, HID_KEY_D);
+INIT_KEYBOARD_LAYER_CONFIG(1, _D4, HID_KEY_C);
+INIT_KEYBOARD_LAYER_CONFIG(1, _D5, HID_KEY_ARROW_DOWN);
+INIT_KEYBOARD_LAYER_CONFIG(1, _E1, HID_KEY_F5);
+INIT_KEYBOARD_LAYER_CONFIG(1, _E2, HID_KEY_VOLUME_DOWN);
+INIT_KEYBOARD_LAYER_CONFIG(1, _E3, HID_KEY_F);
+INIT_KEYBOARD_LAYER_CONFIG(1, _E4, HID_KEY_V);
+INIT_KEYBOARD_LAYER_CONFIG(1, _E5, HID_KEY_ARROW_UP);
+INIT_KEYBOARD_LAYER_CONFIG(1, _F1, HID_KEY_F6);
+INIT_KEYBOARD_LAYER_CONFIG(1, _F2, HID_KEY_VOLUME_UP);
+INIT_KEYBOARD_LAYER_CONFIG(1, _F3, HID_KEY_G);
+INIT_KEYBOARD_LAYER_CONFIG(1, _F4, HID_KEY_B);
+INIT_KEYBOARD_LAYER_CONFIG(1, _F5, HID_KEY_NONE);
 /* THUMB CLUSTER */
-uint8_t const _L1_T1[] = {HID_KEY_BACKSPACE};    //  T1
-const key_layer_config_t L1_T1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_T1);
-uint8_t const _L1_T2[] = {HID_KEY_DELETE};       //  T2
-const key_layer_config_t L1_T2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_T2);
-uint8_t const _L1_T3[] = {HID_KEY_HOME};         //  T3
-const key_layer_config_t L1_T3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_T3);
-uint8_t const _L1_T4[] = {HID_KEY_END};          //  T4
-const key_layer_config_t L1_T4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_T4);
-uint8_t const _L1_T5[] = {HID_KEY_ARROW_UP};     //  T5
-const key_layer_config_t L1_T5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_T5);
-uint8_t const _L1_T6[] = {HID_KEY_KEYPAD_ENTER}; //  T6
-const key_layer_config_t L1_T6 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_T6);
+INIT_KEYBOARD_LAYER_CONFIG(1, _T1, HID_KEY_BACKSPACE);
+INIT_KEYBOARD_LAYER_CONFIG(1, _T2, HID_KEY_DELETE);
+INIT_KEYBOARD_LAYER_CONFIG(1, _T3, HID_KEY_HOME);
+INIT_KEYBOARD_LAYER_CONFIG(1, _T4, HID_KEY_END);
+INIT_KEYBOARD_LAYER_CONFIG(1, _T5, HID_KEY_ARROW_UP);
+INIT_KEYBOARD_LAYER_CONFIG(1, _T6, HID_KEY_KEYPAD_ENTER);
 
 //     /* LAYER
 //      * ┌─────┬─────┬─────┬─────┬─────┬─────┐
@@ -284,79 +217,43 @@ const key_layer_config_t L1_T6 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_T
 //      *                                 └─────┴─────┴─────┘
 //      */
 //      */
-uint8_t const _L2_A1[] = {HID_KEY_F1};                                                                                                               //  A1
-const key_layer_config_t L2_A1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_A1);
-uint8_t const _L2_A2[] = {HID_KEY_TAB};                                                                                                              //  A2
-const key_layer_config_t L2_A2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_A2);
-uint8_t const _L2_A3[] = {HID_KEY_ESCAPE};                                                                                                           //  A3
-const key_layer_config_t L2_A3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_A3);
-uint8_t const _L2_A4[] = {HID_KEY_SHIFT_LEFT};                                                                                                       //  A4
-const key_layer_config_t L2_A4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_A4);
-uint8_t const _L2_A5[] = {HID_KEY_CONTROL_LEFT};                                                                                                     //  A5
-const key_layer_config_t L2_A5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_A5);
-uint8_t const _L2_B1[] = {HID_KEY_F2};                                                                                                               //  B1
-const key_layer_config_t L2_B1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_B1);
-uint8_t const _L2_B2[] = {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_P, HID_KEY_U, HID_KEY_S, HID_KEY_H};                               //  B2
-const key_layer_config_t L2_B2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_B2);
-uint8_t const _L2_B3[] = {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_L, HID_KEY_O, HID_KEY_G};                                          //  B3
-const key_layer_config_t L2_B3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_B3);
-uint8_t const _L2_B4[] = {HID_KEY_V, HID_KEY_I, HID_KEY_M};                                                                                          //  B4
-const key_layer_config_t L2_B4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_B4);
-uint8_t const _L2_B5[] = {HID_KEY_GUI_LEFT};                                                                                                         //  B5
-const key_layer_config_t L2_B5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_B5);
-uint8_t const _L2_C1[] = {HID_KEY_F3};                                                                                                               //  C1
-const key_layer_config_t L2_C1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_C1);
-uint8_t const _L2_C2[] = {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_P, HID_KEY_U, HID_KEY_L, HID_KEY_L};                               //  B2
-const key_layer_config_t L2_C2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_C2);
-uint8_t const _L2_C3[] = {HID_KEY_S};                                                                                                                //  C3
-const key_layer_config_t L2_C3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_C3);
-uint8_t const _L2_C4[] = {HID_KEY_M, HID_KEY_A, HID_KEY_K, HID_KEY_E, HID_KEY_SPACE, HID_KEY_MINUS, HID_KEY_J, HID_KEY_4};                           //  C4
-const key_layer_config_t L2_C4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_C4);
-uint8_t const _L2_C5[] = {HID_KEY_ALT_LEFT};                                                                                                         //  C5
-const key_layer_config_t L2_C5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_C5);
-uint8_t const _L2_D1[] = {HID_KEY_F4};                                                                                                               //  D1
-const key_layer_config_t L2_D1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_D1);
-uint8_t const _L2_D2[] = {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_C, HID_KEY_O, HID_KEY_M, HID_KEY_M, HID_KEY_I, HID_KEY_T};         //  D2
-const key_layer_config_t L2_D2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_D2);
-uint8_t const _L2_D3[] = {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_D, HID_KEY_I, HID_KEY_F, HID_KEY_F};                               //  D3
-const key_layer_config_t L2_D3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_D3);
-uint8_t const _L2_D4[] = {HID_KEY_C, HID_KEY_L, HID_KEY_E, HID_KEY_A, HID_KEY_R};                                                                    //  D4
-const key_layer_config_t L2_D4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_D4);
-uint8_t const _L2_D5[] = {HID_KEY_ARROW_DOWN};                                                                                                       //  D5
-const key_layer_config_t L2_D5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_D5);
-uint8_t const _L2_E1[] = {HID_KEY_F5};                                                                                                               //  E1
-const key_layer_config_t L2_E1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_E1);
-uint8_t const _L2_E2[] = {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_A, HID_KEY_D, HID_KEY_D, HID_KEY_SPACE, HID_KEY_MINUS, HID_KEY_U}; //  E2
-const key_layer_config_t L2_E2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_E2);
-uint8_t const _L2_E3[] = {HID_KEY_F};                                                                                                                //  E3
-const key_layer_config_t L2_E3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_E3);
-uint8_t const _L2_E4[] = {HID_KEY_V, HID_KEY_I, HID_KEY_M};                                                                                          //  E4
-const key_layer_config_t L2_E4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_E4);
-uint8_t const _L2_E5[] = {HID_KEY_ARROW_UP};                                                                                                         //  D5
-const key_layer_config_t L2_E5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_E5);
-uint8_t const _L2_F1[] = {HID_KEY_F6};                                                                                                               //  F1
-const key_layer_config_t L2_F1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_F1);
-uint8_t const _L2_F2[] = {HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_S, HID_KEY_T, HID_KEY_A, HID_KEY_T, HID_KEY_U, HID_KEY_S};         //  F2
-const key_layer_config_t L2_F2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_F2);
-uint8_t const _L2_F3[] = {HID_KEY_L, HID_KEY_S, HID_KEY_SPACE, HID_KEY_MINUS, HID_KEY_L, HID_KEY_R, HID_KEY_T};                                      //  F3
-const key_layer_config_t L2_F3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_F3);
-uint8_t const _L2_F4[] = {HID_KEY_P, HID_KEY_Y, HID_KEY_T, HID_KEY_H, HID_KEY_O, HID_KEY_N};                                                         //  F4
-const key_layer_config_t L2_F4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_F4);
-uint8_t const _L2_F5[] = {HID_KEY_NONE};                                                                                                             //  F5
-const key_layer_config_t L2_F5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_F5);
+INIT_KEYBOARD_LAYER_CONFIG(2, _A1, HID_KEY_F1);
+INIT_KEYBOARD_LAYER_CONFIG(2, _A2, HID_KEY_TAB);
+INIT_KEYBOARD_LAYER_CONFIG(2, _A3, HID_KEY_ESCAPE);
+INIT_KEYBOARD_LAYER_CONFIG(2, _A4, HID_KEY_SHIFT_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(2, _A5, HID_KEY_CONTROL_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(2, _B1, HID_KEY_F2);
+INIT_KEYBOARD_LAYER_CONFIG(2, _B2, HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_P, HID_KEY_U, HID_KEY_S, HID_KEY_H);
+INIT_KEYBOARD_LAYER_CONFIG(2, _B3, HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_L, HID_KEY_O, HID_KEY_G);
+INIT_KEYBOARD_LAYER_CONFIG(2, _B4, HID_KEY_V, HID_KEY_I, HID_KEY_M);
+INIT_KEYBOARD_LAYER_CONFIG(2, _B5, HID_KEY_GUI_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(2, _C1, HID_KEY_F3);
+INIT_KEYBOARD_LAYER_CONFIG(2, _C2, HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_P, HID_KEY_U, HID_KEY_L, HID_KEY_L);
+INIT_KEYBOARD_LAYER_CONFIG(2, _C3, HID_KEY_S);
+INIT_KEYBOARD_LAYER_CONFIG(2, _C4, HID_KEY_M, HID_KEY_A, HID_KEY_K, HID_KEY_E, HID_KEY_SPACE, HID_KEY_MINUS, HID_KEY_J, HID_KEY_4);
+INIT_KEYBOARD_LAYER_CONFIG(2, _C5, HID_KEY_ALT_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(2, _D1, HID_KEY_F4);
+INIT_KEYBOARD_LAYER_CONFIG(2, _D2, HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_C, HID_KEY_O, HID_KEY_M, HID_KEY_M, HID_KEY_I, HID_KEY_T);
+INIT_KEYBOARD_LAYER_CONFIG(2, _D3, HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_D, HID_KEY_I, HID_KEY_F, HID_KEY_F);
+INIT_KEYBOARD_LAYER_CONFIG(2, _D4, HID_KEY_C, HID_KEY_L, HID_KEY_E, HID_KEY_A, HID_KEY_R);
+INIT_KEYBOARD_LAYER_CONFIG(2, _D5, HID_KEY_ARROW_DOWN);
+INIT_KEYBOARD_LAYER_CONFIG(2, _E1, HID_KEY_F5);
+INIT_KEYBOARD_LAYER_CONFIG(2, _E2, HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_A, HID_KEY_D, HID_KEY_D, HID_KEY_SPACE, HID_KEY_MINUS, HID_KEY_U);
+INIT_KEYBOARD_LAYER_CONFIG(2, _E3, HID_KEY_F);
+INIT_KEYBOARD_LAYER_CONFIG(2, _E4, HID_KEY_V, HID_KEY_I, HID_KEY_M);
+INIT_KEYBOARD_LAYER_CONFIG(2, _E5, HID_KEY_ARROW_UP);
+INIT_KEYBOARD_LAYER_CONFIG(2, _F1, HID_KEY_F6);
+INIT_KEYBOARD_LAYER_CONFIG(2, _F2, HID_KEY_G, HID_KEY_I, HID_KEY_T, HID_KEY_SPACE, HID_KEY_S, HID_KEY_T, HID_KEY_A, HID_KEY_T, HID_KEY_U, HID_KEY_S);
+INIT_KEYBOARD_LAYER_CONFIG(2, _F3, HID_KEY_L, HID_KEY_S, HID_KEY_SPACE, HID_KEY_MINUS, HID_KEY_L, HID_KEY_R, HID_KEY_T);
+INIT_KEYBOARD_LAYER_CONFIG(2, _F4, HID_KEY_P, HID_KEY_Y, HID_KEY_T, HID_KEY_H, HID_KEY_O, HID_KEY_N);
+INIT_KEYBOARD_LAYER_CONFIG(2, _F5, HID_KEY_NONE);
 /* THUMB CLUSTER */
-uint8_t const _L2_T1[] = {HID_KEY_BACKSPACE};    //  T1
-const key_layer_config_t L2_T1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_T1);
-uint8_t const _L2_T2[] = {HID_KEY_DELETE};       //  T2
-const key_layer_config_t L2_T2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_T2);
-uint8_t const _L2_T3[] = {HID_KEY_HOME};         //  T3
-const key_layer_config_t L2_T3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_T3);
-uint8_t const _L2_T4[] = {HID_KEY_END};          //  T4
-const key_layer_config_t L2_T4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_T4);
-uint8_t const _L2_T5[] = {HID_KEY_ARROW_UP};     //  T5
-const key_layer_config_t L2_T5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_T5);
-uint8_t const _L2_T6[] = {HID_KEY_KEYPAD_ENTER}; //  T6
-const key_layer_config_t L2_T6 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_T6);
+INIT_KEYBOARD_LAYER_CONFIG(2, _T1, HID_KEY_BACKSPACE);
+INIT_KEYBOARD_LAYER_CONFIG(2, _T2, HID_KEY_DELETE);
+INIT_KEYBOARD_LAYER_CONFIG(2, _T3, HID_KEY_HOME);
+INIT_KEYBOARD_LAYER_CONFIG(2, _T4, HID_KEY_END);
+INIT_KEYBOARD_LAYER_CONFIG(2, _T5, HID_KEY_ARROW_UP);
+INIT_KEYBOARD_LAYER_CONFIG(2, _T6, HID_KEY_KEYPAD_ENTER);
 
 #else
 //     /* LAYER
@@ -414,79 +311,43 @@ const key_layer_config_t L2_T6 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_T
 //      * └─────┴─────┴─────┘
 //      *
 //      */
-uint8_t const _L0_A1[] = {HID_KEY_MINUS};         //  A1
-const key_layer_config_t L0_A1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_A1);
-uint8_t const _L0_A2[] = {HID_KEY_BACKSLASH};     //  A2
-const key_layer_config_t L0_A2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_A2);
-uint8_t const _L0_A3[] = {HID_KEY_APOSTROPHE};    //  A3
-const key_layer_config_t L0_A3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_A3);
-uint8_t const _L0_A4[] = {HID_KEY_SHIFT_RIGHT};   //  A4
-const key_layer_config_t L0_A4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_A4);
-uint8_t const _L0_A5[] = {HID_KEY_CONTROL_RIGHT}; //  A5
-const key_layer_config_t L0_A5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_A5);
-uint8_t const _L0_B1[] = {HID_KEY_0};             //  B1
-const key_layer_config_t L0_B1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_B1);
-uint8_t const _L0_B2[] = {HID_KEY_P};             //  B2
-const key_layer_config_t L0_B2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_B2);
-uint8_t const _L0_B3[] = {HID_KEY_SEMICOLON};     //  B3
-const key_layer_config_t L0_B3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_B3);
-uint8_t const _L0_B4[] = {HID_KEY_SLASH};         //  B4
-const key_layer_config_t L0_B4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_B4);
-uint8_t const _L0_B5[] = {HID_KEY_GUI_RIGHT};     //  B5
-const key_layer_config_t L0_B5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_B5);
-uint8_t const _L0_C1[] = {HID_KEY_9};             //  C1
-const key_layer_config_t L0_C1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_C1);
-uint8_t const _L0_C2[] = {HID_KEY_O};             //  C2
-const key_layer_config_t L0_C2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_C2);
-uint8_t const _L0_C3[] = {HID_KEY_L};             //  C3
-const key_layer_config_t L0_C3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_C3);
-uint8_t const _L0_C4[] = {HID_KEY_PERIOD};        //  C4
-const key_layer_config_t L0_C4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_C4);
-uint8_t const _L0_C5[] = {HID_KEY_ALT_LEFT};      //  C5
-const key_layer_config_t L0_C5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_C5);
-uint8_t const _L0_D1[] = {HID_KEY_8};             //  D1
-const key_layer_config_t L0_D1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_D1);
-uint8_t const _L0_D2[] = {HID_KEY_I};             //  D2
-const key_layer_config_t L0_D2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_D2);
-uint8_t const _L0_D3[] = {HID_KEY_K};             //  D3
-const key_layer_config_t L0_D3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_D3);
-uint8_t const _L0_D4[] = {HID_KEY_COMMA};         //  D4
-const key_layer_config_t L0_D4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_D4);
-uint8_t const _L0_D5[] = {HID_KEY_ARROW_RIGHT};   //  D5
-const key_layer_config_t L0_D5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_D5);
-uint8_t const _L0_E1[] = {HID_KEY_7};             //  E1
-const key_layer_config_t L0_E1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_E1);
-uint8_t const _L0_E2[] = {HID_KEY_U};             //  E2
-const key_layer_config_t L0_E2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_E2);
-uint8_t const _L0_E3[] = {HID_KEY_J};             //  E3
-const key_layer_config_t L0_E3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_E3);
-uint8_t const _L0_E4[] = {HID_KEY_M};             //  E4
-const key_layer_config_t L0_E4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_E4);
-uint8_t const _L0_E5[] = {HID_KEY_ARROW_LEFT};    //  E5
-const key_layer_config_t L0_E5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_E5);
-uint8_t const _L0_F1[] = {HID_KEY_6};             //  F1
-const key_layer_config_t L0_F1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_F1);
-uint8_t const _L0_F2[] = {HID_KEY_Y};             //  F2
-const key_layer_config_t L0_F2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_F2);
-uint8_t const _L0_F3[] = {HID_KEY_H};             //  F3
-const key_layer_config_t L0_F3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_F3);
-uint8_t const _L0_F4[] = {HID_KEY_N};             //  F4
-const key_layer_config_t L0_F4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_F4);
-uint8_t const _L0_F5[] = {HID_KEY_NONE};          //  F5
-const key_layer_config_t L0_F5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_F5);
+INIT_KEYBOARD_LAYER_CONFIG(0, _A1, HID_KEY_MINUS);
+INIT_KEYBOARD_LAYER_CONFIG(0, _A2, HID_KEY_BACKSLASH);
+INIT_KEYBOARD_LAYER_CONFIG(0, _A3, HID_KEY_APOSTROPHE);
+INIT_KEYBOARD_LAYER_CONFIG(0, _A4, HID_KEY_SHIFT_RIGHT);
+INIT_KEYBOARD_LAYER_CONFIG(0, _A5, HID_KEY_CONTROL_RIGHT);
+INIT_KEYBOARD_LAYER_CONFIG(0, _B1, HID_KEY_0);
+INIT_KEYBOARD_LAYER_CONFIG(0, _B2, HID_KEY_P);
+INIT_KEYBOARD_LAYER_CONFIG(0, _B3, HID_KEY_SEMICOLON);
+INIT_KEYBOARD_LAYER_CONFIG(0, _B4, HID_KEY_SLASH);
+INIT_KEYBOARD_LAYER_CONFIG(0, _B5, HID_KEY_GUI_RIGHT);
+INIT_KEYBOARD_LAYER_CONFIG(0, _C1, HID_KEY_9);
+INIT_KEYBOARD_LAYER_CONFIG(0, _C2, HID_KEY_O);
+INIT_KEYBOARD_LAYER_CONFIG(0, _C3, HID_KEY_L);
+INIT_KEYBOARD_LAYER_CONFIG(0, _C4, HID_KEY_PERIOD);
+INIT_KEYBOARD_LAYER_CONFIG(0, _C5, HID_KEY_ALT_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(0, _D1, HID_KEY_8);
+INIT_KEYBOARD_LAYER_CONFIG(0, _D2, HID_KEY_I);
+INIT_KEYBOARD_LAYER_CONFIG(0, _D3, HID_KEY_K);
+INIT_KEYBOARD_LAYER_CONFIG(0, _D4, HID_KEY_COMMA);
+INIT_KEYBOARD_LAYER_CONFIG(0, _D5, HID_KEY_ARROW_RIGHT);
+INIT_KEYBOARD_LAYER_CONFIG(0, _E1, HID_KEY_7);
+INIT_KEYBOARD_LAYER_CONFIG(0, _E2, HID_KEY_U);
+INIT_KEYBOARD_LAYER_CONFIG(0, _E3, HID_KEY_J);
+INIT_KEYBOARD_LAYER_CONFIG(0, _E4, HID_KEY_M);
+INIT_KEYBOARD_LAYER_CONFIG(0, _E5, HID_KEY_ARROW_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(0, _F1, HID_KEY_6);
+INIT_KEYBOARD_LAYER_CONFIG(0, _F2, HID_KEY_Y);
+INIT_KEYBOARD_LAYER_CONFIG(0, _F3, HID_KEY_H);
+INIT_KEYBOARD_LAYER_CONFIG(0, _F4, HID_KEY_N);
+INIT_KEYBOARD_LAYER_CONFIG(0, _F5, HID_KEY_NONE);
 /* THUMB CLUSTER */
-uint8_t const _L0_T1[] = {HID_KEY_SPACE};        //  T1
-const key_layer_config_t L0_T1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_T1);
-uint8_t const _L0_T2[] = {HID_KEY_ENTER};        //  T2
-const key_layer_config_t L0_T2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_T2);
-uint8_t const _L0_T3[] = {HID_KEY_PAGE_UP};      //  T3
-const key_layer_config_t L0_T3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_T3);
-uint8_t const _L0_T4[] = {HID_KEY_PAGE_DOWN};    //  T4
-const key_layer_config_t L0_T4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_T4);
-uint8_t const _L0_T5[] = {HID_KEY_ARROW_UP};     //  T5
-const key_layer_config_t L0_T5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_T5);
-uint8_t const _L0_T6[] = {HID_KEY_KEYPAD_ENTER}; //  T6
-const key_layer_config_t L0_T6 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_T6);
+INIT_KEYBOARD_LAYER_CONFIG(0, _T1, HID_KEY_SPACE);
+INIT_KEYBOARD_LAYER_CONFIG(0, _T2, HID_KEY_ENTER);
+INIT_KEYBOARD_LAYER_CONFIG(0, _T3, HID_KEY_PAGE_UP);
+INIT_KEYBOARD_LAYER_CONFIG(0, _T4, HID_KEY_PAGE_DOWN);
+INIT_KEYBOARD_LAYER_CONFIG(0, _T5, HID_KEY_ARROW_UP);
+INIT_KEYBOARD_LAYER_CONFIG(0, _T6, HID_KEY_KEYPAD_ENTER);
 
 //     /* LAYER
 //      *               ┌─────┬─────┬─────┬─────┬─────┬─────┐
@@ -517,154 +378,82 @@ const key_layer_config_t L0_T6 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L0_T
 //      */
 
 // Layer 1
-uint8_t const _L1_A1[] = {HID_KEY_F12};               //  A1
-const key_layer_config_t L1_A1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_A1);
-uint8_t const _L1_A2[] = {HID_KEY_BACKSLASH};         //  A2
-const key_layer_config_t L1_A2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_A2);
-uint8_t const _L1_A3[] = {HID_KEY_APOSTROPHE};        //  A3
-const key_layer_config_t L1_A3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_A3);
-uint8_t const _L1_A4[] = {HID_KEY_SHIFT_RIGHT};       //  A4
-const key_layer_config_t L1_A4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_A4);
-uint8_t const _L1_A5[] = {HID_KEY_CONTROL_RIGHT};     //  A5
-const key_layer_config_t L1_A5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_A5);
-uint8_t const _L1_B1[] = {HID_KEY_F11};               //  B1
-const key_layer_config_t L1_B1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_B1);
-uint8_t const _L1_B2[] = {HID_KEY_KEYPAD_SUBTRACT};   //  B2
-const key_layer_config_t L1_B2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_B2);
-uint8_t const _L1_B3[] = {HID_KEY_KEYPAD_ADD};        //  B3
-const key_layer_config_t L1_B3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_B3);
-uint8_t const _L1_B4[] = {HID_KEY_KEYPAD_EQUAL};      //  B4
-const key_layer_config_t L1_B4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_B4);
-uint8_t const _L1_B5[] = {HID_KEY_KEYPAD_EQUAL_SIGN}; //  B5
-const key_layer_config_t L1_B5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_B5);
-uint8_t const _L1_C1[] = {HID_KEY_F10};               //  C1
-const key_layer_config_t L1_C1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_C1);
-uint8_t const _L1_C2[] = {HID_KEY_KEYPAD_9};          //  C2
-const key_layer_config_t L1_C2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_C2);
-uint8_t const _L1_C3[] = {HID_KEY_KEYPAD_6};          //  C3
-const key_layer_config_t L1_C3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_C3);
-uint8_t const _L1_C4[] = {HID_KEY_KEYPAD_3};          //  C4
-const key_layer_config_t L1_C4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_C4);
-uint8_t const _L1_C5[] = {HID_KEY_KEYPAD_DECIMAL};    //  C5
-const key_layer_config_t L1_C5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_C5);
-uint8_t const _L1_D1[] = {HID_KEY_F9};                //  D1
-const key_layer_config_t L1_D1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_D1);
-uint8_t const _L1_D2[] = {HID_KEY_KEYPAD_8};          //  D2
-const key_layer_config_t L1_D2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_D2);
-uint8_t const _L1_D3[] = {HID_KEY_KEYPAD_5};          //  D3
-const key_layer_config_t L1_D3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_D3);
-uint8_t const _L1_D4[] = {HID_KEY_KEYPAD_2};          //  D4
-const key_layer_config_t L1_D4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_D4);
-uint8_t const _L1_D5[] = {HID_KEY_ARROW_RIGHT};       //  D5
-const key_layer_config_t L1_D5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_D5);
-uint8_t const _L1_E1[] = {HID_KEY_F8};                //  E1
-const key_layer_config_t L1_E1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_E1);
-uint8_t const _L1_E2[] = {HID_KEY_KEYPAD_7};          //  E2
-const key_layer_config_t L1_E2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_E2);
-uint8_t const _L1_E3[] = {HID_KEY_KEYPAD_4};          //  E3
-const key_layer_config_t L1_E3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_E3);
-uint8_t const _L1_E4[] = {HID_KEY_KEYPAD_1};          //  E4
-const key_layer_config_t L1_E4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_E4);
-uint8_t const _L1_E5[] = {HID_KEY_KEYPAD_0};          //  E5
-const key_layer_config_t L1_E5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_E5);
-uint8_t const _L1_F1[] = {HID_KEY_F7};                //  F1
-const key_layer_config_t L1_F1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_F1);
-uint8_t const _L1_F2[] = {HID_KEY_KEYPAD_DIVIDE};     //  F2
-const key_layer_config_t L1_F2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_F2);
-uint8_t const _L1_F3[] = {HID_KEY_ARROW_LEFT};        //  F3
-const key_layer_config_t L1_F3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_F3);
-uint8_t const _L1_F4[] = {HID_KEY_N};                 //  F4
-const key_layer_config_t L1_F4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_F4);
-uint8_t const _L1_F5[] = {HID_KEY_NONE};              //  F5
-const key_layer_config_t L1_F5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_F5);
+INIT_KEYBOARD_LAYER_CONFIG(1, _A1, HID_KEY_F12);
+INIT_KEYBOARD_LAYER_CONFIG(1, _A2, HID_KEY_BACKSLASH);
+INIT_KEYBOARD_LAYER_CONFIG(1, _A3, HID_KEY_APOSTROPHE);
+INIT_KEYBOARD_LAYER_CONFIG(1, _A4, HID_KEY_SHIFT_RIGHT);
+INIT_KEYBOARD_LAYER_CONFIG(1, _A5, HID_KEY_CONTROL_RIGHT);
+INIT_KEYBOARD_LAYER_CONFIG(1, _B1, HID_KEY_F11);
+INIT_KEYBOARD_LAYER_CONFIG(1, _B2, HID_KEY_KEYPAD_SUBTRACT);
+INIT_KEYBOARD_LAYER_CONFIG(1, _B3, HID_KEY_KEYPAD_ADD);
+INIT_KEYBOARD_LAYER_CONFIG(1, _B4, HID_KEY_KEYPAD_EQUAL);
+INIT_KEYBOARD_LAYER_CONFIG(1, _B5, HID_KEY_KEYPAD_EQUAL_SIGN);
+INIT_KEYBOARD_LAYER_CONFIG(1, _C1, HID_KEY_F10);
+INIT_KEYBOARD_LAYER_CONFIG(1, _C2, HID_KEY_KEYPAD_9);
+INIT_KEYBOARD_LAYER_CONFIG(1, _C3, HID_KEY_KEYPAD_6);
+INIT_KEYBOARD_LAYER_CONFIG(1, _C4, HID_KEY_KEYPAD_3);
+INIT_KEYBOARD_LAYER_CONFIG(1, _C5, HID_KEY_KEYPAD_DECIMAL);
+INIT_KEYBOARD_LAYER_CONFIG(1, _D1, HID_KEY_F9);
+INIT_KEYBOARD_LAYER_CONFIG(1, _D2, HID_KEY_KEYPAD_8);
+INIT_KEYBOARD_LAYER_CONFIG(1, _D3, HID_KEY_KEYPAD_5);
+INIT_KEYBOARD_LAYER_CONFIG(1, _D4, HID_KEY_KEYPAD_2);
+INIT_KEYBOARD_LAYER_CONFIG(1, _D5, HID_KEY_ARROW_RIGHT);
+INIT_KEYBOARD_LAYER_CONFIG(1, _E1, HID_KEY_F8);
+INIT_KEYBOARD_LAYER_CONFIG(1, _E2, HID_KEY_KEYPAD_7);
+INIT_KEYBOARD_LAYER_CONFIG(1, _E3, HID_KEY_KEYPAD_4);
+INIT_KEYBOARD_LAYER_CONFIG(1, _E4, HID_KEY_KEYPAD_1);
+INIT_KEYBOARD_LAYER_CONFIG(1, _E5, HID_KEY_KEYPAD_0);
+INIT_KEYBOARD_LAYER_CONFIG(1, _F1, HID_KEY_F7);
+INIT_KEYBOARD_LAYER_CONFIG(1, _F2, HID_KEY_KEYPAD_DIVIDE);
+INIT_KEYBOARD_LAYER_CONFIG(1, _F3, HID_KEY_ARROW_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(1, _F4, HID_KEY_N);
+INIT_KEYBOARD_LAYER_CONFIG(1, _F5, HID_KEY_NONE);
 /* THUMB CLUSTER */
-uint8_t const _L1_T1[] = {HID_KEY_SPACE};        //  T1
-const key_layer_config_t L1_T1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_T1);
-uint8_t const _L1_T2[] = {HID_KEY_ENTER};       //  T2
-const key_layer_config_t L1_T2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_T2);
-uint8_t const _L1_T3[] = {HID_KEY_ARROW_DOWN};   //  T3
-const key_layer_config_t L1_T3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_T3);
-uint8_t const _L1_T4[] = {HID_KEY_DELETE};       //  T4
-const key_layer_config_t L1_T4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_T4);
-uint8_t const _L1_T5[] = {HID_KEY_ARROW_UP};     //  T5
-const key_layer_config_t L1_T5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_T5);
-uint8_t const _L1_T6[] = {HID_KEY_KEYPAD_ENTER}; //  T6
-const key_layer_config_t L1_T6 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L1_T6);
+INIT_KEYBOARD_LAYER_CONFIG(1, _T1, HID_KEY_SPACE);
+INIT_KEYBOARD_LAYER_CONFIG(1, _T2, HID_KEY_ENTER);
+INIT_KEYBOARD_LAYER_CONFIG(1, _T3, HID_KEY_ARROW_DOWN);
+INIT_KEYBOARD_LAYER_CONFIG(1, _T4, HID_KEY_DELETE);
+INIT_KEYBOARD_LAYER_CONFIG(1, _T5, HID_KEY_ARROW_UP);
+INIT_KEYBOARD_LAYER_CONFIG(1, _T6, HID_KEY_KEYPAD_ENTER);
 
 // Layer 2
-uint8_t const _L2_A1[] = {HID_KEY_F12};           //  A1
-const key_layer_config_t L2_A1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_A1);
-uint8_t const _L2_A2[] = {HID_KEY_BACKSLASH};     //  A2
-const key_layer_config_t L2_A2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_A2);
-uint8_t const _L2_A3[] = {HID_KEY_APOSTROPHE};    //  A3
-const key_layer_config_t L2_A3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_A3);
-uint8_t const _L2_A4[] = {HID_KEY_SHIFT_RIGHT};   //  A4
-const key_layer_config_t L2_A4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_A4);
-uint8_t const _L2_A5[] = {HID_KEY_CONTROL_RIGHT}; //  A5
-const key_layer_config_t L2_A5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_A5);
-uint8_t const _L2_B1[] = {HID_KEY_F11};           //  B1
-const key_layer_config_t L2_B1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_B1);
-uint8_t const _L2_B2[] = {HID_KEY_EQUAL};         //  B2
-const key_layer_config_t L2_B2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_B2);
-uint8_t const _L2_B3[] = {HID_KEY_SEMICOLON};     //  B3
-const key_layer_config_t L2_B3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_B3);
-uint8_t const _L2_B4[] = {HID_KEY_SLASH};         //  B4
-const key_layer_config_t L2_B4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_B4);
-uint8_t const _L2_B5[] = {HID_KEY_GUI_RIGHT};     //  B5
-const key_layer_config_t L2_B5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_B5);
-uint8_t const _L2_C1[] = {HID_KEY_F10};           //  C1
-const key_layer_config_t L2_C1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_C1);
-uint8_t const _L2_C2[] = {HID_KEY_MINUS};         //  C2
-const key_layer_config_t L2_C2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_C2);
-uint8_t const _L2_C3[] = {HID_KEY_ARROW_RIGHT};   //  C3
-const key_layer_config_t L2_C3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_C3);
-uint8_t const _L2_C4[] = {HID_KEY_PERIOD};        //  C4
-const key_layer_config_t L2_C4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_C4);
-uint8_t const _L2_C5[] = {HID_KEY_ALT_LEFT};      //  C5
-const key_layer_config_t L2_C5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_C5);
-uint8_t const _L2_D1[] = {HID_KEY_F9};            //  D1
-const key_layer_config_t L2_D1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_D1);
-uint8_t const _L2_D2[] = {HID_KEY_I};             //  D2
-const key_layer_config_t L2_D2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_D2);
-uint8_t const _L2_D3[] = {HID_KEY_ARROW_UP};      //  D3
-const key_layer_config_t L2_D3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_D3);
-uint8_t const _L2_D4[] = {HID_KEY_COMMA};         //  D4
-const key_layer_config_t L2_D4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_D4);
-uint8_t const _L2_D5[] = {HID_KEY_ARROW_RIGHT};   //  D5
-const key_layer_config_t L2_D5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_D5);
-uint8_t const _L2_E1[] = {HID_KEY_F8};            //  E1
-const key_layer_config_t L2_E1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_E1);
-uint8_t const _L2_E2[] = {HID_KEY_U};             //  E2
-const key_layer_config_t L2_E2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_E2);
-uint8_t const _L2_E3[] = {HID_KEY_ARROW_DOWN};    //  E3
-const key_layer_config_t L2_E3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_E3);
-uint8_t const _L2_E4[] = {HID_KEY_M, HID_KEY_A, HID_KEY_K, HID_KEY_E, HID_KEY_SPACE, HID_KEY_MINUS, HID_KEY_J, HID_KEY_4};             //  E4
-const key_layer_config_t L2_E4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_E4);
-uint8_t const _L2_E5[] = {HID_KEY_ARROW_LEFT};    //  E5
-const key_layer_config_t L2_E5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_E5);
-uint8_t const _L2_F1[] = {HID_KEY_F7};            //  F1
-const key_layer_config_t L2_F1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_F1);
-uint8_t const _L2_F2[] = {HID_KEY_Y};             //  F2
-const key_layer_config_t L2_F2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_F2);
-uint8_t const _L2_F3[] = {HID_KEY_ARROW_LEFT};    //  F3
-const key_layer_config_t L2_F3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_F3);
-uint8_t const _L2_F4[] = {HID_KEY_N};             //  F4
-const key_layer_config_t L2_F4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_F4);
-uint8_t const _L2_F5[] = {HID_KEY_NONE};          //  F5
-const key_layer_config_t L2_F5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_F5);
+INIT_KEYBOARD_LAYER_CONFIG(2, _A1, HID_KEY_F12);
+INIT_KEYBOARD_LAYER_CONFIG(2, _A2, HID_KEY_BACKSLASH);
+INIT_KEYBOARD_LAYER_CONFIG(2, _A3, HID_KEY_APOSTROPHE);
+INIT_KEYBOARD_LAYER_CONFIG(2, _A4, HID_KEY_SHIFT_RIGHT);
+INIT_KEYBOARD_LAYER_CONFIG(2, _A5, HID_KEY_CONTROL_RIGHT);
+INIT_KEYBOARD_LAYER_CONFIG(2, _B1, HID_KEY_F11);
+INIT_KEYBOARD_LAYER_CONFIG(2, _B2, HID_KEY_EQUAL);
+INIT_KEYBOARD_LAYER_CONFIG(2, _B3, HID_KEY_SEMICOLON);
+INIT_KEYBOARD_LAYER_CONFIG(2, _B4, HID_KEY_SLASH);
+INIT_KEYBOARD_LAYER_CONFIG(2, _B5, HID_KEY_GUI_RIGHT);
+INIT_KEYBOARD_LAYER_CONFIG(2, _C1, HID_KEY_F10);
+INIT_KEYBOARD_LAYER_CONFIG(2, _C2, HID_KEY_MINUS);
+INIT_KEYBOARD_LAYER_CONFIG(2, _C3, HID_KEY_ARROW_RIGHT);
+INIT_KEYBOARD_LAYER_CONFIG(2, _C4, HID_KEY_PERIOD);
+INIT_KEYBOARD_LAYER_CONFIG(2, _C5, HID_KEY_ALT_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(2, _D1, HID_KEY_F9);
+INIT_KEYBOARD_LAYER_CONFIG(2, _D2, HID_KEY_I);
+INIT_KEYBOARD_LAYER_CONFIG(2, _D3, HID_KEY_ARROW_UP);
+INIT_KEYBOARD_LAYER_CONFIG(2, _D4, HID_KEY_COMMA);
+INIT_KEYBOARD_LAYER_CONFIG(2, _D5, HID_KEY_ARROW_RIGHT);
+INIT_KEYBOARD_LAYER_CONFIG(2, _E1, HID_KEY_F8);
+INIT_KEYBOARD_LAYER_CONFIG(2, _E2, HID_KEY_U);
+INIT_KEYBOARD_LAYER_CONFIG(2, _E3, HID_KEY_ARROW_DOWN);
+INIT_KEYBOARD_LAYER_CONFIG(2, _E4, HID_KEY_M, HID_KEY_A, HID_KEY_K, HID_KEY_E, HID_KEY_SPACE, HID_KEY_MINUS, HID_KEY_J, HID_KEY_4);
+INIT_KEYBOARD_LAYER_CONFIG(2, _E5, HID_KEY_ARROW_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(2, _F1, HID_KEY_F7);
+INIT_KEYBOARD_LAYER_CONFIG(2, _F2, HID_KEY_Y);
+INIT_KEYBOARD_LAYER_CONFIG(2, _F3, HID_KEY_ARROW_LEFT);
+INIT_KEYBOARD_LAYER_CONFIG(2, _F4, HID_KEY_N);
+INIT_KEYBOARD_LAYER_CONFIG(2, _F5, HID_KEY_NONE);
 /* THUMB CLUSTER */
-uint8_t const _L2_T1[] = {HID_KEY_SPACE};        //  T1
-const key_layer_config_t L2_T1 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_T1);
-uint8_t const _L2_T2[] = {HID_KEY_ENTER};       //  T2
-const key_layer_config_t L2_T2 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_T2);
-uint8_t const _L2_T3[] = {HID_KEY_ARROW_DOWN};   //  T3
-const key_layer_config_t L2_T3 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_T3);
-uint8_t const _L2_T4[] = {HID_KEY_DELETE};       //  T4
-const key_layer_config_t L2_T4 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_T4);
-uint8_t const _L2_T5[] = {HID_KEY_ARROW_UP};     //  T5
-const key_layer_config_t L2_T5 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_T5);
-uint8_t const _L2_T6[] = {HID_KEY_KEYPAD_ENTER}; //  T6
-const key_layer_config_t L2_T6 = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L2_T6);
+INIT_KEYBOARD_LAYER_CONFIG(2, _T1, HID_KEY_SPACE);
+INIT_KEYBOARD_LAYER_CONFIG(2, _T2, HID_KEY_ENTER);
+INIT_KEYBOARD_LAYER_CONFIG(2, _T3, HID_KEY_ARROW_DOWN);
+INIT_KEYBOARD_LAYER_CONFIG(2, _T4, HID_KEY_DELETE);
+INIT_KEYBOARD_LAYER_CONFIG(2, _T5, HID_KEY_ARROW_UP);
+INIT_KEYBOARD_LAYER_CONFIG(2, _T6, HID_KEY_KEYPAD_ENTER);
 
 #endif
 
