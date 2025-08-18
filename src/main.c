@@ -495,11 +495,16 @@ void send_modifier_uart(modifier_t *modifier)
     uart_putc(UART_ID, HID_KEY_GUI_RIGHT);
 }
 
-inline void add_keycodes_n_composite(const key_layer_config_t *key)
+static inline void add_keycodes_n_composite(const key_layer_config_t *key)
 {
-  if (key->key_type == REPORT_ID_KEYBOARD)
+  switch (key->key_type)
   {
+  case REPORT_ID_KEYBOARD:
     add_keycodes_n(&keycode_buffer, key->keys, key->size);
+    uart_puts(UART_ID, (const char *)key);
+    break;
+  default:
+    break;
   }
 }
 
@@ -536,14 +541,13 @@ void hid_task(void)
     if ((status->is_pressed))
     {
       const key_layer_config_t key_layer_config = keymaps_layers[get_layer()][i];
-      const uint8_t* key = key_layer_config.keys;
+      const uint8_t *key = key_layer_config.keys;
       switch (status->held)
       {
       case NO_TOUCH:
         if (!((*key >= HID_KEY_CONTROL_LEFT) && (*key <= HID_KEY_GUI_RIGHT)) && (*key != HID_KEY_NONE))
         {
           add_keycodes_n_composite(&key_layer_config);
-          uart_puts(UART_ID, (const char *)key);
         }
         status->last_handled_time = current_time;
         status->held = FIRST_TOUCH;
@@ -554,7 +558,6 @@ void hid_task(void)
           if (!((*key >= HID_KEY_CONTROL_LEFT) && (*key <= HID_KEY_GUI_RIGHT)) && (*key != HID_KEY_NONE))
           {
             add_keycodes_n_composite(&key_layer_config);
-            uart_puts(UART_ID, (const char *)key);
           }
           status->last_handled_time = current_time;
           status->held = CONTINUOUS_TOUCH;
@@ -566,7 +569,6 @@ void hid_task(void)
           if (!((*key >= HID_KEY_CONTROL_LEFT) && (*key <= HID_KEY_GUI_RIGHT)) && (*key != HID_KEY_NONE))
           {
             add_keycodes_n_composite(&key_layer_config);
-            uart_puts(UART_ID, (const char *)key);
           }
           status->last_handled_time = current_time;
           status->held = CONTINUOUS_TOUCH;
