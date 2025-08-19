@@ -28,6 +28,17 @@ void shift_reset_keycode_buffer(keycode_buffer_t *keycode_buffer)
   keycode_buffer->completed = 0;
 }
 
+
+bool add_keycode_layer(keycode_buffer_t *keycode_buffer, const key_layer_config_t* keycode)
+{
+  if (keycode_buffer->size + keycode->size < KEYCODE_BUFFER_LENGTH) 
+  {
+    memcpy(keycode_buffer->keycodes + keycode_buffer->size, keycode->keys, keycode->size);
+    keycode_buffer->size += keycode->size;
+  }
+  return true;
+}
+
 bool add_keycode(keycode_buffer_t *keycode_buffer, uint8_t keycode)
 {
   if (keycode_buffer->size < KEYCODE_BUFFER_LENGTH)

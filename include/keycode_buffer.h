@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "keyboard_config.h"
 
 #define KEYCODE_BUFFER_LENGTH 125
 
@@ -34,6 +35,7 @@ typedef struct
 void reset_keycode_buffer(keycode_buffer_t *keycode_buffer);
 void shift_reset_keycode_buffer(keycode_buffer_t *keycode_buffer);
 
+bool add_keycode_layer(keycode_buffer_t *keycode_buffer, const key_layer_config_t* keycode);
 bool add_keycode(keycode_buffer_t *keycode_buffer, uint8_t keycode);
 bool add_keycodes(keycode_buffer_t *keycode_buffer, const uint8_t* keycode);
 bool add_keycodes_n(keycode_buffer_t *keycode_buffer, const uint8_t *keycode, uint8_t size);

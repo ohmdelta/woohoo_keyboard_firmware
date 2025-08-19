@@ -278,13 +278,30 @@ int main(void)
     {
       if (tud_hid_ready())
       {
-        tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
-        keycode_buffer.completed += 6;
-        keycode_buffer.null_sent = false;
+        if (keycode_buffer.size > keycode_buffer.completed)
+        {
+          tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
+          keycode_buffer.completed += 6;
+          keycode_buffer.null_sent = false;
+        }
+        else if (consumer_control_buffer.size > consumer_control_buffer.completed)
+        {
+          // uint8_t* key = consumer_control_buffer.keycodes + consumer_control_buffer.completed;
+          tud_hid_report(REPORT_ID_CONSUMER_CONTROL, consumer_control_buffer.keycodes + consumer_control_buffer.completed, 2);
+          consumer_control_buffer.completed += 2;
+          consumer_control_buffer.null_sent = false;
+        }
+        else {
+          tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
+          keycode_buffer.completed += 6;
+          keycode_buffer.null_sent = false;
+        }
       }
-    } else
+    }
+    else
     {
       reset_keycode_buffer(&keycode_buffer);
+      reset_keycode_buffer(&consumer_control_buffer);
     }
 
     led_task();
@@ -503,6 +520,10 @@ static inline void add_keycodes_n_composite(const key_layer_config_t *key)
     add_keycodes_n(&keycode_buffer, key->keys, key->size);
     uart_puts(UART_ID, (const char *)key);
     break;
+  case REPORT_ID_CONSUMER_CONTROL:
+    add_keycode_layer(&consumer_control_buffer, key);
+    break;
+  
   default:
     break;
   }
@@ -525,6 +546,7 @@ void hid_task(void)
 
   layer_key_task();
   shift_reset_keycode_buffer(&keycode_buffer);
+  shift_reset_keycode_buffer(&consumer_control_buffer);
 
   for (int i = 0; i < NUM_KEYS; i++)
   {
@@ -596,18 +618,44 @@ void tud_hid_report_complete_cb(uint8_t instance, uint8_t const *report,
 {
   (void)instance;
   (void)len;
-  (void)report;
 
-  if (!keycode_buffer.null_sent)
+  uint8_t next_report_id = report[0];
+  switch (next_report_id)
   {
-    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, NULL);
-    keycode_buffer.null_sent = true;
+  case REPORT_ID_KEYBOARD:
+  {
+    if (!keycode_buffer.null_sent)
+    {
+      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, NULL);
+      keycode_buffer.null_sent = true;
+    }
+    else if (keycode_buffer.size > keycode_buffer.completed)
+    {
+      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
+      keycode_buffer.completed += 6;
+      keycode_buffer.null_sent = false;
+    }
   }
-  else if (keycode_buffer.size > keycode_buffer.completed)
+  break;
+  case REPORT_ID_CONSUMER_CONTROL:
   {
-    tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
-    keycode_buffer.completed += 6;
-    keycode_buffer.null_sent = false;
+    if (!consumer_control_buffer.null_sent)
+    {
+      uint16_t empty_key = 0;
+      tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &empty_key, 2);
+      consumer_control_buffer.null_sent = true;
+    }
+    else if (consumer_control_buffer.size > consumer_control_buffer.completed)
+    {
+      tud_hid_report(REPORT_ID_CONSUMER_CONTROL, consumer_control_buffer.keycodes + consumer_control_buffer.completed, 2);
+      consumer_control_buffer.completed += 2;
+      consumer_control_buffer.null_sent = false;
+    }
+  }
+  break;
+
+  default:
+    break;
   }
 }
 

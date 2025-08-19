@@ -8,22 +8,15 @@
 #include <stdint.h>
 #include "keyboard_config.h"
 
-typedef struct
-{
-    const uint8_t key_type;
-    const uint8_t size;
-    const uint8_t* keys;
-} key_layer_config_t;
-
 #define INIT_KEY_LAYER_CONFIG(key_type_, keys_) \
     (key_layer_config_t) { .key_type = (key_type_), .size = sizeof((keys_)), .keys = (keys_) }
 
 #define INIT_KEYBOARD_LAYER_CONFIG(layer_index, key_index, keys...) \
-    uint8_t const _L##layer_index ##key_index[] = {keys};            \
+    uint8_t const _L##layer_index##key_index[] = {keys};            \
     const key_layer_config_t L##layer_index##key_index = INIT_KEY_LAYER_CONFIG(REPORT_ID_KEYBOARD, _L##layer_index##key_index);
 
 #define INIT_CONSUMER_CONTROL_LAYER_CONFIG(layer_index, key_index, value)    \
-    uint8_t const _L##layer_index##key_index[] = {value >> 2, value & 0xff}; \
+    uint8_t const _L##layer_index##key_index[] = { value & 0xff, value >> 8}; \
     const key_layer_config_t L##layer_index##key_index = INIT_KEY_LAYER_CONFIG(REPORT_ID_CONSUMER_CONTROL, _L##layer_index##key_index);
 
 // A1, B1, C1, D1, E1, F1,

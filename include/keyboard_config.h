@@ -139,4 +139,11 @@
 #define SSD1306_DEFAULT_I2C_SDA_PIN 40
 #define SSD1306_DEFAULT_I2C_SCL_PIN 41
 
+typedef struct
+{
+    const uint8_t key_type;
+    const uint8_t size;
+    const uint8_t* keys;
+} key_layer_config_t;
+
 #endif
