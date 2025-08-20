@@ -129,11 +129,11 @@ INIT_KEYBOARD_LAYER_CONFIG(0, _T6, HID_KEY_KEYPAD_ENTER);
 //      * │ TAB │BRIGH│BRIGH│ VOL │ VOL │ VOL │
 //      * │     │DOWN │UP   │ MUTE│ DOWN│ UP  │
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┤
-//      * │CAPS │  F  │PLAY │PLAY │PLAY │  G  ├─────┐
-//      * │     │     │PREV │PAUSE│NEXT │     | F5  │
+//      * │CAPS │RE   │PLAY │PLAY │PLAY │FAST ├─────┐
+//      * │     │WIND │PREV │PAUSE│NEXT │FWD  |     │
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┤     │
-//      * │SHIFT│  Z  │FILE │CALCU│BROWS|EMAIL├─────┘
-//      * │     │     │     │LATOR│     │APP  │
+//      * │SHIFT│BACK │FILE │CALCU│BROWS|EMAIL├─────┘
+//      * │     │LIGHT│     │LATOR│     │APP  │
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┘
 //      * │CTRL │ SYS │ ALT │LOWER│SPACE│
 //      * │     │     │     │     │     │       ┌─────┬─────┐
@@ -143,8 +143,8 @@ INIT_KEYBOARD_LAYER_CONFIG(0, _T6, HID_KEY_KEYPAD_ENTER);
 //      *                                 │     │     │ T3  │
 //      *                                 │     │     │     │
 //      *                                 |BSPC | DEL ├─────┤
-//      *                                 │     │     │ T4  │
-//      *                                 │     │     │     │
+//      *                                 │     │     │LOCK │
+//      *                                 │     │     │SCREE│
 //      *                                 └─────┴─────┴─────┘
 //      */
 //      */
@@ -156,7 +156,7 @@ INIT_KEYBOARD_LAYER_CONFIG(1, _A5, HID_KEY_CONTROL_LEFT);
 INIT_KEYBOARD_LAYER_CONFIG(1, _B1, HID_KEY_F2);
 INIT_CONSUMER_CONTROL_LAYER_CONFIG(1, _B2, HID_USAGE_CONSUMER_BRIGHTNESS_DECREMENT)
 INIT_CONSUMER_CONTROL_LAYER_CONFIG(1, _B3, HID_USAGE_CONSUMER_REWIND)
-INIT_KEYBOARD_LAYER_CONFIG(1, _B4, HID_KEY_Z);
+INIT_CONSUMER_CONTROL_LAYER_CONFIG(1, _B4, HID_USAGE_CONSUMER_KEYBOARD_BRIGHTNESS_INCREMENT)
 INIT_KEYBOARD_LAYER_CONFIG(1, _B5, HID_KEY_GUI_LEFT);
 INIT_KEYBOARD_LAYER_CONFIG(1, _C1, HID_KEY_F3);
 INIT_CONSUMER_CONTROL_LAYER_CONFIG(1, _C2, HID_USAGE_CONSUMER_BRIGHTNESS_INCREMENT)
@@ -182,7 +182,7 @@ INIT_KEYBOARD_LAYER_CONFIG(1, _F5, HID_KEY_NONE);
 INIT_KEYBOARD_LAYER_CONFIG(1, _T1, HID_KEY_BACKSPACE);
 INIT_KEYBOARD_LAYER_CONFIG(1, _T2, HID_KEY_DELETE);
 INIT_KEYBOARD_LAYER_CONFIG(1, _T3, HID_KEY_HOME);
-INIT_KEYBOARD_LAYER_CONFIG(1, _T4, HID_KEY_END);
+INIT_CONSUMER_CONTROL_LAYER_CONFIG(1, _T4, HID_USAGE_CONSUMER_AL_TERMINAL_LOCK_SCREENSAVER)
 INIT_KEYBOARD_LAYER_CONFIG(1, _T5, HID_KEY_ARROW_UP);
 INIT_KEYBOARD_LAYER_CONFIG(1, _T6, HID_KEY_KEYPAD_ENTER);
 
