@@ -183,6 +183,10 @@ struct render_area frame_area = {
 
 void core1_entry()
 {
+  bool success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio, &sm, &offset, KEYBOARD_BACKLIGHT_PIN, 1, true);
+  hard_assert(success);
+  ws2812_program_init(pio, sm, offset, KEYBOARD_BACKLIGHT_PIN, 800000, IS_RGBW);
+
   i2c_init(i2c_default, SSD1306_I2C_CLK * 1000);
   gpio_set_function(SSD1306_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
   gpio_set_function(SSD1306_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
@@ -204,7 +208,9 @@ void core1_entry()
   while (1)
   {
     display_task();
+    led_task();
   }
+  pio_remove_program_and_unclaim_sm(&ws2812_program, pio, sm, offset);
 }
 /*------------- MAIN -------------*/
 int main(void)
@@ -226,11 +232,7 @@ int main(void)
     board_init_after_tusb();
   }
 
-  bool success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio, &sm, &offset, KEYBOARD_BACKLIGHT_PIN, 1, true);
-  hard_assert(success);
-  ws2812_program_init(pio, sm, offset, KEYBOARD_BACKLIGHT_PIN, 800000, IS_RGBW);
-
-  success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio_2, &sm_2, &offset_2, INDICATOR_LEDS_PIN, 1, true);
+  bool success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio_2, &sm_2, &offset_2, INDICATOR_LEDS_PIN, 1, true);
   hard_assert(success);
   ws2812_program_init(pio_2, sm_2, offset_2, INDICATOR_LEDS_PIN, 800000, IS_RGBW);
 
@@ -304,14 +306,12 @@ int main(void)
       reset_keycode_buffer(&consumer_control_buffer);
     }
 
-    led_task();
     encoder_task();
 
     if (tud_suspended())
       tud_remote_wakeup();
   }
 
-  pio_remove_program_and_unclaim_sm(&ws2812_program, pio, sm, offset);
   pio_remove_program_and_unclaim_sm(&ws2812_program, pio_2, sm_2, offset_2);
 }
 
