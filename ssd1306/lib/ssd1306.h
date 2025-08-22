@@ -3,5 +3,6 @@
 
 
 #include "ssd1306_i2c.h"
+#include "render_util.h"
 
 #endif

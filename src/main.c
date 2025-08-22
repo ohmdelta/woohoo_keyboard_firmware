@@ -360,27 +360,7 @@ void display_task()
 
   start_us = current_time;
 
-  char text[] = "00:00:00";
-  fast_timer_t ms = current_time / 1000;
-  fast_timer_t s = ms / 1000;
-  uint8_t _s = s % 60;
-
-  fast_timer_t mins = s / 60;
-  uint8_t _mins = mins % 60;
-
-  fast_timer_t hours = mins / 60;
-  uint8_t _hours = hours % 100;
-
-  text[0] = (_hours / 10 % 10) + '0';
-  text[1] = (_hours % 10) + '0';
-
-  text[3] = (_mins / 10 % 10) + '0';
-  text[4] = (_mins % 10) + '0';
-
-  text[6] = (_s / 10 % 10) + '0';
-  text[7] = (_s % 10) + '0';
-
-  write_string_vertical(buf, 120, 0, text);
+  render_time(buf, 120, 0, current_time);
 
   if (tud_mounted())
   {
