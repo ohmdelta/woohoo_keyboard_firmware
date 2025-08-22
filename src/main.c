@@ -89,6 +89,10 @@ typedef struct
   modifier_t modifiers;
 } queue_t;
 
+
+void send_consumer_control_block();
+void send_keyboard_report_block();
+
 other_board_t ch = {.ch = 0, .done = 1};
 queue_t key_queue = {
     .size = 0,
@@ -282,21 +286,16 @@ int main(void)
       {
         if (keycode_buffer.size > keycode_buffer.completed)
         {
-          tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
-          keycode_buffer.completed += 6;
-          keycode_buffer.null_sent = false;
+          send_keyboard_report_block();
         }
         else if (consumer_control_buffer.size > consumer_control_buffer.completed)
         {
           // uint8_t* key = consumer_control_buffer.keycodes + consumer_control_buffer.completed;
-          tud_hid_report(REPORT_ID_CONSUMER_CONTROL, consumer_control_buffer.keycodes + consumer_control_buffer.completed, 2);
-          consumer_control_buffer.completed += 2;
-          consumer_control_buffer.null_sent = false;
+          send_consumer_control_block();
         }
-        else {
-          tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
-          keycode_buffer.completed += 6;
-          keycode_buffer.null_sent = false;
+        else
+        {
+          send_keyboard_report_block();
         }
       }
     }
@@ -314,6 +313,7 @@ int main(void)
 
   pio_remove_program_and_unclaim_sm(&ws2812_program, pio_2, sm_2, offset_2);
 }
+
 
 void uart_read_task()
 {
@@ -390,7 +390,6 @@ void display_task()
     write_string_vertical(buf, 112, 0, "N/A CONN");
 
   render(buf, &frame_area);
-
 }
 //--------------------------------------------------------------------+
 // Device callbacks
@@ -523,7 +522,7 @@ static inline void add_keycodes_n_composite(const key_layer_config_t *key)
   case REPORT_ID_CONSUMER_CONTROL:
     add_keycode_layer(&consumer_control_buffer, key);
     break;
-  
+
   default:
     break;
   }
@@ -629,11 +628,12 @@ void tud_hid_report_complete_cb(uint8_t instance, uint8_t const *report,
       tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, NULL);
       keycode_buffer.null_sent = true;
     }
-    else if (keycode_buffer.size > keycode_buffer.completed)
+    else
     {
-      tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
-      keycode_buffer.completed += 6;
-      keycode_buffer.null_sent = false;
+      if (keycode_buffer.size > keycode_buffer.completed)
+      {
+        send_keyboard_report_block();
+      }
     }
   }
   break;
@@ -647,9 +647,7 @@ void tud_hid_report_complete_cb(uint8_t instance, uint8_t const *report,
     }
     else if (consumer_control_buffer.size > consumer_control_buffer.completed)
     {
-      tud_hid_report(REPORT_ID_CONSUMER_CONTROL, consumer_control_buffer.keycodes + consumer_control_buffer.completed, 2);
-      consumer_control_buffer.completed += 2;
-      consumer_control_buffer.null_sent = false;
+      send_consumer_control_block();
     }
   }
   break;
@@ -657,6 +655,20 @@ void tud_hid_report_complete_cb(uint8_t instance, uint8_t const *report,
   default:
     break;
   }
+}
+
+void send_consumer_control_block()
+{
+  tud_hid_report(REPORT_ID_CONSUMER_CONTROL, consumer_control_buffer.keycodes + consumer_control_buffer.completed, 2);
+  consumer_control_buffer.completed += 2;
+  consumer_control_buffer.null_sent = false;
+}
+
+void send_keyboard_report_block()
+{
+  tud_hid_keyboard_report(REPORT_ID_KEYBOARD, keycode_buffer.modifier.bits, keycode_buffer.keycodes + keycode_buffer.completed);
+  keycode_buffer.completed += 6;
+  keycode_buffer.null_sent = false;
 }
 
 // Invoked when received GET_REPORT control request
