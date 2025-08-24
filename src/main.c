@@ -61,7 +61,7 @@
 #include "keycode_buffer.h"
 #include "layer.h"
 
-#include "ssd1306.h"
+#include "ui.h"
 
 #define QUEUE_SIZE 128
 #define LAYER_MOD_KEY ((uint8_t)(LAYER_MODIFIER_KEY - A1))
@@ -366,24 +366,7 @@ void display_task()
 
   start_us = current_time;
 
-  render_time(buf, 120, 0, current_time);
-
-  if (tud_mounted())
-  {
-    write_string_vertical(buf, 112, 0, "MOUNTED");
-  }
-  else
-  {
-    write_string_vertical(buf, 112, 0, "N/A CONN");
-  }
-
-  char ccw[SSD1306_NUM_PAGES];
-  snprintf(ccw, SSD1306_NUM_PAGES, "CCW:%d", ccw_count);
-  char cc[SSD1306_NUM_PAGES];
-  snprintf(cc, SSD1306_NUM_PAGES, "CC:%d", cw_count);
-
-  write_string_vertical(buf, 104, 0, ccw);
-  write_string_vertical(buf, 96, 0, cc);
+  render_main_screen(buf, current_time, ccw_count, cw_count);
   render(buf, &frame_area);
 }
 //--------------------------------------------------------------------+

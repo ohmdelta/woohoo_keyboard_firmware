@@ -117,7 +117,7 @@ struct render_area {
     int buflen;
 };
 
-void calc_render_area_buflen(struct render_area *area)
+static inline void calc_render_area_buflen(struct render_area *area)
 {
     // calculate how long the flattened buffer will be for a render area
     area->buflen = (area->end_col - area->start_col + 1) * (area->end_page - area->start_page + 1);
@@ -126,7 +126,7 @@ void calc_render_area_buflen(struct render_area *area)
 
 #ifdef i2c_default
 
-void SSD1306_send_cmd(uint8_t cmd)
+static inline void SSD1306_send_cmd(uint8_t cmd)
 {
     // I2C write process expects a control byte followed by data
     // this "data" can be a command or data to follow up a command
@@ -135,13 +135,13 @@ void SSD1306_send_cmd(uint8_t cmd)
     i2c_write_blocking(i2c_default, SSD1306_I2C_ADDR, buf, 2, false);
 }
 
-void SSD1306_send_cmd_list(uint8_t *buf, int num)
+static inline void SSD1306_send_cmd_list(uint8_t *buf, int num)
 {
     for (int i = 0; i < num; i++)
         SSD1306_send_cmd(buf[i]);
 }
 
-void SSD1306_send_buf(uint8_t buf[], int buflen)
+static inline void SSD1306_send_buf(uint8_t buf[], int buflen)
 {
     // in horizontal addressing mode, the column address pointer auto-increments
     // and then wraps around to the next page, so we can send the entire frame
@@ -160,7 +160,7 @@ void SSD1306_send_buf(uint8_t buf[], int buflen)
     free(temp_buf);
 }
 
-void SSD1306_init()
+static inline void SSD1306_init()
 {
     // Some of these commands are not strictly necessary as the reset
     // process defaults to some of these but they are shown here
@@ -210,7 +210,7 @@ void SSD1306_init()
     SSD1306_send_cmd_list(cmds, count_of(cmds));
 }
 
-void SSD1306_scroll(bool on)
+static inline void SSD1306_scroll(bool on)
 {
     // configure horizontal scrolling
     uint8_t cmds[] = {
@@ -227,15 +227,8 @@ void SSD1306_scroll(bool on)
     SSD1306_send_cmd_list(cmds, count_of(cmds));
 }
 
-void buf_swap(uint8_t* a, uint8_t* b) {
-    *a ^= *b;
-    *b ^= *a;
-    *a ^= *b;
-    *a = reverse(*a);
-    *b = reverse(*b);
-}
 
-void render(uint8_t *buf, struct render_area *area)
+static inline void render(uint8_t *buf, struct render_area *area)
 {
 #if SSD1306_ORIENTATION == 1
     for (uint16_t i = 0; i < (SSD1306_BUF_LEN >> 1); i++)
@@ -256,7 +249,7 @@ void render(uint8_t *buf, struct render_area *area)
     SSD1306_send_buf(buf, area->buflen);
 }
 
-void SetPixel(uint8_t *buf, int x, int y, bool on)
+static inline void SetPixel(uint8_t *buf, int x, int y, bool on)
 {
     assert(x >= 0 && x < SSD1306_WIDTH && y >= 0 && y < SSD1306_HEIGHT);
 
@@ -284,7 +277,7 @@ void SetPixel(uint8_t *buf, int x, int y, bool on)
 }
 
 // Basic Bresenhams.
-void DrawLine(uint8_t *buf, int x0, int y0, int x1, int y1, bool on)
+static inline void DrawLine(uint8_t *buf, int x0, int y0, int x1, int y1, bool on)
 {
 
     int dx = abs(x1 - x0);
@@ -314,7 +307,7 @@ void DrawLine(uint8_t *buf, int x0, int y0, int x1, int y1, bool on)
     }
 }
 
-int GetFontIndex(uint8_t ch)
+static inline int GetFontIndex(uint8_t ch)
 {
     if (ch >= 'A' && ch <= 'Z')
     {
@@ -333,7 +326,7 @@ int GetFontIndex(uint8_t ch)
         return 0; // Not got that char so space.
 }
 
-void WriteChar(uint8_t *buf, int16_t x, int16_t y, uint8_t ch)
+static inline void WriteChar(uint8_t *buf, int16_t x, int16_t y, uint8_t ch)
 {
     if (x > SSD1306_WIDTH - 8 || y > SSD1306_HEIGHT - 8)
         return;
@@ -351,7 +344,7 @@ void WriteChar(uint8_t *buf, int16_t x, int16_t y, uint8_t ch)
     }
 }
 
-void WriteString(uint8_t *buf, int16_t x, int16_t y, char *str)
+static inline void WriteString(uint8_t *buf, int16_t x, int16_t y, char *str)
 {
     // Cull out any string off the screen
     if (x > SSD1306_WIDTH - 8 || y > SSD1306_HEIGHT - 8)
@@ -364,7 +357,7 @@ void WriteString(uint8_t *buf, int16_t x, int16_t y, char *str)
     }
 }
 
-void write_char_vertical(uint8_t *buf, int16_t x, int16_t y, uint8_t ch)
+static inline void write_char_vertical(uint8_t *buf, int16_t x, int16_t y, uint8_t ch)
 {
     if (x > SSD1306_WIDTH - 8 || y > SSD1306_HEIGHT - 8)
         return;
@@ -390,7 +383,7 @@ void write_char_vertical(uint8_t *buf, int16_t x, int16_t y, uint8_t ch)
     }
 }
 
-void write_string_vertical(uint8_t *buf, int16_t x, int16_t y, char *str)
+static inline void write_string_vertical(uint8_t *buf, int16_t x, int16_t y, char *str)
 {
     // Cull out any string off the screen
     if (x > SSD1306_WIDTH - 8 || y > SSD1306_HEIGHT - 8)
