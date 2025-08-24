@@ -62,6 +62,7 @@
 #include "layer.h"
 
 #include "ui.h"
+#include "ssd1306.h"
 
 #define QUEUE_SIZE 128
 #define LAYER_MOD_KEY ((uint8_t)(LAYER_MODIFIER_KEY - A1))

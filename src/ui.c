@@ -1,6 +1,6 @@
+#include "ssd1306.h"
 #include "ui.h"
 #include "tusb.h"
-
 
 void render_main_screen(uint8_t *buf, uint64_t time, uint8_t ccw_count, uint8_t cw_count)
 {

@@ -17,6 +17,7 @@
 #include "pico/binary_info.h"
 #include "hardware/i2c.h"
 #include "ssd1306_font.h"
+#include "ssd1306_render_area.h"
 #include "util.h"
 
 /* Example code to talk to an SSD1306-based OLED display
@@ -107,21 +108,6 @@
 #define SSD1306_WRITE_MODE         _u(0xFE)
 #define SSD1306_READ_MODE          _u(0xFF)
 
-
-struct render_area {
-    uint8_t start_col;
-    uint8_t end_col;
-    uint8_t start_page;
-    uint8_t end_page;
-
-    int buflen;
-};
-
-static inline void calc_render_area_buflen(struct render_area *area)
-{
-    // calculate how long the flattened buffer will be for a render area
-    area->buflen = (area->end_col - area->start_col + 1) * (area->end_page - area->start_page + 1);
-}
 
 
 #ifdef i2c_default

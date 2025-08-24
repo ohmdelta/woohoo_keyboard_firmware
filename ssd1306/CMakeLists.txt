@@ -5,6 +5,7 @@ include_directories(lib)
 add_library(
         ssd1306
         src/util.c
+        src/ssd1306_render_area.c
 )
 
 target_include_directories(
