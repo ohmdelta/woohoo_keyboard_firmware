@@ -2,24 +2,28 @@
 #include "keyboard_config.h"
 
 #include "hardware/gpio.h"
+#include <stdio.h>
 
 #define GPIO_INPUT_SETUP(BUTTON)   \
     gpio_init(BUTTON);             \
     gpio_set_dir(BUTTON, GPIO_IN); \
     gpio_pull_up(BUTTON);
 
-#define GPIO_INPUT_PULLDOWN(BUTTON)   \
-    gpio_init(BUTTON);             \
-    gpio_set_dir(BUTTON, GPIO_IN); \
+#define GPIO_INPUT_PULLDOWN(BUTTON) \
+    gpio_init(BUTTON);              \
+    gpio_set_dir(BUTTON, GPIO_IN);  \
     gpio_pull_down(BUTTON);
 
-bool encoder_a = 0;
-bool encoder_b = 0;
+atomic_bool encoder_a = 0;
+atomic_bool encoder_b = 0;
 bool encoder_button = 0;
+
+atomic_uint count_clockwise = 0;
+atomic_uint count_anti_clockwise = 0;
 
 bool encoder_has_action()
 {
-    return encoder_a || encoder_b || encoder_button;
+    return count_clockwise || count_anti_clockwise || encoder_button;
 }
 
 static void isr_handler(uint buf, uint32_t events)
@@ -28,19 +32,29 @@ static void isr_handler(uint buf, uint32_t events)
     switch (buf)
     {
     case ENCODER_A:
-        if ((!encoder_a) && !(encoder_b))
+        if (encoder_b)
+        {
+            count_clockwise++;
+            encoder_b = 0;
+        }
+        else
         {
             encoder_a = 1;
         }
         break;
     case ENCODER_B:
-        if ((!encoder_a) && !(encoder_b))
+        if (encoder_a)
+        {
+            count_anti_clockwise++;
+            encoder_a = 0;
+        }
+        else
         {
             encoder_b = 1;
         }
         break;
     case ENCODER_BUTTON:
-        encoder_button = true; 
+        encoder_button = true;
         break;
     default:
         break;
@@ -92,7 +106,10 @@ void setup_board(void)
     GPIO_INPUT_SETUP(T4)
     GPIO_INPUT_SETUP(T5)
     GPIO_INPUT_SETUP(T6)
+}
 
+void setup_encoder()
+{
     GPIO_INPUT_PULLDOWN(ENCODER_BUTTON)
     GPIO_INPUT_PULLDOWN(ENCODER_A)
     GPIO_INPUT_PULLDOWN(ENCODER_B)

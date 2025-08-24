@@ -38,6 +38,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdatomic.h>
 
 #include <tusb.h>
 #include <class/hid/hid.h>
@@ -90,8 +91,8 @@ typedef struct
 } queue_t;
 
 
-void send_consumer_control_block();
-void send_keyboard_report_block();
+static void send_consumer_control_block();
+static void send_keyboard_report_block();
 
 other_board_t ch = {.ch = 0, .done = 1};
 queue_t key_queue = {
@@ -187,7 +188,9 @@ struct render_area frame_area = {
 
 void core1_entry()
 {
+  setup_encoder();
   bool success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio, &sm, &offset, KEYBOARD_BACKLIGHT_PIN, 1, true);
+
   hard_assert(success);
   ws2812_program_init(pio, sm, offset, KEYBOARD_BACKLIGHT_PIN, 800000, IS_RGBW);
 
@@ -213,6 +216,7 @@ void core1_entry()
   {
     display_task();
     led_task();
+    encoder_task();
   }
   pio_remove_program_and_unclaim_sm(&ws2812_program, pio, sm, offset);
 }
@@ -305,7 +309,6 @@ int main(void)
       reset_keycode_buffer(&consumer_control_buffer);
     }
 
-    encoder_task();
 
     if (tud_suspended())
       tud_remote_wakeup();
@@ -347,6 +350,9 @@ void uart_read_task()
   }
 }
 
+uint8_t ccw_count = 0;
+uint8_t cw_count = 0;
+
 void display_task()
 {
   const fast_timer_t interval_us = 10000;
@@ -367,8 +373,17 @@ void display_task()
     write_string_vertical(buf, 112, 0, "MOUNTED");
   }
   else
+  {
     write_string_vertical(buf, 112, 0, "N/A CONN");
+  }
 
+  char ccw[SSD1306_NUM_PAGES];
+  snprintf(ccw, SSD1306_NUM_PAGES, "CCW:%d", ccw_count);
+  char cc[SSD1306_NUM_PAGES];
+  snprintf(cc, SSD1306_NUM_PAGES, "CC:%d", cw_count);
+
+  write_string_vertical(buf, 104, 0, ccw);
+  write_string_vertical(buf, 96, 0, cc);
   render(buf, &frame_area);
 }
 //--------------------------------------------------------------------+
@@ -400,47 +415,42 @@ void tud_resume_cb(void)
 
 static void encoder_task()
 {
-  if (encoder_has_action())
   {
-    if (encoder_a)
+    uint counter = atomic_exchange(&count_anti_clockwise, 0);
+    if (counter)
     {
       // uint16_t volume_down = HID_USAGE_CONSUMER_VOLUME_DECREMENT;
       // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_down, 2);
       // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
       // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-      brightness_update(1);
-      encoder_a = false;
+      brightness_update(counter);
+      ccw_count += counter;
     }
-    if (encoder_b)
+  }
+  {
+    uint counter = atomic_exchange(&count_clockwise, 0);
+    if (counter)
     {
       // uint16_t volume_down = HID_USAGE_CONSUMER_VOLUME_DECREMENT;
       // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_down, 2);
       // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
       // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-      brightness_update(-1);
-      encoder_b = false;
+      brightness_update(-counter);
+      cw_count += counter;
     }
-    // if (encoder_b)
-    // {
-    //   // uint8_t volume_up[2] = {0x00, 0xE9};
-    //   // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, volume_up, 2);
-    //   send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
-    //   tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-    //   encoder_b = false;
-    //   has_consumer_key = true;
-    // }
-    if (encoder_button)
-    {
-      // uint16_t volume_mute = HID_USAGE_CONSUMER_MUTE;
-      // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_mute, 2);
-      // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MUTE);
-      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-      led_cycle_pattern();
-      // uint8_t keycode[6] = {HID_KEY_A, HID_KEY_B, HID_KEY_C, HID_KEY_D, HID_KEY_E, HID_KEY_F};
-      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
-      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-      encoder_button = false;
-    }
+  }
+
+  if (encoder_button)
+  {
+    // uint16_t volume_mute = HID_USAGE_CONSUMER_MUTE;
+    // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_mute, 2);
+    // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MUTE);
+    // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+    led_cycle_pattern();
+    // uint8_t keycode[6] = {HID_KEY_A, HID_KEY_B, HID_KEY_C, HID_KEY_D, HID_KEY_E, HID_KEY_F};
+    // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
+    // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+    encoder_button = false;
   }
 }
 
