@@ -32,25 +32,39 @@ static void isr_handler(uint buf, uint32_t events)
     switch (buf)
     {
     case ENCODER_A:
-        if (encoder_b)
+        if (events == GPIO_IRQ_EDGE_FALL)
         {
-            count_clockwise++;
-            encoder_b = 0;
+            if (encoder_b)
+            {
+                count_clockwise++;
+                encoder_b = 0;
+            }
+            else
+            {
+                encoder_a = 1;
+            }
         }
         else
         {
-            encoder_a = 1;
+            encoder_a = 0;
         }
         break;
     case ENCODER_B:
-        if (encoder_a)
+        if (events == GPIO_IRQ_EDGE_FALL)
         {
-            count_anti_clockwise++;
-            encoder_a = 0;
+            if (encoder_a)
+            {
+                count_anti_clockwise++;
+                encoder_a = 0;
+            }
+            else
+            {
+                encoder_b = 1;
+            }
         }
         else
         {
-            encoder_b = 1;
+            encoder_b = 0;
         }
         break;
     case ENCODER_BUTTON:
@@ -115,6 +129,6 @@ void setup_encoder()
     GPIO_INPUT_PULLDOWN(ENCODER_B)
 
     gpio_set_irq_enabled_with_callback(ENCODER_BUTTON, GPIO_IRQ_EDGE_FALL, true, &isr_handler);
-    gpio_set_irq_enabled(ENCODER_A, GPIO_IRQ_EDGE_FALL, true);
-    gpio_set_irq_enabled(ENCODER_B, GPIO_IRQ_EDGE_FALL, true);
+    gpio_set_irq_enabled(ENCODER_A, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true);
+    gpio_set_irq_enabled(ENCODER_B, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true);
 }
