@@ -367,7 +367,24 @@ void display_task()
 
   start_us = current_time;
 
-  render_main_screen(buf, current_time, ccw_count, cw_count);
+  static main_page_state_t page_state = {
+      .ui_page = {
+          .page = MAIN,
+          .state = 0,
+          .time = 0,
+      },
+      .ccw_count = 0,
+      .cw_count = 0,
+  };
+
+  page_state.ui_page.time = current_time;
+
+  ui_command_t state = {
+      .ccw_count = ccw_count,
+      .cw_count = cw_count,
+  };
+  handle_main_screen(&page_state, &state);
+  render_main_screen(buf, &page_state);
   render(buf, &frame_area);
 }
 //--------------------------------------------------------------------+
@@ -408,8 +425,8 @@ static void encoder_task()
       // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
       // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
       brightness_update(counter);
-      ccw_count += counter;
     }
+    ccw_count = counter;
   }
   {
     uint counter = atomic_exchange(&count_clockwise, 0);
@@ -420,8 +437,8 @@ static void encoder_task()
       // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
       // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
       brightness_update(-counter);
-      cw_count += counter;
     }
+    cw_count = counter;
   }
 
   if (encoder_button)
