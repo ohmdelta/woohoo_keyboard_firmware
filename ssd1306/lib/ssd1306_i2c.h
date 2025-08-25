@@ -263,7 +263,7 @@ static inline void SetPixel(uint8_t *buf, int x, int y, bool on)
 }
 
 // Basic Bresenhams.
-static inline void DrawLine(uint8_t *buf, int x0, int y0, int x1, int y1, bool on)
+static inline void draw_line(uint8_t *buf, int x0, int y0, int x1, int y1, bool on)
 {
 
     int dx = abs(x1 - x0);
@@ -369,7 +369,7 @@ static inline void write_char_vertical(uint8_t *buf, int16_t x, int16_t y, uint8
     }
 }
 
-static inline void write_string_vertical(uint8_t *buf, int16_t x, int16_t y, char *str)
+static inline void write_string_vertical(uint8_t *buf, int16_t x, int16_t y, const char *str)
 {
     // Cull out any string off the screen
     if (x > SSD1306_WIDTH - 8 || y > SSD1306_HEIGHT - 8)

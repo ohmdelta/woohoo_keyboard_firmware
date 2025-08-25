@@ -104,12 +104,12 @@ restart:
     bool pix = true;
     for (int i = 0; i < 2;i++) {
         for (int x = 0;x < SSD1306_WIDTH;x++) {
-            DrawLine(buf, x, 0,  SSD1306_WIDTH - 1 - x, SSD1306_HEIGHT - 1, pix);
+            draw_line(buf, x, 0,  SSD1306_WIDTH - 1 - x, SSD1306_HEIGHT - 1, pix);
             render(buf, &frame_area);
         }
 
         for (int y = SSD1306_HEIGHT-1; y >= 0 ;y--) {
-            DrawLine(buf, 0, y, SSD1306_WIDTH - 1, SSD1306_HEIGHT - 1 - y, pix);
+            draw_line(buf, 0, y, SSD1306_WIDTH - 1, SSD1306_HEIGHT - 1 - y, pix);
             render(buf, &frame_area);
         }
         pix = false;
