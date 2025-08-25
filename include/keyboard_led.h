@@ -1,9 +1,6 @@
 #ifndef LED_H
 #define LED_H
 
-#include "matrix.h"
-
-#include "pico/stdlib.h"
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
 #include "ws2812.pio.h"
@@ -11,6 +8,7 @@
 #define LED_TIMEOUT 10000
 
 void led_cycle_pattern();
+void led_set_pattern(uint8_t ind);
 
 void brightness_update(int8_t val);
 

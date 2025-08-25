@@ -1,5 +1,6 @@
 #include "ssd1306.h"
 #include "ui.h"
+#include "keyboard_led.h"
 #include "tusb.h"
 
 const option_t main_options[] = {
@@ -11,32 +12,32 @@ const uint8_t num_main_options = sizeof(main_options) / sizeof(main_options[0]);
 
 void render_ui(uint8_t *buf, ui_command_t *state)
 {
-  static main_page_state_t page_state = {
-      .ui_page = {
-          .page = MAIN,
-          .state = 0,
-          .time = 0,
-      },
-      .ccw_count = 0,
-      .cw_count = 0,
-  };
+    static main_page_state_t page_state = {
+        .ui_page = {
+            .page = MAIN,
+            .state = 0,
+            .time = 0,
+        },
+        .ccw_count = 0,
+        .cw_count = 0,
+    };
 
-  page_state.ui_page.time = state->time;
+    page_state.ui_page.time = state->time;
 
-  switch (page_state.ui_page.page)
-  {
-  case MAIN:
-      handle_main_screen(&page_state, state);
-      render_main_screen(buf, &page_state);
-      break;
-  case LED:
-      handle_led_screen((ui_page_state_t *)&page_state, state);
-      render_led_screen(buf, (ui_page_state_t *)&page_state);
-      break;
+    switch (page_state.ui_page.page)
+    {
+    case MAIN:
+        handle_main_screen(&page_state, state);
+        render_main_screen(buf, &page_state);
+        break;
+    case LED:
+        handle_led_screen((ui_page_state_t *)&page_state, state);
+        render_led_screen(buf, (ui_page_state_t *)&page_state);
+        break;
 
-  default:
-      break;
-  }
+    default:
+        break;
+    }
 }
 
 void render_main_screen(uint8_t *buf, main_page_state_t *main_page_state)
@@ -114,13 +115,13 @@ void handle_main_screen(main_page_state_t *page_state, ui_command_t *state)
 }
 
 char const led_options[][9] = {
+    "NEUTRAL",
+    "RIPPLE",
     "SNAKES",
     "RANDOM",
     "SPARKLE",
     "GREYS",
     "DULL",
-    "RIPPLE",
-    "NEUTRAL",
 };
 
 const uint8_t num_led_options = sizeof(led_options) / sizeof(led_options[0]);
@@ -145,7 +146,13 @@ void render_led_screen(uint8_t *buf, ui_page_state_t *page_state)
     }
 }
 
-void handle_led_screen(ui_page_state_t* page_state, ui_command_t* state)
+void handle_led_screen(ui_page_state_t *page_state, ui_command_t *state)
 {
     handle_screen((ui_page_state_t *)(page_state), state, num_led_options);
+
+    if (state->encoder_pressed)
+    {
+        led_set_pattern(page_state->state);
+        page_state->page = MAIN;
+    }
 }

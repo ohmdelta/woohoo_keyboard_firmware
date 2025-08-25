@@ -440,7 +440,6 @@ static void encoder_task()
       // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_mute, 2);
       // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MUTE);
       // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-      led_cycle_pattern();
 
       // uint8_t keycode[6] = {HID_KEY_A, HID_KEY_B, HID_KEY_C, HID_KEY_D, HID_KEY_E, HID_KEY_F};
       // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);

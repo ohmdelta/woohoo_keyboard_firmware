@@ -1,5 +1,6 @@
 #include "keyboard_led.h"
 
+#include "matrix.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -63,6 +64,11 @@ uint8_t curr_pattern = 0;
 void led_cycle_pattern()
 {
     curr_pattern = (curr_pattern + 1) % count_of(pattern_table);
+}
+
+void led_set_pattern(uint8_t ind)
+{
+    curr_pattern = ind % count_of(pattern_table);
 }
 
 void run_pattern(PIO pio, uint sm, uint len)
