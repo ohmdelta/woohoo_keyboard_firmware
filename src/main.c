@@ -353,6 +353,7 @@ void uart_read_task()
 
 uint8_t ccw_count = 0;
 uint8_t cw_count = 0;
+bool enc_button = 0;
 
 void display_task()
 {
@@ -367,24 +368,14 @@ void display_task()
 
   start_us = current_time;
 
-  static main_page_state_t page_state = {
-      .ui_page = {
-          .page = MAIN,
-          .state = 0,
-          .time = 0,
-      },
-      .ccw_count = 0,
-      .cw_count = 0,
-  };
-
-  page_state.ui_page.time = current_time;
-
   ui_command_t state = {
       .ccw_count = ccw_count,
       .cw_count = cw_count,
+      .time = current_time,
+      .encoder_pressed = enc_button,
   };
-  handle_main_screen(&page_state, &state);
-  render_main_screen(buf, &page_state);
+
+  render_ui(buf, &state);
   render(buf, &frame_area);
 }
 //--------------------------------------------------------------------+
@@ -441,17 +432,22 @@ static void encoder_task()
     cw_count = counter;
   }
 
-  if (encoder_button)
   {
-    // uint16_t volume_mute = HID_USAGE_CONSUMER_MUTE;
-    // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_mute, 2);
-    // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MUTE);
-    // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-    led_cycle_pattern();
-    // uint8_t keycode[6] = {HID_KEY_A, HID_KEY_B, HID_KEY_C, HID_KEY_D, HID_KEY_E, HID_KEY_F};
-    // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
-    // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-    encoder_button = false;
+    enc_button = encoder_button;
+    if (encoder_button)
+    {
+      // uint16_t volume_mute = HID_USAGE_CONSUMER_MUTE;
+      // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_mute, 2);
+      // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MUTE);
+      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+      led_cycle_pattern();
+
+      // uint8_t keycode[6] = {HID_KEY_A, HID_KEY_B, HID_KEY_C, HID_KEY_D, HID_KEY_E, HID_KEY_F};
+      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
+      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+      encoder_button = false;
+    }
+
   }
 }
 
