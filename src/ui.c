@@ -3,14 +3,16 @@
 #include "keyboard_led.h"
 #include "tusb.h"
 
+void render_back_button(uint8_t *buf);
+
 // LED SCREEN
 void render_led_screen(uint8_t *buf, ui_page_state_t *page_state);
-void handle_led_screen(ui_page_state_t* page_state, ui_command_t* state);
+void handle_led_screen(ui_page_state_t *page_state, ui_command_t *state);
 
 void handle_led_brightness(ui_page_state_t *page_state, ui_command_t *state);
 void render_led_brightness(uint8_t *buf, ui_page_state_t *page_state);
 
-void handle_led_pattern_screen(ui_page_state_t* page_state, ui_command_t* state);
+void handle_led_pattern_screen(ui_page_state_t *page_state, ui_command_t *state);
 void render_led_pattern_screen(uint8_t *buf, ui_page_state_t *page_state);
 
 const option_t main_options[] = {
@@ -129,9 +131,10 @@ void handle_main_screen(main_page_state_t *page_state, ui_command_t *state)
     }
 }
 
-enum LED_SCREEN_OPTIONS{
+enum LED_SCREEN_OPTIONS
+{
     LED_SCREEN_PATTERN = 0,
-    LED_PAGE_BRIGHTNESS ,
+    LED_PAGE_BRIGHTNESS,
 };
 
 char const led_screen_options[][9] = {
@@ -147,6 +150,8 @@ void render_led_screen(uint8_t *buf, ui_page_state_t *page_state)
         write_string_vertical(buf, 128 - 12 * (i + 1), 0, led_screen_options[i]);
     }
 
+    render_back_button(buf);
+
     {
         uint8_t state = page_state->state;
         uint8_t ax = 114 - 12 * state;
@@ -156,7 +161,7 @@ void render_led_screen(uint8_t *buf, ui_page_state_t *page_state)
     }
 }
 
-void handle_led_screen(ui_page_state_t* page_state, ui_command_t* state)
+void handle_led_screen(ui_page_state_t *page_state, ui_command_t *state)
 {
     handle_state((ui_page_state_t *)(page_state), state, num_main_options);
 
@@ -174,17 +179,28 @@ void handle_led_screen(ui_page_state_t* page_state, ui_command_t* state)
             break;
         }
     }
-
 }
 
+enum LED_PATTERN_OPTIONS
+{
+    NEUTRAL = 0,
+    RIPPLE,
+    SNAKES,
+    RANDOM,
+    SPARKLE,
+    GREYS,
+    DULL,
+    LED_PATTERN_PAGE_BACK,
+};
+
 char const led_options[][9] = {
-    "NEUTRAL",
-    "RIPPLE",
-    "SNAKES",
-    "RANDOM",
-    "SPARKLE",
-    "GREYS",
-    "DULL",
+    [NEUTRAL] = "NEUTRAL",
+    [RIPPLE] = "RIPPLE",
+    [SNAKES] = "SNAKES",
+    [RANDOM] = "RANDOM",
+    [SPARKLE] = "SPARKLE",
+    [GREYS] = "GREYS",
+    [DULL] = "DULL",
 };
 
 const uint8_t num_led_options = sizeof(led_options) / sizeof(led_options[0]);
@@ -196,9 +212,14 @@ void render_led_pattern_screen(uint8_t *buf, ui_page_state_t *page_state)
         write_string_vertical(buf, 128 - 12 * (i + 1), 0, led_options[i]);
     }
 
+    render_back_button(buf);
     {
         uint8_t state = page_state->state;
-        uint8_t ax = 114 - 12 * state;
+        uint8_t ax = 0;
+        if (state != LED_PATTERN_PAGE_BACK)
+        {
+            ax = 114 - 12 * state;
+        }
         uint8_t bx = 12 + ax;
 
         draw_divider_box(buf, ax, bx, 1);
@@ -207,12 +228,19 @@ void render_led_pattern_screen(uint8_t *buf, ui_page_state_t *page_state)
 
 void handle_led_pattern_screen(ui_page_state_t *page_state, ui_command_t *state)
 {
-    handle_state((ui_page_state_t *)(page_state), state, num_led_options);
+    handle_state((ui_page_state_t *)(page_state), state, num_led_options + 1);
 
     if (state->encoder_pressed)
     {
-        led_set_pattern(page_state->state);
-        page_state->page = MAIN_PAGE;
+        if (page_state->state == LED_PATTERN_PAGE_BACK)
+        {
+            page_state->page = LED_PAGE;
+        }
+        else
+        {
+            led_set_pattern(page_state->state);
+            page_state->page = MAIN_PAGE;
+        }
     }
 }
 
@@ -242,4 +270,9 @@ void render_led_brightness(uint8_t *buf, ui_page_state_t *page_state)
 
     uint8_t brightness = get_led_brightness();
     draw_solid_rectangle(buf, ax, 0, bx, brightness ? ((brightness * 8) - 1) : 0, 1);
+}
+
+void render_back_button(uint8_t *buf)
+{
+    write_string_vertical(buf, 2, 0, " BACK");
 }
