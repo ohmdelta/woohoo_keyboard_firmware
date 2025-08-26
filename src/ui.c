@@ -3,9 +3,12 @@
 #include "keyboard_led.h"
 #include "tusb.h"
 
+void handle_led_brightness(ui_page_state_t *page_state, ui_command_t *state);
+void render_led_brightness(uint8_t *buf, ui_page_state_t *page_state);
+
 const option_t main_options[] = {
-    {" LED", LED},
-    {" TIMER", TIMER},
+    {" LED", LED_PAGE},
+    {" TIMER", TIMER_PAGE},
 };
 
 const uint8_t num_main_options = sizeof(main_options) / sizeof(main_options[0]);
@@ -14,7 +17,7 @@ void render_ui(uint8_t *buf, ui_command_t *state)
 {
     static main_page_state_t page_state = {
         .ui_page = {
-            .page = MAIN,
+            .page = MAIN_PAGE,
             .state = 0,
             .time = 0,
         },
@@ -26,13 +29,19 @@ void render_ui(uint8_t *buf, ui_command_t *state)
 
     switch (page_state.ui_page.page)
     {
-    case MAIN:
+    case MAIN_PAGE:
         handle_main_screen(&page_state, state);
         render_main_screen(buf, &page_state);
         break;
-    case LED:
+    case LED_PAGE:
         handle_led_screen((ui_page_state_t *)&page_state, state);
         render_led_screen(buf, (ui_page_state_t *)&page_state);
+        break;
+    case TIMER_PAGE:
+        break;
+    case LED_BRIGHTNESS_PAGE:
+        handle_led_brightness((ui_page_state_t *)&page_state, state);
+        render_led_brightness(buf, (ui_page_state_t *)&page_state);
         break;
 
     default:
@@ -81,7 +90,7 @@ void render_main_screen(uint8_t *buf, main_page_state_t *main_page_state)
     }
 }
 
-void handle_screen(ui_page_state_t *page_state, ui_command_t *state, uint8_t num_options)
+void handle_state(ui_page_state_t *page_state, ui_command_t *state, uint8_t num_options)
 {
     int8_t ui_state = page_state->state + (state->ccw_count - state->cw_count);
     ui_state %= num_options;
@@ -95,7 +104,7 @@ void handle_screen(ui_page_state_t *page_state, ui_command_t *state, uint8_t num
 
 void handle_main_screen(main_page_state_t *page_state, ui_command_t *state)
 {
-    handle_screen((ui_page_state_t *)(page_state), state, num_main_options);
+    handle_state((ui_page_state_t *)(page_state), state, num_main_options);
 
     page_state->ccw_count += state->ccw_count;
     page_state->cw_count += state->cw_count;
@@ -104,8 +113,8 @@ void handle_main_screen(main_page_state_t *page_state, ui_command_t *state)
     {
         switch (page_state->ui_page.state + 1)
         {
-        case LED:
-            page_state->ui_page.page = LED;
+        case LED_PAGE:
+            page_state->ui_page.page = LED_PAGE;
             break;
 
         default:
@@ -148,11 +157,39 @@ void render_led_screen(uint8_t *buf, ui_page_state_t *page_state)
 
 void handle_led_screen(ui_page_state_t *page_state, ui_command_t *state)
 {
-    handle_screen((ui_page_state_t *)(page_state), state, num_led_options);
+    handle_state((ui_page_state_t *)(page_state), state, num_led_options);
 
     if (state->encoder_pressed)
     {
         led_set_pattern(page_state->state);
-        page_state->page = MAIN;
+        page_state->page = MAIN_PAGE;
     }
+}
+
+void handle_led_brightness(ui_page_state_t *page_state, ui_command_t *state)
+{
+    brightness_update(state->ccw_count - state->cw_count);
+
+    if (state->encoder_pressed)
+    {
+        page_state->page = LED_PAGE;
+    }
+}
+
+void render_led_brightness(uint8_t *buf, ui_page_state_t *page_state)
+{
+    write_string_vertical(buf, 92, 0, "LED");
+
+    uint8_t state = page_state->state;
+    uint8_t ax = 64 - 12 * state;
+    uint8_t bx = 12 + ax;
+
+    draw_line(buf, ax, 0, ax, SSD1306_HEIGHT - 1, 1);
+    draw_line(buf, bx, 0, bx, SSD1306_HEIGHT - 1, 1);
+
+    draw_line(buf, ax, 0, bx, 0, 1);
+    draw_line(buf, ax, SSD1306_HEIGHT - 1, bx, SSD1306_HEIGHT - 1, 1);
+
+    uint8_t brightness = get_led_brightness();
+    draw_solid_rectangle(buf, ax, 0, bx, brightness ? brightness * 8 - 1 : 0, 1);
 }

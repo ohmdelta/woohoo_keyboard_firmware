@@ -14,9 +14,10 @@ typedef struct
 
 enum UIPage
 {
-    MAIN = 0,
-    LED,
-    TIMER,
+    MAIN_PAGE = 0,
+    LED_PAGE,
+    TIMER_PAGE,
+    LED_BRIGHTNESS_PAGE,
 };
 
 typedef struct

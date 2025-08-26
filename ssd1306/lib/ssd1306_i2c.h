@@ -235,7 +235,7 @@ static inline void render(uint8_t *buf, struct render_area *area)
     SSD1306_send_buf(buf, area->buflen);
 }
 
-static inline void SetPixel(uint8_t *buf, int x, int y, bool on)
+inline void set_pixel(uint8_t *buf, int x, int y, bool on)
 {
     assert(x >= 0 && x < SSD1306_WIDTH && y >= 0 && y < SSD1306_HEIGHT);
 
@@ -262,36 +262,6 @@ static inline void SetPixel(uint8_t *buf, int x, int y, bool on)
     buf[byte_idx] = byte;
 }
 
-// Basic Bresenhams.
-static inline void draw_line(uint8_t *buf, int x0, int y0, int x1, int y1, bool on)
-{
-
-    int dx = abs(x1 - x0);
-    int sx = x0 < x1 ? 1 : -1;
-    int dy = -abs(y1 - y0);
-    int sy = y0 < y1 ? 1 : -1;
-    int err = dx + dy;
-    int e2;
-
-    while (true)
-    {
-        SetPixel(buf, x0, y0, on);
-        if (x0 == x1 && y0 == y1)
-            break;
-        e2 = 2 * err;
-
-        if (e2 >= dy)
-        {
-            err += dy;
-            x0 += sx;
-        }
-        if (e2 <= dx)
-        {
-            err += dx;
-            y0 += sy;
-        }
-    }
-}
 
 static inline int GetFontIndex(uint8_t ch)
 {

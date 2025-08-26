@@ -10,7 +10,6 @@
 #include "hardware/clocks.h"
 #include "ws2812.pio.h"
 
-
 void pattern_snakes(PIO pio, uint sm, uint len, uint t);
 void pattern_random(PIO pio, uint sm, uint len, uint t);
 void pattern_sparkle(PIO pio, uint sm, uint len, uint t);
@@ -33,15 +32,23 @@ const struct
     {pattern_dull, "Dull"},
 };
 
-uint8_t brightess = 7;
+uint8_t brightess = MAX_LED_BRIGHTNESS - 1;
 
-void brightness_update(int8_t val) {
+uint8_t get_led_brightness()
+{
+    return brightess;
+}
+
+void brightness_update(int8_t val)
+{
     int8_t v = brightess + val;
-    if (v < 0) {
+    if (v < 0)
+    {
         v = 0;
     }
-    if (v > 8) {
-        v = 8;
+    if (v >= MAX_LED_BRIGHTNESS)
+    {
+        v = MAX_LED_BRIGHTNESS - 1;
     }
     brightess = v;
 }
@@ -129,7 +136,8 @@ void pattern_greys(PIO pio, uint sm, uint len, uint t)
     }
 }
 
-void pattern_dull(PIO pio, uint sm, uint len, uint t){
+void pattern_dull(PIO pio, uint sm, uint len, uint t)
+{
     (void)t;
     for (uint i = 0; i < len; ++i)
     {
@@ -153,11 +161,13 @@ const uint8_t translation_kernel[KERNEL_SIZE][KERNEL_SIZE] = {
     {-9, -4, 1, 6, 11},
     {-8, -3, 2, 7, 12}};
 
-inline int8_t min(int8_t a, int8_t b) {
+inline int8_t min(int8_t a, int8_t b)
+{
     return a < b ? a : b;
 }
 
-inline int8_t max(int8_t a, int8_t b) {
+inline int8_t max(int8_t a, int8_t b)
+{
     return a > b ? a : b;
 }
 

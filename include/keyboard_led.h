@@ -6,10 +6,12 @@
 #include "ws2812.pio.h"
 
 #define LED_TIMEOUT 10000
+#define MAX_LED_BRIGHTNESS 8
 
 void led_cycle_pattern();
 void led_set_pattern(uint8_t ind);
 
+uint8_t get_led_brightness();
 void brightness_update(int8_t val);
 
 void run_pattern(PIO pio, uint sm, uint len);
