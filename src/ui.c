@@ -92,12 +92,7 @@ void render_main_screen(uint8_t *buf, main_page_state_t *main_page_state)
     {
         uint8_t ax = 88 - 2 - 12 * state;
         uint8_t bx = ax - 12;
-
-        draw_line(buf, ax, 0, ax, SSD1306_HEIGHT - 1, 1);
-        draw_line(buf, bx, 0, bx, SSD1306_HEIGHT - 1, 1);
-
-        draw_line(buf, ax, 0, bx, 0, 1);
-        draw_line(buf, ax, SSD1306_HEIGHT - 1, bx, SSD1306_HEIGHT - 1, 1);
+        draw_divider_box(buf, ax, bx, 1);
     }
 }
 
@@ -157,11 +152,7 @@ void render_led_screen(uint8_t *buf, ui_page_state_t *page_state)
         uint8_t ax = 114 - 12 * state;
         uint8_t bx = 12 + ax;
 
-        draw_line(buf, ax, 0, ax, SSD1306_HEIGHT - 1, 1);
-        draw_line(buf, bx, 0, bx, SSD1306_HEIGHT - 1, 1);
-
-        draw_line(buf, ax, 0, bx, 0, 1);
-        draw_line(buf, ax, SSD1306_HEIGHT - 1, bx, SSD1306_HEIGHT - 1, 1);
+        draw_divider_box(buf, ax, bx, 1);
     }
 }
 
@@ -210,11 +201,7 @@ void render_led_pattern_screen(uint8_t *buf, ui_page_state_t *page_state)
         uint8_t ax = 114 - 12 * state;
         uint8_t bx = 12 + ax;
 
-        draw_line(buf, ax, 0, ax, SSD1306_HEIGHT - 1, 1);
-        draw_line(buf, bx, 0, bx, SSD1306_HEIGHT - 1, 1);
-
-        draw_line(buf, ax, 0, bx, 0, 1);
-        draw_line(buf, ax, SSD1306_HEIGHT - 1, bx, SSD1306_HEIGHT - 1, 1);
+        draw_divider_box(buf, ax, bx, 1);
     }
 }
 
