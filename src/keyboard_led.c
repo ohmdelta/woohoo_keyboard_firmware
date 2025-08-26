@@ -32,16 +32,16 @@ const struct
     {pattern_dull, "Dull"},
 };
 
-uint8_t brightess = MAX_LED_BRIGHTNESS - 1;
+uint8_t brightness = (MAX_LED_BRIGHTNESS - 1) / 2;
 
 uint8_t get_led_brightness()
 {
-    return brightess;
+    return brightness;
 }
 
 void brightness_update(int8_t val)
 {
-    int8_t v = brightess + val;
+    int8_t v = brightness + val;
     if (v < 0)
     {
         v = 0;
@@ -50,7 +50,7 @@ void brightness_update(int8_t val)
     {
         v = MAX_LED_BRIGHTNESS - 1;
     }
-    brightess = v;
+    brightness = v;
 }
 
 static inline void put_pixel(PIO pio, uint sm, uint32_t pixel_grb)
@@ -97,9 +97,9 @@ void pattern_snakes(PIO pio, uint sm, uint len, uint t)
     for (uint i = 0; i < len; ++i)
     {
         uint x = (i + (t >> 1)) % 64;
-        if (brightess)
+        if (brightness)
         {
-            uint8_t b = brightess - 1;
+            uint8_t b = brightness - 1;
             if (x < 10)
                 put_pixel(pio, sm, urgb_u32(0x1 << b, 0, 0));
             else if (x >= 15 && x < 25)
@@ -114,12 +114,38 @@ void pattern_snakes(PIO pio, uint sm, uint len, uint t)
     }
 }
 
+static inline uint8_t normalise_brightness(uint8_t c, uint8_t brightness)
+{
+    if (brightness == MAX_LED_BRIGHTNESS - 1)
+    {
+        return c;
+    }
+
+    return brightness * (c / (MAX_LED_BRIGHTNESS - 1));
+}
+
+static inline uint32_t brightness_color_normalisation(uint32_t color, uint8_t brightness)
+{
+    uint8_t r = u32_r(color);
+    uint8_t g = u32_g(color);
+    uint8_t b = u32_b(color);
+
+    r = normalise_brightness(r, brightness);
+    g = normalise_brightness(g, brightness);
+    b = normalise_brightness(b, brightness);
+
+    return urgb_u32(r, g, b);
+}
+
 void pattern_random(PIO pio, uint sm, uint len, uint t)
 {
     if (t % 8)
         return;
     for (uint i = 0; i < len; ++i)
-        put_pixel(pio, sm, rand());
+    {
+        uint32_t pix = brightness_color_normalisation(rand(), brightness);
+        put_pixel(pio, sm, pix);
+    }
 }
 
 void pattern_sparkle(PIO pio, uint sm, uint len, uint t)
@@ -127,7 +153,10 @@ void pattern_sparkle(PIO pio, uint sm, uint len, uint t)
     if (t % 8)
         return;
     for (uint i = 0; i < len; ++i)
-        put_pixel(pio, sm, rand() % 16 ? 0 : 0xffffffff);
+    {
+        uint32_t pix = rand() % 16 ? 0 : 0xffffffff;
+        put_pixel(pio, sm, brightness_color_normalisation(pix, brightness));
+    }
 }
 
 void pattern_greys(PIO pio, uint sm, uint len, uint t)
@@ -136,7 +165,7 @@ void pattern_greys(PIO pio, uint sm, uint len, uint t)
     t %= max;
     for (uint i = 0; i < len; ++i)
     {
-        put_pixel(pio, sm, t * 0x10101);
+        put_pixel(pio, sm, brightness_color_normalisation(t * 0x10101, brightness));
         if (++t >= max)
             t = 0;
     }
@@ -147,7 +176,7 @@ void pattern_dull(PIO pio, uint sm, uint len, uint t)
     (void)t;
     for (uint i = 0; i < len; ++i)
     {
-        put_pixel(pio, sm, urgb_u32(0x2, 0x2, 0x2));
+        put_pixel(pio, sm, brightness_color_normalisation(white_offset_urgb_u32(0xf, 0x0, 0x0, 0x0), brightness));
     }
 }
 
@@ -276,11 +305,11 @@ void pattern_neutral(PIO pio, uint sm, uint len, uint t)
     {
         if (matrix_bank_status[i].is_pressed)
         {
-            put_pixel(pio, sm, white_offset_urgb_u32(0xff, 0x0, 0x0, 0x0));
+            put_pixel(pio, sm, brightness_color_normalisation(white_offset_urgb_u32(0xff, 0x0, 0x0, 0x0), brightness));
         }
         else
         {
-            put_pixel(pio, sm, urgb_u32(0x0, 0x1, 0x4));
+            put_pixel(pio, sm, urgb_u32(0x0, normalise_brightness(0xff >> 3, brightness), normalise_brightness(0xff, brightness)));
         }
     }
 }

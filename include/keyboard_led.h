@@ -30,5 +30,18 @@ inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b)
            (uint32_t)(b);
 }
 
+inline uint8_t u32_r(uint32_t c) {
+    return c >> 8;
+}
+
+inline uint8_t u32_g(uint32_t c) {
+    return c >> 16;
+}
+
+inline uint8_t u32_b(uint32_t c) {
+    return c;
+}
+
+
 typedef void (*pattern)(PIO pio, uint sm, uint len, uint t);
 #endif

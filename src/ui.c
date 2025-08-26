@@ -78,7 +78,7 @@ void render_main_screen(uint8_t *buf, main_page_state_t *main_page_state)
     char ccw[SSD1306_NUM_PAGES];
     snprintf(ccw, SSD1306_NUM_PAGES, "CCW:%d", main_page_state->ccw_count);
     char cc[SSD1306_NUM_PAGES];
-    snprintf(cc, SSD1306_NUM_PAGES, "CC:%d", main_page_state->cw_count);
+    snprintf(cc, SSD1306_NUM_PAGES, "CW:%d", main_page_state->cw_count);
 
     write_string_vertical(buf, 104, 0, ccw);
     write_string_vertical(buf, 96, 0, cc);
@@ -98,7 +98,7 @@ void render_main_screen(uint8_t *buf, main_page_state_t *main_page_state)
 
 void handle_state(ui_page_state_t *page_state, ui_command_t *state, uint8_t num_options)
 {
-    int8_t ui_state = page_state->state + (state->ccw_count - state->cw_count);
+    int8_t ui_state = page_state->state + (state->cw_count - state->ccw_count);
     ui_state %= num_options;
     if (ui_state < 0)
     {
