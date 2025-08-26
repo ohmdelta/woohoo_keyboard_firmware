@@ -18,6 +18,7 @@ enum UIPage
     LED_PAGE,
     TIMER_PAGE,
     LED_BRIGHTNESS_PAGE,
+    LED_PATTERN_PAGE,
 };
 
 typedef struct
@@ -47,9 +48,5 @@ void render_ui(uint8_t *buf, ui_command_t *state);
 
 void render_main_screen(uint8_t *buf, main_page_state_t *main_page_state);
 void handle_main_screen(main_page_state_t* page_state, ui_command_t* state);
-
-// LED SCREEN
-void render_led_screen(uint8_t *buf, ui_page_state_t *page_state);
-void handle_led_screen(ui_page_state_t* page_state, ui_command_t* state);
 
 #endif

@@ -408,28 +408,10 @@ void tud_resume_cb(void)
 static void encoder_task()
 {
   {
-    uint counter = atomic_exchange(&count_anti_clockwise, 0);
-    if (counter)
-    {
-      // uint16_t volume_down = HID_USAGE_CONSUMER_VOLUME_DECREMENT;
-      // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_down, 2);
-      // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
-      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-      brightness_update(counter);
-    }
-    ccw_count = counter;
+    ccw_count = atomic_exchange(&count_anti_clockwise, 0);
   }
   {
-    uint counter = atomic_exchange(&count_clockwise, 0);
-    if (counter)
-    {
-      // uint16_t volume_down = HID_USAGE_CONSUMER_VOLUME_DECREMENT;
-      // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_down, 2);
-      // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MINUS);
-      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-      brightness_update(-counter);
-    }
-    cw_count = counter;
+    cw_count  = atomic_exchange(&count_clockwise, 0);
   }
 
   {

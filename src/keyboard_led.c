@@ -97,12 +97,18 @@ void pattern_snakes(PIO pio, uint sm, uint len, uint t)
     for (uint i = 0; i < len; ++i)
     {
         uint x = (i + (t >> 1)) % 64;
-        if (x < 10)
-            put_pixel(pio, sm, urgb_u32(0x1 << brightess, 0, 0));
-        else if (x >= 15 && x < 25)
-            put_pixel(pio, sm, urgb_u32(0, 0x1 << brightess, 0));
-        else if (x >= 30 && x < 40)
-            put_pixel(pio, sm, urgb_u32(0, 0, 0x1 << brightess));
+        if (brightess)
+        {
+            uint8_t b = brightess - 1;
+            if (x < 10)
+                put_pixel(pio, sm, urgb_u32(0x1 << b, 0, 0));
+            else if (x >= 15 && x < 25)
+                put_pixel(pio, sm, urgb_u32(0, 0x1 << b, 0));
+            else if (x >= 30 && x < 40)
+                put_pixel(pio, sm, urgb_u32(0, 0, 0x1 << b));
+            else
+                put_pixel(pio, sm, 0);
+        }
         else
             put_pixel(pio, sm, 0);
     }
