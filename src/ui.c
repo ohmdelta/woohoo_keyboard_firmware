@@ -135,6 +135,7 @@ enum LED_SCREEN_OPTIONS
 {
     LED_SCREEN_PATTERN = 0,
     LED_PAGE_BRIGHTNESS,
+    LED_PAGE_BACK,
 };
 
 char const led_screen_options[][9] = {
@@ -154,7 +155,11 @@ void render_led_screen(uint8_t *buf, ui_page_state_t *page_state)
 
     {
         uint8_t state = page_state->state;
-        uint8_t ax = 114 - 12 * state;
+        uint8_t ax = 0;
+        if (state != LED_PAGE_BACK)
+        {
+            ax = 114 - 12 * state;
+        }
         uint8_t bx = 12 + ax;
 
         draw_divider_box(buf, ax, bx, 1);
@@ -163,7 +168,7 @@ void render_led_screen(uint8_t *buf, ui_page_state_t *page_state)
 
 void handle_led_screen(ui_page_state_t *page_state, ui_command_t *state)
 {
-    handle_state((ui_page_state_t *)(page_state), state, num_main_options);
+    handle_state((ui_page_state_t *)(page_state), state, NUM_LED_SCREEN_OPTIONS + 1);
 
     if (state->encoder_pressed)
     {
@@ -174,6 +179,9 @@ void handle_led_screen(ui_page_state_t *page_state, ui_command_t *state)
             break;
         case LED_PAGE_BRIGHTNESS:
             page_state->page = LED_BRIGHTNESS_PAGE;
+            break;
+        case LED_PAGE_BACK:
+            page_state->page = MAIN_PAGE;
             break;
         default:
             break;
@@ -274,5 +282,6 @@ void render_led_brightness(uint8_t *buf, ui_page_state_t *page_state)
 
 void render_back_button(uint8_t *buf)
 {
+    draw_horizontal_divider(buf, 12, 1);
     write_string_vertical(buf, 2, 0, " BACK");
 }
