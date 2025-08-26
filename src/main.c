@@ -485,7 +485,7 @@ static inline void add_keycodes_n_composite(const key_layer_config_t *key)
   {
   case REPORT_ID_KEYBOARD:
     add_keycodes_n(&keycode_buffer, key->keys, key->size);
-    uart_puts(UART_ID, (const char *)key);
+    uart_puts(UART_ID, (const char *)key->keys);
     break;
   case REPORT_ID_CONSUMER_CONTROL:
     add_keycode_layer(&consumer_control_buffer, key);
