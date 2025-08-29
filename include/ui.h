@@ -16,7 +16,7 @@ enum UIPage
 {
     MAIN_PAGE = 0,
     LED_PAGE,
-    TIMER_PAGE,
+    TIMER_SELECT_PAGE,
     LED_BRIGHTNESS_PAGE,
     LED_PATTERN_PAGE,
 };
@@ -31,6 +31,7 @@ typedef struct
 typedef struct 
 {
     ui_page_state_t ui_page;
+    uint64_t timer_val;
     uint8_t ccw_count;
     uint8_t cw_count;
 } main_page_state_t;

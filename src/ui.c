@@ -15,9 +15,12 @@ void render_led_brightness(uint8_t *buf, ui_page_state_t *page_state);
 void handle_led_pattern_screen(ui_page_state_t *page_state, ui_command_t *state);
 void render_led_pattern_screen(uint8_t *buf, ui_page_state_t *page_state);
 
+void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *state);
+void render_timer_select_screen(uint8_t *buf, main_page_state_t *page_state);
+
 const option_t main_options[] = {
     {" LED", LED_PAGE},
-    {" TIMER", TIMER_PAGE},
+    {" TIMER", TIMER_SELECT_PAGE},
 };
 
 const uint8_t num_main_options = sizeof(main_options) / sizeof(main_options[0]);
@@ -50,7 +53,9 @@ void render_ui(uint8_t *buf, ui_command_t *state)
         handle_led_pattern_screen((ui_page_state_t *)&page_state, state);
         render_led_pattern_screen(buf, (ui_page_state_t *)&page_state);
         break;
-    case TIMER_PAGE:
+    case TIMER_SELECT_PAGE:
+        handle_timer_select_screen(&page_state, state);
+        render_timer_select_screen(buf, &page_state);
         break;
     case LED_BRIGHTNESS_PAGE:
         handle_led_brightness((ui_page_state_t *)&page_state, state);
@@ -119,16 +124,78 @@ void handle_main_screen(main_page_state_t *page_state, ui_command_t *state)
 
     if (state->encoder_pressed)
     {
-        switch (page_state->ui_page.state + 1)
-        {
-        case LED_PAGE:
-            page_state->ui_page.page = LED_PAGE;
-            break;
+        page_state->ui_page.page = main_options[page_state->ui_page.state].ui_page;
+    }
+}
 
+enum timer_screen_states
+{
+    TIMER_SELECT = 0,
+    TIMER_START,
+    TIMER_PAUSE,
+    TIMER_BACK,
+};
+
+
+char const timer_select_options[][9] = {
+    [TIMER_START] = " START",
+    [TIMER_PAUSE] = " PAUSE",
+};
+#define NUM_TIMER_SELECT_OPTIONS (count_of(timer_select_options))
+
+void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *state)
+{
+    handle_state((ui_page_state_t *)(page_state), state, TIMER_BACK + 1);
+    static uint64_t current_timer_count = 0;
+    current_timer_count = MIN(current_timer_count, page_state->timer_val - page_state->ui_page.time);
+
+    page_state->ccw_count += state->ccw_count;
+    page_state->cw_count += state->cw_count;
+
+    if (state->encoder_pressed)
+    {
+        switch (page_state->ui_page.state)
+        {
+        case TIMER_SELECT:
+            break;
+        case TIMER_START:
+            break;
+        case TIMER_PAUSE:
+            break;
+        case TIMER_BACK:
+            page_state->ui_page.page = MAIN_PAGE;
+            break;
         default:
             break;
         }
     }
+}
+
+void render_timer_select_screen(uint8_t *buf, main_page_state_t *page_state)
+{
+    write_string_vertical(buf, 80, 0, "00:00:00");
+    for (uint8_t i = TIMER_START; i < NUM_TIMER_SELECT_OPTIONS; i++)
+    {
+        write_string_vertical(buf, 64 - 12 * (i + 1), 0, timer_select_options[i]);
+    }
+
+    render_back_button(buf);
+
+    {
+        uint8_t state = page_state->ui_page.state;
+        uint8_t ax = 0;
+        if (state == TIMER_SELECT){
+            ax = 78;
+        }
+        else if (state != TIMER_BACK)
+        {
+            ax = 50 - 12 * state;
+        }
+        uint8_t bx = 12 + ax;
+
+        draw_divider_box(buf, ax, bx, 1);
+    }
+
 }
 
 enum LED_SCREEN_OPTIONS
