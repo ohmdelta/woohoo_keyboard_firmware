@@ -3,6 +3,7 @@
 
 // MAIN SCREEN
 #include "ui_structs.h"
+#include "common.h"
 
 void render_ui(uint8_t *buf, ui_command_t *state);
 

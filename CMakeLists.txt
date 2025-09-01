@@ -33,6 +33,8 @@ function (setup_side FIRMWARE)
     src/firmware_timer.c
     src/layer.c
     src/ui/ui.c
+    src/ui/timer.c
+    src/ui/common.c
   )
 
   # create map/bin/hex/uf2 file in addition to ELF.
