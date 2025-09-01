@@ -108,7 +108,7 @@ void handle_main_screen(main_page_state_t *page_state, ui_command_t *state)
 
     if (state->encoder_pressed)
     {
-        page_state->ui_page.page = main_options[page_state->ui_page.state].ui_page;
+        switch_state(&(page_state->ui_page), main_options[page_state->ui_page.state].ui_page);
     }
 }
 
@@ -156,13 +156,13 @@ void handle_led_screen(ui_page_state_t *page_state, ui_command_t *state)
         switch (page_state->state)
         {
         case LED_SCREEN_PATTERN:
-            page_state->page = LED_PATTERN_PAGE;
+            switch_state(page_state, LED_PATTERN_PAGE);
             break;
         case LED_PAGE_BRIGHTNESS:
-            page_state->page = LED_BRIGHTNESS_PAGE;
+            switch_state(page_state, LED_BRIGHTNESS_PAGE);
             break;
         case LED_PAGE_BACK:
-            page_state->page = MAIN_PAGE;
+            switch_state(page_state, MAIN_PAGE);
             break;
         default:
             break;

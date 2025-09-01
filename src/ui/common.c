@@ -1,5 +1,4 @@
 #include "ssd1306.h"
-#include "ui/ui_structs.h"
 #include "ui/common.h"
 
 void render_back_button(uint8_t *buf)

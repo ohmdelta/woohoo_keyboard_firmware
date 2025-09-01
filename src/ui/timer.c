@@ -36,7 +36,7 @@ void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *sta
         case TIMER_PAUSE:
             break;
         case TIMER_BACK:
-            page_state->ui_page.page = MAIN_PAGE;
+            switch_state(&(page_state->ui_page), MAIN_PAGE);
             break;
         default:
             break;
