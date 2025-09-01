@@ -32,7 +32,7 @@ function (setup_side FIRMWARE)
     src/keyboard_led.c
     src/firmware_timer.c
     src/layer.c
-    src/ui.c
+    src/ui/ui.c
   )
 
   # create map/bin/hex/uf2 file in addition to ELF.

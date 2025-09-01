@@ -61,7 +61,7 @@
 #include "keycode_buffer.h"
 #include "layer.h"
 
-#include "ui.h"
+#include "ui/ui.h"
 #include "ssd1306.h"
 
 #define QUEUE_SIZE 128

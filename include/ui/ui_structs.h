@@ -1,5 +1,5 @@
-#ifndef UI_H
-#define UI_H
+#ifndef UI_STRUCTS_H
+#define UI_STRUCTS_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -28,7 +28,7 @@ typedef struct
     uint64_t time;
 } ui_page_state_t;
 
-typedef struct 
+typedef struct
 {
     ui_page_state_t ui_page;
     uint64_t timer_val;
@@ -36,18 +36,10 @@ typedef struct
     uint8_t cw_count;
 } main_page_state_t;
 
-
 typedef struct
 {
     char tag[9];
     enum UIPage ui_page;
 } option_t;
-
-// MAIN SCREEN
-
-void render_ui(uint8_t *buf, ui_command_t *state);
-
-void render_main_screen(uint8_t *buf, main_page_state_t *main_page_state);
-void handle_main_screen(main_page_state_t* page_state, ui_command_t* state);
 
 #endif
