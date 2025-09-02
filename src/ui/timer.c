@@ -20,11 +20,14 @@ char const timer_select_options[][9] = {
 
 bool selected = false;
 
+uint64_t offset_time = 0;
+
 void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *state)
 {
-    handle_state(page_state->ui_page, state, TIMER_BACK + 1);
-    static uint64_t current_timer_count = 0;
-    current_timer_count = MIN(current_timer_count, page_state->timer_val - page_state->ui_page.time);
+    if (!selected)
+    {
+        handle_state(&(page_state->ui_page), state, TIMER_BACK + 1);
+    }
 
     page_state->ccw_count += state->ccw_count;
     page_state->cw_count += state->cw_count;
@@ -36,7 +39,7 @@ void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *sta
         case TIMER_SELECT_HOUR:
         case TIMER_SELECT_MIN:
         case TIMER_SELECT_SEC:
-            selected = selected ? 0 : 1;
+            selected = !selected;
             break;
         case TIMER_START:
             break;
@@ -49,12 +52,35 @@ void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *sta
             break;
         }
     }
+
+    if (selected)
+    {
+        int64_t time_ = offset_time;
+        int64_t offset = (state->cw_count - state->ccw_count) * 1000000;
+        switch (page_state->ui_page.state)
+        {
+        case TIMER_SELECT_HOUR:
+            time_ += (60 * 60) * offset;
+            break;
+        case TIMER_SELECT_MIN:
+            time_ += 60 * offset;
+            break;
+        case TIMER_SELECT_SEC:
+            time_ += offset;
+            break;
+        default:
+            break;
+        }
+
+        if (time_ > 0)
+            offset_time = time_;
+    }
 }
 
 void render_timer_select_screen(uint8_t *buf, main_page_state_t *page_state)
 {
-    write_string_vertical(buf, 80, 0, "00:00:00");
-    for (uint8_t i = 0; i < 2; i++)
+    render_time(buf, 80, 0, offset_time);
+    for (uint8_t i = 0; i < NUM_TIMER_SELECT_OPTIONS; i++)
     {
         write_string_vertical(buf, 64 - 12 * (i + 1), 0, timer_select_options[i]);
     }
@@ -97,7 +123,8 @@ void render_timer_select_screen(uint8_t *buf, main_page_state_t *page_state)
             bx = 12 + ax;
             draw_divider_box(buf, ax, bx, 1);
         }
-        else {
+        else
+        {
             ax = 0;
             bx = 12;
             draw_divider_box(buf, ax, bx, 1);

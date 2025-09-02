@@ -4,10 +4,10 @@
 #include "ssd1306_i2c.h"
 #include <stdint.h>
 
-static inline void render_time(uint8_t *buf, int16_t x, int16_t y, uint64_t time_ms)
+static inline void render_time(uint8_t *buf, int16_t x, int16_t y, uint64_t time_us)
 {
     char text[] = "00:00:00";
-    uint64_t ms = time_ms / 1000;
+    uint64_t ms = time_us / 1000;
     uint64_t s = ms / 1000;
     uint8_t _s = s % 60;
 
