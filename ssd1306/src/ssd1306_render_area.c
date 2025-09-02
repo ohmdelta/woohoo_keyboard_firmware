@@ -73,6 +73,15 @@ void draw_line(uint8_t *buf, int x0, int y0, int x1, int y1, bool on)
     }
 }
 
+void draw_rectangle(uint8_t *buf, int x0, int y0, int x1, int y1, bool on)
+{
+    draw_line(buf, x0, y0, x0, y1, 1);
+    draw_line(buf, x1, y0, x1, y1, 1);
+
+    draw_line(buf, x0, y0, x1, y0, 1);
+    draw_line(buf, x0, y1, x1, y1, 1);
+}
+
 void draw_solid_rectangle(uint8_t *buf, int x0, int y0, int x1, int y1, bool on)
 {
     int dx = abs(x1 - x0);

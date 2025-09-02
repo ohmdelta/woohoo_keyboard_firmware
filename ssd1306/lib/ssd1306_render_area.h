@@ -17,6 +17,7 @@ void calc_render_area_buflen(struct render_area *area);
 
 void draw_line(uint8_t *buf, int x0, int y0, int x1, int y1, bool on);
 void draw_solid_rectangle(uint8_t *buf, int x0, int y0, int x1, int y1, bool on);
+void draw_rectangle(uint8_t *buf, int x0, int y0, int x1, int y1, bool on);
 void draw_horizontal_line(uint8_t *buf, int x0, int y0, int y1, bool on);
 void draw_horizontal_divider(uint8_t *buf, int x0, bool on);
 
