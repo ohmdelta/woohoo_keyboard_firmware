@@ -1,6 +1,7 @@
 #include "ssd1306.h"
 #include "ui/timer.h"
 #include "ui/common.h"
+#include <stdint.h>
 
 enum timer_screen_states
 {
@@ -53,6 +54,17 @@ uint64_t selector_to_time(timer_selector_t timer_selector_vals)
     return ((uint64_t)(timer_selector_vals.seconds) + (60 * (uint64_t)timer_selector_vals.minutes) + (60 * 60 * (uint64_t)timer_selector_vals.hours)) * 1000000;
 }
 
+inline int8_t compute_offset(uint8_t val, int8_t offset, uint8_t bound)
+{
+    int8_t h = val + offset;
+    h %= bound;
+    if (h < 0)
+    {
+        h += bound;
+    }
+    return h;
+}
+
 void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *state)
 {
     if (!selected)
@@ -87,43 +99,19 @@ void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *sta
     if (selected)
     {
         timer_selector_t selector = time_to_selector(offset_time);
-        int64_t offset = (state->cw_count - state->ccw_count);
+        int8_t offset = (state->cw_count - state->ccw_count);
 
         switch (page_state->ui_page.state)
         {
         case TIMER_SELECT_HOUR:
-        {
-            int8_t h = selector.hours + offset;
-            h %= 100;
-            if (h < 0)
-            {
-                h += 100;
-            }
-            selector.hours = h;
+            selector.hours = compute_offset(selector.hours, offset, 100);
             break;
-        }
         case TIMER_SELECT_MIN:
-        {
-            int8_t m = selector.minutes + offset;
-            m %= 60;
-            if (m < 0)
-            {
-                m += 60;
-            }
-            selector.minutes = m;
+            selector.minutes = compute_offset(selector.minutes, offset, 60);
             break;
-        }
         case TIMER_SELECT_SEC:
-        {
-            int8_t s = selector.seconds + offset;
-            s %= 60;
-            if (s < 0)
-            {
-                s += 60;
-            }
-            selector.seconds = s;
+            selector.seconds = compute_offset(selector.seconds, offset, 60);
             break;
-        }
         default:
             break;
         }
