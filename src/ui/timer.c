@@ -18,9 +18,40 @@ char const timer_select_options[][9] = {
 };
 #define NUM_TIMER_SELECT_OPTIONS (count_of(timer_select_options))
 
+typedef struct
+{
+    uint8_t hours : 8;
+    uint8_t minutes : 8;
+    uint8_t seconds : 8;
+} timer_selector_t;
+
 bool selected = false;
 
 uint64_t offset_time = 0;
+
+timer_selector_t time_to_selector(uint64_t time_us)
+{
+    uint64_t ms = time_us / 1000;
+    uint64_t s = ms / 1000;
+    uint8_t _s = s % 60;
+
+    uint64_t mins = s / 60;
+    uint8_t _mins = mins % 60;
+
+    uint64_t hours = mins / 60;
+    uint8_t _hours = hours % 100;
+
+    return (timer_selector_t){
+        .hours = _hours,
+        .minutes = _mins,
+        .seconds = _s,
+    };
+}
+
+uint64_t selector_to_time(timer_selector_t timer_selector_vals)
+{
+    return ((uint64_t)(timer_selector_vals.seconds) + (60 * (uint64_t)timer_selector_vals.minutes) + (60 * 60 * (uint64_t)timer_selector_vals.hours)) * 1000000;
+}
 
 void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *state)
 {
@@ -55,30 +86,60 @@ void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *sta
 
     if (selected)
     {
-        int64_t time_ = offset_time;
-        int64_t offset = (state->cw_count - state->ccw_count) * 1000000;
+        timer_selector_t selector = time_to_selector(offset_time);
+        int64_t offset = (state->cw_count - state->ccw_count);
+
         switch (page_state->ui_page.state)
         {
         case TIMER_SELECT_HOUR:
-            time_ += (60 * 60) * offset;
+        {
+            int8_t h = selector.hours + offset;
+            h %= 100;
+            if (h < 0)
+            {
+                h += 100;
+            }
+            selector.hours = h;
             break;
+        }
         case TIMER_SELECT_MIN:
-            time_ += 60 * offset;
+        {
+            int8_t m = selector.minutes + offset;
+            m %= 60;
+            if (m < 0)
+            {
+                m += 60;
+            }
+            selector.minutes = m;
             break;
+        }
         case TIMER_SELECT_SEC:
-            time_ += offset;
+        {
+            int8_t s = selector.seconds + offset;
+            s %= 60;
+            if (s < 0)
+            {
+                s += 60;
+            }
+            selector.seconds = s;
             break;
+        }
         default:
             break;
         }
 
-        if (time_ > 0)
-            offset_time = time_;
+        offset_time = selector_to_time(selector);
     }
 }
 
 void render_timer_select_screen(uint8_t *buf, main_page_state_t *page_state)
 {
+    if (selected)
+    {
+        const char text[] = "hh:mm:ss";
+        write_string_vertical(buf, 94, 0, text);
+    }
+
     render_time(buf, 80, 0, offset_time);
     for (uint8_t i = 0; i < NUM_TIMER_SELECT_OPTIONS; i++)
     {

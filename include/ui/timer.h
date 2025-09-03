@@ -2,6 +2,7 @@
 #define UI_TIMER_H
 
 #include "ui_structs.h"
+#define US_S (1000000)
 
 void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *state);
 void render_timer_select_screen(uint8_t *buf, main_page_state_t *page_state);
