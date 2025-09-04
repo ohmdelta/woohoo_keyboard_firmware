@@ -21,9 +21,9 @@ char const timer_select_options[][9] = {
 
 typedef struct
 {
-    uint8_t hours : 8;
-    uint8_t minutes : 8;
-    uint8_t seconds : 8;
+    uint8_t hours : 7;
+    uint8_t minutes : 6;
+    uint8_t seconds : 6;
 } timer_selector_t;
 
 bool selected = false;
@@ -65,6 +65,9 @@ inline int8_t compute_offset(uint8_t val, int8_t offset, uint8_t bound)
     return h;
 }
 
+uint64_t timer_end = 0;
+bool timer_running = false;
+
 void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *state)
 {
     if (!selected)
@@ -79,20 +82,34 @@ void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *sta
     {
         switch (page_state->ui_page.state)
         {
-        case TIMER_SELECT_HOUR:
-        case TIMER_SELECT_MIN:
-        case TIMER_SELECT_SEC:
-            selected = !selected;
-            break;
-        case TIMER_START:
-            break;
-        case TIMER_PAUSE:
-            break;
-        case TIMER_BACK:
-            switch_state(&(page_state->ui_page), MAIN_PAGE);
-            break;
-        default:
-            break;
+            case TIMER_SELECT_HOUR:
+            case TIMER_SELECT_MIN:
+            case TIMER_SELECT_SEC:
+                selected = !selected;
+                break;
+            case TIMER_START:
+                {
+                    if (!timer_running)
+                    {
+                        timer_end = state->time + offset_time;
+                    }
+                    timer_running = true;
+                    break;
+                }
+            case TIMER_PAUSE:
+                {
+                    if (timer_running)
+                    {
+                        offset_time = timer_end - state->time;
+                    }
+                    timer_running = false;
+                    break;
+                }
+            case TIMER_BACK:
+                switch_state(&(page_state->ui_page), MAIN_PAGE);
+                break;
+            default:
+                break;
         }
     }
 
@@ -103,21 +120,32 @@ void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *sta
 
         switch (page_state->ui_page.state)
         {
-        case TIMER_SELECT_HOUR:
-            selector.hours = compute_offset(selector.hours, offset, 100);
-            break;
-        case TIMER_SELECT_MIN:
-            selector.minutes = compute_offset(selector.minutes, offset, 60);
-            break;
-        case TIMER_SELECT_SEC:
-            selector.seconds = compute_offset(selector.seconds, offset, 60);
-            break;
-        default:
-            break;
+            case TIMER_SELECT_HOUR:
+                selector.hours = compute_offset(selector.hours, offset, 100);
+                break;
+            case TIMER_SELECT_MIN:
+                selector.minutes = compute_offset(selector.minutes, offset, 60);
+                break;
+            case TIMER_SELECT_SEC:
+                selector.seconds = compute_offset(selector.seconds, offset, 60);
+                break;
+            default:
+                break;
         }
 
         offset_time = selector_to_time(selector);
     }
+}
+
+inline uint64_t pos_time(uint64_t time, uint64_t offset_time)
+{
+    if (time < offset_time) {
+        return 0;
+    }
+    else {
+        return time - offset_time;
+    }
+
 }
 
 void render_timer_select_screen(uint8_t *buf, main_page_state_t *page_state)
@@ -128,7 +156,14 @@ void render_timer_select_screen(uint8_t *buf, main_page_state_t *page_state)
         write_string_vertical(buf, 94, 0, text);
     }
 
-    render_time(buf, 80, 0, offset_time);
+    if (timer_running)
+    {
+        render_time(buf, 80, 0, pos_time(timer_end , page_state->ui_page.time));
+    }
+    else {
+        render_time(buf, 80, 0, offset_time);
+    }
+
     for (uint8_t i = 0; i < NUM_TIMER_SELECT_OPTIONS; i++)
     {
         write_string_vertical(buf, 64 - 12 * (i + 1), 0, timer_select_options[i]);
@@ -150,19 +185,19 @@ void render_timer_select_screen(uint8_t *buf, main_page_state_t *page_state)
             uint8_t by;
             switch (state)
             {
-            case TIMER_SELECT_HOUR:
-                by = ay + 8 * 3 - 5;
-                break;
-            case TIMER_SELECT_MIN:
-                ay = 8 * 3 - 5;
-                by = SSD1306_HEIGHT - (8 * 3 - 3);
-                break;
-            case TIMER_SELECT_SEC:
-                ay = SSD1306_HEIGHT - (8 * 3 - 3);
-                by = SSD1306_HEIGHT - 1;
-                break;
-            default:
-                break;
+                case TIMER_SELECT_HOUR:
+                    by = ay + 8 * 3 - 5;
+                    break;
+                case TIMER_SELECT_MIN:
+                    ay = 8 * 3 - 5;
+                    by = SSD1306_HEIGHT - (8 * 3 - 3);
+                    break;
+                case TIMER_SELECT_SEC:
+                    ay = SSD1306_HEIGHT - (8 * 3 - 3);
+                    by = SSD1306_HEIGHT - 1;
+                    break;
+                default:
+                    break;
             }
             draw_rectangle(buf, ax, ay, bx, by, 1);
         }
@@ -172,8 +207,7 @@ void render_timer_select_screen(uint8_t *buf, main_page_state_t *page_state)
             bx = 12 + ax;
             draw_divider_box(buf, ax, bx, 1);
         }
-        else
-        {
+        else {
             ax = 0;
             bx = 12;
             draw_divider_box(buf, ax, bx, 1);
