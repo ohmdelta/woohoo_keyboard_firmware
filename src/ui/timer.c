@@ -10,12 +10,14 @@ enum timer_screen_states
     TIMER_SELECT_SEC,
     TIMER_START,
     TIMER_PAUSE,
+    TIMER_RESET,
     TIMER_BACK,
 };
 
 char const timer_select_options[][9] = {
     " START",
     " PAUSE",
+    " RESET",
 };
 #define NUM_TIMER_SELECT_OPTIONS (count_of(timer_select_options))
 
@@ -85,7 +87,10 @@ void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *sta
             case TIMER_SELECT_HOUR:
             case TIMER_SELECT_MIN:
             case TIMER_SELECT_SEC:
-                selected = !selected;
+                if (!timer_running)
+                {
+                    selected = !selected;
+                }
                 break;
             case TIMER_START:
                 {
@@ -105,6 +110,13 @@ void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *sta
                     timer_running = false;
                     break;
                 }
+            case TIMER_RESET:
+                {
+                    offset_time = 0;
+                    timer_end = 0;
+                    timer_running = false;
+                    break;
+                }
             case TIMER_BACK:
                 switch_state(&(page_state->ui_page), MAIN_PAGE);
                 break;
@@ -113,10 +125,16 @@ void handle_timer_select_screen(main_page_state_t *page_state, ui_command_t *sta
         }
     }
 
+    if ((timer_end < page_state->ui_page.time) && (timer_running))
+    {
+        timer_running = false;
+        offset_time = 0;
+    }
+
     if (selected)
     {
         timer_selector_t selector = time_to_selector(offset_time);
-        int8_t offset = (state->cw_count - state->ccw_count);
+        int8_t offset = (state->ccw_count - state->cw_count);
 
         switch (page_state->ui_page.state)
         {
