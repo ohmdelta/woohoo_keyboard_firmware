@@ -2,6 +2,7 @@
 #define KEYBOARD_MAPPING_H
 
 #include "tusb.h"
+#include "usb_descriptors.h"
 // #include "hid.h"
 
 #include "pico/platform.h"
@@ -37,10 +38,10 @@
 //      * │     │     │     │     │     │     │
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┤
 //      * │ A3  │ B3  │ C3  │ D3  │ E3  │ F3  ├─────┐
-//      * │     │     │     │     │     │     | F5  │
+//      * │     │     │     │     │     │     │ F5  │
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┤     │
 //      * │ A4  │ B4  │ C4  │ D4  │ E4  │ F4  ├─────┘
-//      * │     │     │     │     │     │     |
+//      * │     │     │     │     │     │     │
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┘
 //      * │ A5  │ B5  │ C5  │ D5  │ E5  │
 //      * │     │     │     │     │     │       ┌─────┬─────┐
@@ -49,7 +50,7 @@
 //      *                                 ┌─────┼─────┼─────┤
 //      *                                 │     │     │ T3  │
 //      *                                 │     │     │     │
-//      *                                 | T1  | T2  ├─────┤
+//      *                                 │ T1  │ T2  ├─────┤
 //      *                                 │     │     │ T4  │
 //      *                                 │     │     │     │
 //      *                                 └─────┴─────┴─────┘
@@ -65,19 +66,19 @@
 //      * │     │     │     │     │     │     │
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┤
 //      * │ ESC │  A  │  S  │  D  │  F  │  G  ├─────┐
-//      * │     │     │     │     │     │     |LOWER│
+//      * │     │     │     │     │     │     │LOWER│
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┤     │
-//      * │SHIFT│  Z  │  X  │  C  │  V  |  B  ├─────┘
+//      * │SHIFT│  Z  │  X  │  C  │  V  │  B  ├─────┘
 //      * │     │     │     │     │     │     │
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┘
-//      * │CTRL │ SYS │ ALT │Down │Up   |
+//      * │CTRL │ SYS │ ALT │Down │Up   │
 //      * │     │     │     │     │     │       ┌─────┬─────┐
 //      * └─────┴─────┴─────┴─────┴─────┘       │ T6  │ T5  │
 //      *                                       │     │     │
 //      *                                 ┌─────┼─────┼─────┤
 //      *                                 │     │     │HOME │
 //      *                                 │     │     │     │
-//      *                                 |BSPC | DEL ├─────┤
+//      *                                 │BSPC │ DEL ├─────┤
 //      *                                 │     │     │ END │
 //      *                                 │     │     │     │
 //      *                                 └─────┴─────┴─────┘
@@ -130,9 +131,9 @@ INIT_KEYBOARD_LAYER_CONFIG(0, _T6, HID_KEY_KEYPAD_ENTER);
 //      * │     │DOWN │UP   │ MUTE│ DOWN│ UP  │
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┤
 //      * │CAPS │RE   │PLAY │PLAY │PLAY │FAST ├─────┐
-//      * │     │WIND │PREV │PAUSE│NEXT │FWD  |     │
+//      * │     │WIND │PREV │PAUSE│NEXT │FWD  │LOWER│
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┤     │
-//      * │SHIFT│BACK │FILE │CALCU│BROWS|EMAIL├─────┘
+//      * │SHIFT│BACK │FILE │CALCU│BROWS│EMAIL├─────┘
 //      * │     │LIGHT│     │LATOR│     │APP  │
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┘
 //      * │CTRL │ SYS │ ALT │LOWER│SPACE│
@@ -140,9 +141,9 @@ INIT_KEYBOARD_LAYER_CONFIG(0, _T6, HID_KEY_KEYPAD_ENTER);
 //      * └─────┴─────┴─────┴─────┴─────┘       │ T6  │ T5  │
 //      *                                       │     │     │
 //      *                                 ┌─────┼─────┼─────┤
-//      *                                 │     │     │ T3  │
-//      *                                 │     │     │     │
-//      *                                 |BSPC | DEL ├─────┤
+//      *                                 │     │     │LOG  │
+//      *                                 │     │     │OFF  │
+//      *                                 │BSPC │ DEL ├─────┤
 //      *                                 │     │     │LOCK │
 //      *                                 │     │     │SCREE│
 //      *                                 └─────┴─────┴─────┘
@@ -181,7 +182,7 @@ INIT_KEYBOARD_LAYER_CONFIG(1, _F5, HID_KEY_NONE);
 /* THUMB CLUSTER */
 INIT_KEYBOARD_LAYER_CONFIG(1, _T1, HID_KEY_BACKSPACE);
 INIT_KEYBOARD_LAYER_CONFIG(1, _T2, HID_KEY_DELETE);
-INIT_KEYBOARD_LAYER_CONFIG(1, _T3, HID_KEY_HOME);
+INIT_CONSUMER_CONTROL_LAYER_CONFIG(1, _T3, HID_USAGE_CONSUMER_AL_LOGOFF)
 INIT_CONSUMER_CONTROL_LAYER_CONFIG(1, _T4, HID_USAGE_CONSUMER_AL_TERMINAL_LOCK_SCREENSAVER)
 INIT_KEYBOARD_LAYER_CONFIG(1, _T5, HID_KEY_ARROW_UP);
 INIT_KEYBOARD_LAYER_CONFIG(1, _T6, HID_KEY_KEYPAD_ENTER);
@@ -192,12 +193,12 @@ INIT_KEYBOARD_LAYER_CONFIG(1, _T6, HID_KEY_KEYPAD_ENTER);
 //      * │     │     │     │     │     │     │
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┤
 //      * │ TAB │git  │git  │git  │git  │git  │
-//      * │     │push │pull │commi│add  │stat |
+//      * │     │push │pull │commi│add  │stat │
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┤
 //      * │ ESC │git  │  S  │git  │  F  │ls   ├─────┐
-//      * │     │log  │     │diff │     │-lrt | F5  │
+//      * │     │log  │     │diff │     │-lrt │ F5  │
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┤     │
-//      * │SHIFT│vim  │make │clear│vim  |pytho├─────┘
+//      * │SHIFT│vim  │make │clear│vim  │pytho├─────┘
 //      * │     │     │-j4  │     │     │     │
 //      * ├─────┼─────┼─────┼─────┼─────┼─────┘
 //      * │CTRL │ SYS │ ALT │LOWER│SPACE│
@@ -207,7 +208,7 @@ INIT_KEYBOARD_LAYER_CONFIG(1, _T6, HID_KEY_KEYPAD_ENTER);
 //      *                                 ┌─────┼─────┼─────┤
 //      *                                 │     │     │ T3  │
 //      *                                 │     │     │     │
-//      *                                 |BSPC | DEL ├─────┤
+//      *                                 │BSPC │ DEL ├─────┤
 //      *                                 │     │     │ T4  │
 //      *                                 │     │     │     │
 //      *                                 └─────┴─────┴─────┘
@@ -260,11 +261,11 @@ INIT_KEYBOARD_LAYER_CONFIG(2, _T6, HID_KEY_KEYPAD_ENTER);
 //      *               │ F2  │ E2  │ D2  │ C2  │ B2  │ A2  │
 //      *               │     │     │     │     │     │     │
 //      *               ├─────┼─────┼─────┼─────┼─────┼─────┤
-//      *         ┌─────┤ F3  │ E3  │ D3  │ C3  │ B3  │ A3  |
-//      *         │ F5  │     │     │     │     │     │     |
+//      *         ┌─────┤ F3  │ E3  │ D3  │ C3  │ B3  │ A3  │
+//      *         │ F5  │     │     │     │     │     │     │
 //      *         │     ├─────┼─────┼─────┼─────┼─────┼─────┤
-//      *         └─────┤ F4  │ E4  │ D4  │ C4  │ B4  │ A4  |
-//      *               │     │     │     │     │     │     |
+//      *         └─────┤ F4  │ E4  │ D4  │ C4  │ B4  │ A4  │
+//      *               │     │     │     │     │     │     │
 //      *               └─────┼─────┼─────┼─────┼─────┼─────┤
 //      *                     │ E5  │ D5  │ C5  │ B5  │ A5  │
 //      * ┌─────┬─────┐       │     │     │     │     │     │
@@ -273,7 +274,7 @@ INIT_KEYBOARD_LAYER_CONFIG(2, _T6, HID_KEY_KEYPAD_ENTER);
 //      ^ ├─────┼─────┼─────┐
 //      * │ T3  │     │     │
 //      * │     │     │     │
-//      * ├─────┤ T2  ┤ T1  |
+//      * ├─────┤ T2  ┤ T1  │
 //      * │ T4  │     │     │
 //      * │     │     │     │
 //      * └─────┴─────┴─────┘
@@ -288,11 +289,11 @@ INIT_KEYBOARD_LAYER_CONFIG(2, _T6, HID_KEY_KEYPAD_ENTER);
 //      *               │ y   │ u   │ i   │ o   │ p   │ #   │
 //      *               │     │     │     │     │     │     │
 //      *               ├─────┼─────┼─────┼─────┼─────┼─────┤
-//      *         ┌─────┤ h   │ j   │ k   │ l   │ ;   │ENTER|
-//      *         │UPPER│     │     │     │     │     │     |
+//      *         ┌─────┤ h   │ j   │ k   │ l   │ ;   │ENTER│
+//      *         │UPPER│     │     │     │     │     │     │
 //      *         │     ├─────┼─────┼─────┼─────┼─────┼─────┤
-//      *         └─────┤ n   │ m   │ ,   │ .   │ /   │SHIFT|
-//      *               │     │     │     │     │     │     |
+//      *         └─────┤ n   │ m   │ ,   │ .   │ /   │SHIFT│
+//      *               │     │     │     │     │     │     │
 //      *               └─────┼─────┼─────┼─────┼─────┼─────┤
 //      *                     │Left │Right│ ALT │ GUI │CTRL │
 //      * ┌─────┬─────┐       │     │     │     │     │     │
@@ -301,7 +302,7 @@ INIT_KEYBOARD_LAYER_CONFIG(2, _T6, HID_KEY_KEYPAD_ENTER);
 //      ^ ├─────┼─────┼─────┐
 //      * │ T3  │     │     │
 //      * │     │     │     │
-//      * ├─────┤ENTER|SPACE|
+//      * ├─────┤ENTER│SPACE│
 //      * │ T4  │     │     │
 //      * │     │     │     │
 //      * └─────┴─────┴─────┘
@@ -350,23 +351,23 @@ INIT_KEYBOARD_LAYER_CONFIG(0, _T6, HID_KEY_KEYPAD_ENTER);
 //      *               │ F7  │ F8  │ F9  │ F10 │ F11 │ F12 │
 //      *               │     │     │     │     │     │     │
 //      *               ├─────┼─────┼─────┼─────┼─────┼─────┤
-//      *               │NUM_/│NUM_7│NUM_8│NUM_9│NUM_-│ \   │
+//      *               │NUM_7│NUM_8│NUM_9│NUM_-│NUM_/│ \   │
 //      *               │     │     │     │     │     │     │
 //      *               ├─────┼─────┼─────┼─────┼─────┼─────┤
-//      *         ┌─────┤ h   │NUM_4│NUM_5│NUM_6│NUM_+│ '   |
-//      *         │UPPER│     │     │     │     │     │     |
+//      *         ┌─────┤NUM_4│NUM_5│NUM_6│NUM_+│ ;   │ '   │
+//      *         │UPPER│     │     │     │     │     │     │
 //      *         │     ├─────┼─────┼─────┼─────┼─────┼─────┤
-//      *         └─────┤ n   │NUM_1│NUM_2│NUM_3│NUM_=│SHIFT|
-//      *               │     │     │     │     │     │     |
+//      *         └─────┤NUM_1│NUM_2│NUM_3│NUM_=│ /   │SHIFT│
+//      *               │     │     │     │     │     │     │
 //      *               └─────┼─────┼─────┼─────┼─────┼─────┤
-//      *                     │NUM_0│Right│ .   │NUM_=│CTRL │
+//      *                     │NUM_0│NUM_.│ [   │ ]   │CTRL │
 //      * ┌─────┬─────┐       │     │     │     │     │     │
 //      * │ T5  │ T6  │       └─────┴─────┴─────┴─────┴─────┘
 //      * │     │     │
 //      ^ ├─────┼─────┼─────┐
 //      * │ T3  │     │     │
 //      * │     │     │     │
-//      * ├─────┤ENTER|SPACE|
+//      * ├─────┤ENTER│SPACE│
 //      * │ T4  │     │     │
 //      * │     │     │     │
 //      * └─────┴─────┴─────┘
@@ -380,29 +381,29 @@ INIT_KEYBOARD_LAYER_CONFIG(1, _A3, HID_KEY_APOSTROPHE);
 INIT_KEYBOARD_LAYER_CONFIG(1, _A4, HID_KEY_SHIFT_RIGHT);
 INIT_KEYBOARD_LAYER_CONFIG(1, _A5, HID_KEY_CONTROL_RIGHT);
 INIT_KEYBOARD_LAYER_CONFIG(1, _B1, HID_KEY_F11);
-INIT_KEYBOARD_LAYER_CONFIG(1, _B2, HID_KEY_KEYPAD_SUBTRACT);
-INIT_KEYBOARD_LAYER_CONFIG(1, _B3, HID_KEY_KEYPAD_ADD);
-INIT_KEYBOARD_LAYER_CONFIG(1, _B4, HID_KEY_KEYPAD_EQUAL);
-INIT_KEYBOARD_LAYER_CONFIG(1, _B5, HID_KEY_KEYPAD_EQUAL_SIGN);
+INIT_KEYBOARD_LAYER_CONFIG(1, _B2, HID_KEY_KEYPAD_DIVIDE);
+INIT_KEYBOARD_LAYER_CONFIG(1, _B3, HID_KEY_SEMICOLON);
+INIT_KEYBOARD_LAYER_CONFIG(1, _B4, HID_KEY_SLASH);
+INIT_KEYBOARD_LAYER_CONFIG(1, _B5, HID_KEY_BRACKET_RIGHT);
 INIT_KEYBOARD_LAYER_CONFIG(1, _C1, HID_KEY_F10);
-INIT_KEYBOARD_LAYER_CONFIG(1, _C2, HID_KEY_KEYPAD_9);
-INIT_KEYBOARD_LAYER_CONFIG(1, _C3, HID_KEY_KEYPAD_6);
-INIT_KEYBOARD_LAYER_CONFIG(1, _C4, HID_KEY_KEYPAD_3);
-INIT_KEYBOARD_LAYER_CONFIG(1, _C5, HID_KEY_KEYPAD_DECIMAL);
+INIT_KEYBOARD_LAYER_CONFIG(1, _C2, HID_KEY_KEYPAD_SUBTRACT);
+INIT_KEYBOARD_LAYER_CONFIG(1, _C3, HID_KEY_KEYPAD_ADD);
+INIT_KEYBOARD_LAYER_CONFIG(1, _C4, HID_KEY_KEYPAD_EQUAL);
+INIT_KEYBOARD_LAYER_CONFIG(1, _C5, HID_KEY_BRACKET_LEFT);
 INIT_KEYBOARD_LAYER_CONFIG(1, _D1, HID_KEY_F9);
-INIT_KEYBOARD_LAYER_CONFIG(1, _D2, HID_KEY_KEYPAD_8);
-INIT_KEYBOARD_LAYER_CONFIG(1, _D3, HID_KEY_KEYPAD_5);
-INIT_KEYBOARD_LAYER_CONFIG(1, _D4, HID_KEY_KEYPAD_2);
-INIT_KEYBOARD_LAYER_CONFIG(1, _D5, HID_KEY_ARROW_RIGHT);
+INIT_KEYBOARD_LAYER_CONFIG(1, _D2, HID_KEY_KEYPAD_9);
+INIT_KEYBOARD_LAYER_CONFIG(1, _D3, HID_KEY_KEYPAD_6);
+INIT_KEYBOARD_LAYER_CONFIG(1, _D4, HID_KEY_KEYPAD_3);
+INIT_KEYBOARD_LAYER_CONFIG(1, _D5, HID_KEY_KEYPAD_DECIMAL);
 INIT_KEYBOARD_LAYER_CONFIG(1, _E1, HID_KEY_F8);
-INIT_KEYBOARD_LAYER_CONFIG(1, _E2, HID_KEY_KEYPAD_7);
-INIT_KEYBOARD_LAYER_CONFIG(1, _E3, HID_KEY_KEYPAD_4);
-INIT_KEYBOARD_LAYER_CONFIG(1, _E4, HID_KEY_KEYPAD_1);
+INIT_KEYBOARD_LAYER_CONFIG(1, _E2, HID_KEY_KEYPAD_8);
+INIT_KEYBOARD_LAYER_CONFIG(1, _E3, HID_KEY_KEYPAD_5);
+INIT_KEYBOARD_LAYER_CONFIG(1, _E4, HID_KEY_KEYPAD_2);
 INIT_KEYBOARD_LAYER_CONFIG(1, _E5, HID_KEY_KEYPAD_0);
 INIT_KEYBOARD_LAYER_CONFIG(1, _F1, HID_KEY_F7);
-INIT_KEYBOARD_LAYER_CONFIG(1, _F2, HID_KEY_KEYPAD_DIVIDE);
-INIT_KEYBOARD_LAYER_CONFIG(1, _F3, HID_KEY_ARROW_LEFT);
-INIT_KEYBOARD_LAYER_CONFIG(1, _F4, HID_KEY_N);
+INIT_KEYBOARD_LAYER_CONFIG(1, _F2, HID_KEY_KEYPAD_7);
+INIT_KEYBOARD_LAYER_CONFIG(1, _F3, HID_KEY_KEYPAD_4);
+INIT_KEYBOARD_LAYER_CONFIG(1, _F4, HID_KEY_KEYPAD_1);
 INIT_KEYBOARD_LAYER_CONFIG(1, _F5, HID_KEY_NONE);
 /* THUMB CLUSTER */
 INIT_KEYBOARD_LAYER_CONFIG(1, _T1, HID_KEY_SPACE);
@@ -412,6 +413,34 @@ INIT_KEYBOARD_LAYER_CONFIG(1, _T4, HID_KEY_DELETE);
 INIT_KEYBOARD_LAYER_CONFIG(1, _T5, HID_KEY_ARROW_UP);
 INIT_KEYBOARD_LAYER_CONFIG(1, _T6, HID_KEY_KEYPAD_ENTER);
 
+//     /* LAYER
+//      *               ┌─────┬─────┬─────┬─────┬─────┬─────┐
+//      *               │ F7  │ F8  │ F9  │ F10 │ F11 │ F12 │
+//      *               │     │     │     │     │     │     │
+//      *               ├─────┼─────┼─────┼─────┼─────┼─────┤
+//      *               │NUM_/│NUM_7│NUM_8│ [   │ ]   │ \   │
+//      *               │     │     │     │     │     │     │
+//      *               ├─────┼─────┼─────┼─────┼─────┼─────┤
+//      *         ┌─────┤ h   │NUM_4│NUM_5│NUM_6│NUM_+│ '   │
+//      *         │UPPER│     │     │     │     │     │     │
+//      *         │     ├─────┼─────┼─────┼─────┼─────┼─────┤
+//      *         └─────┤ n   │NUM_1│NUM_2│NUM_3│NUM_=│SHIFT│
+//      *               │     │     │     │     │     │     │
+//      *               └─────┼─────┼─────┼─────┼─────┼─────┤
+//      *                     │NUM_0│Right│ .   │NUM_=│CTRL │
+//      * ┌─────┬─────┐       │     │     │     │     │     │
+//      * │ T5  │ T6  │       └─────┴─────┴─────┴─────┴─────┘
+//      * │     │     │
+//      ^ ├─────┼─────┼─────┐
+//      * │ T3  │     │     │
+//      * │     │     │     │
+//      * ├─────┤ENTER│SPACE│
+//      * │ T4  │     │     │
+//      * │     │     │     │
+//      * └─────┴─────┴─────┘
+//      *
+//      */
+
 // Layer 2
 INIT_KEYBOARD_LAYER_CONFIG(2, _A1, HID_KEY_F12);
 INIT_KEYBOARD_LAYER_CONFIG(2, _A2, HID_KEY_BACKSLASH);
@@ -419,12 +448,12 @@ INIT_KEYBOARD_LAYER_CONFIG(2, _A3, HID_KEY_APOSTROPHE);
 INIT_KEYBOARD_LAYER_CONFIG(2, _A4, HID_KEY_SHIFT_RIGHT);
 INIT_KEYBOARD_LAYER_CONFIG(2, _A5, HID_KEY_CONTROL_RIGHT);
 INIT_KEYBOARD_LAYER_CONFIG(2, _B1, HID_KEY_F11);
-INIT_KEYBOARD_LAYER_CONFIG(2, _B2, HID_KEY_EQUAL);
+INIT_KEYBOARD_LAYER_CONFIG(2, _B2, HID_KEY_BRACKET_RIGHT);
 INIT_KEYBOARD_LAYER_CONFIG(2, _B3, HID_KEY_SEMICOLON);
 INIT_KEYBOARD_LAYER_CONFIG(2, _B4, HID_KEY_SLASH);
 INIT_KEYBOARD_LAYER_CONFIG(2, _B5, HID_KEY_GUI_RIGHT);
 INIT_KEYBOARD_LAYER_CONFIG(2, _C1, HID_KEY_F10);
-INIT_KEYBOARD_LAYER_CONFIG(2, _C2, HID_KEY_MINUS);
+INIT_KEYBOARD_LAYER_CONFIG(2, _C2, HID_KEY_BRACKET_LEFT);
 INIT_KEYBOARD_LAYER_CONFIG(2, _C3, HID_KEY_ARROW_RIGHT);
 INIT_KEYBOARD_LAYER_CONFIG(2, _C4, HID_KEY_PERIOD);
 INIT_KEYBOARD_LAYER_CONFIG(2, _C5, HID_KEY_ALT_LEFT);
@@ -454,18 +483,18 @@ INIT_KEYBOARD_LAYER_CONFIG(2, _T6, HID_KEY_KEYPAD_ENTER);
 #endif
 
 const key_layer_config_t
-    __in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
-        [0] = {
-            L0_A1, L0_A2, L0_A3, L0_A4, L0_A5,
-            L0_B1, L0_B2, L0_B3, L0_B4, L0_B5,
-            L0_C1, L0_C2, L0_C3, L0_C4, L0_C5,
-            L0_D1, L0_D2, L0_D3, L0_D4, L0_D5,
-            L0_E1, L0_E2, L0_E3, L0_E4, L0_E5,
-            L0_F1, L0_F2, L0_F3, L0_F4, L0_F5,
-            L0_T1, L0_T2, L0_T3,
-            L0_T4, L0_T5, L0_T6},
-        [1] = {L1_A1, L1_A2, L1_A3, L1_A4, L1_A5, L1_B1, L1_B2, L1_B3, L1_B4, L1_B5, L1_C1, L1_C2, L1_C3, L1_C4, L1_C5, L1_D1, L1_D2, L1_D3, L1_D4, L1_D5, L1_E1, L1_E2, L1_E3, L1_E4, L1_E5, L1_F1, L1_F2, L1_F3, L1_F4, L1_F5, L1_T1, L1_T2, L1_T3, L1_T4, L1_T5, L1_T6},
-        [2] = {L2_A1, L2_A2, L2_A3, L2_A4, L2_A5, L2_B1, L2_B2, L2_B3, L2_B4, L2_B5, L2_C1, L2_C2, L2_C3, L2_C4, L2_C5, L2_D1, L2_D2, L2_D3, L2_D4, L2_D5, L2_E1, L2_E2, L2_E3, L2_E4, L2_E5, L2_F1, L2_F2, L2_F3, L2_F4, L2_F5, L2_T1, L2_T2, L2_T3, L2_T4, L2_T5, L2_T6},
+__in_flash("keymaps") keymaps_layers[][NUM_KEYS] = {
+    [0] = {
+        L0_A1, L0_A2, L0_A3, L0_A4, L0_A5,
+        L0_B1, L0_B2, L0_B3, L0_B4, L0_B5,
+        L0_C1, L0_C2, L0_C3, L0_C4, L0_C5,
+        L0_D1, L0_D2, L0_D3, L0_D4, L0_D5,
+        L0_E1, L0_E2, L0_E3, L0_E4, L0_E5,
+        L0_F1, L0_F2, L0_F3, L0_F4, L0_F5,
+        L0_T1, L0_T2, L0_T3,
+        L0_T4, L0_T5, L0_T6},
+    [1] = {L1_A1, L1_A2, L1_A3, L1_A4, L1_A5, L1_B1, L1_B2, L1_B3, L1_B4, L1_B5, L1_C1, L1_C2, L1_C3, L1_C4, L1_C5, L1_D1, L1_D2, L1_D3, L1_D4, L1_D5, L1_E1, L1_E2, L1_E3, L1_E4, L1_E5, L1_F1, L1_F2, L1_F3, L1_F4, L1_F5, L1_T1, L1_T2, L1_T3, L1_T4, L1_T5, L1_T6},
+    [2] = {L2_A1, L2_A2, L2_A3, L2_A4, L2_A5, L2_B1, L2_B2, L2_B3, L2_B4, L2_B5, L2_C1, L2_C2, L2_C3, L2_C4, L2_C5, L2_D1, L2_D2, L2_D3, L2_D4, L2_D5, L2_E1, L2_E2, L2_E3, L2_E4, L2_E5, L2_F1, L2_F2, L2_F3, L2_F4, L2_F5, L2_T1, L2_T2, L2_T3, L2_T4, L2_T5, L2_T6},
 };
 
 #endif
