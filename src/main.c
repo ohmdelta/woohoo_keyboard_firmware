@@ -519,7 +519,7 @@ void hid_task(void)
   {
     if ((matrix_bank_status[i].is_pressed))
     {
-      update_modifier(&keycode_buffer.modifier, keymaps_layers[0][i].keys[0]);
+      update_modifier(&keycode_buffer.modifier, keymaps_layers[get_layer()][i].keys[0]);
     }
   }
   send_modifier_uart(&keycode_buffer.modifier);
