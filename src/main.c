@@ -31,7 +31,6 @@
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "hardware/pio.h"
-#include "hardware/clocks.h"
 #include "ws2812.pio.h"
 
 #include <stdio.h>
@@ -53,7 +52,6 @@
 #include "debounce.h"
 #include "keyboard_mapping.h"
 
-#include "pico/stdlib.h"
 #include "hardware/uart.h"
 #include "hardware/irq.h"
 
@@ -179,10 +177,10 @@ void set_indicator_leds()
 uint8_t buf[SSD1306_BUF_LEN];
 
 struct render_area frame_area = {
-  start_col : 0,
-  end_col : SSD1306_WIDTH - 1,
-  start_page : 0,
-  end_page : SSD1306_NUM_PAGES - 1
+  .start_col =  0,
+  .end_col =  SSD1306_WIDTH - 1,
+  .start_page =  0,
+  .end_page =  SSD1306_NUM_PAGES - 1,
 };
 
 #define FLAG_VALUE 123
@@ -407,29 +405,22 @@ void tud_resume_cb(void)
 
 static void encoder_task()
 {
-  {
     ccw_count = atomic_exchange(&count_anti_clockwise, 0);
-  }
-  {
-    cw_count  = atomic_exchange(&count_clockwise, 0);
-  }
+    cw_count = atomic_exchange(&count_clockwise, 0);
 
-  {
     enc_button = encoder_button;
     if (encoder_button)
     {
-      // uint16_t volume_mute = HID_USAGE_CONSUMER_MUTE;
-      // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_mute, 2);
-      // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MUTE);
-      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+        // uint16_t volume_mute = HID_USAGE_CONSUMER_MUTE;
+        // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &volume_mute, 2);
+        // send_hid_report_mod(REPORT_ID_KEYBOARD, 0, HID_KEY_MUTE);
+        // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
 
-      // uint8_t keycode[6] = {HID_KEY_A, HID_KEY_B, HID_KEY_C, HID_KEY_D, HID_KEY_E, HID_KEY_F};
-      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
-      // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
-      encoder_button = false;
+        // uint8_t keycode[6] = {HID_KEY_A, HID_KEY_B, HID_KEY_C, HID_KEY_D, HID_KEY_E, HID_KEY_F};
+        // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
+        // tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
+        encoder_button = false;
     }
-
-  }
 }
 
 bool is_modifier(uint8_t code)

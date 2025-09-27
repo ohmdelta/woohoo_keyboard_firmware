@@ -2,7 +2,6 @@
 #define BOARD_H
 
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdatomic.h>
 
 void setup_board(void);

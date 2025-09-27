@@ -2,7 +2,7 @@
 #include "keyboard_config.h"
 
 #include "hardware/gpio.h"
-#include <stdio.h>
+#include <stdint.h>
 
 #define GPIO_INPUT_SETUP(BUTTON)   \
     gpio_init(BUTTON);             \
