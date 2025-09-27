@@ -65,22 +65,9 @@
 #define QUEUE_SIZE 128
 #define LAYER_MOD_KEY ((uint8_t)(LAYER_MODIFIER_KEY - A1))
 
-typedef struct
-{
-  bool caps_lock : 1;
-  bool num_lock : 1;
-  bool scroll_lock : 1;
-} indicator_state_t;
-
 indicator_state_t keyboard_indicator_state = {0, 0, 0};
 keycode_buffer_t keycode_buffer = {0};
 keycode_buffer_t consumer_control_buffer = {0};
-
-typedef struct
-{
-  uint8_t ch;
-  bool done;
-} other_board_t;
 
 typedef struct
 {
@@ -88,7 +75,6 @@ typedef struct
   uint8_t ch[QUEUE_SIZE];
   modifier_t modifiers;
 } queue_t;
-
 
 static void send_consumer_control_block();
 static void send_keyboard_report_block();
@@ -109,20 +95,6 @@ void display_task();
 //--------------------------------------------------------------------+
 
 #define IS_RGBW false
-
-/* Blink pattern
- * - 250 ms  : device not mounted
- * - 1000 ms : device mounted
- * - 2500 ms : device is suspended
- */
-enum
-{
-  BLINK_NOT_MOUNTED = 250,
-  BLINK_MOUNTED = 1000,
-  BLINK_SUSPENDED = 2500,
-};
-
-static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 
 void led_blinking_task(void);
 void hid_task(void);
@@ -381,22 +353,26 @@ void display_task()
 //--------------------------------------------------------------------+
 
 // Invoked when device is mounted
-void tud_mount_cb(void) { blink_interval_ms = BLINK_MOUNTED; }
+void tud_mount_cb(void) {
+    /* blink_interval_ms = BLINK_MOUNTED;  */
+}
 
 // Invoked when device is unmounted
-void tud_umount_cb(void) { blink_interval_ms = BLINK_NOT_MOUNTED; }
+void tud_umount_cb(void) { 
+    /* blink_interval_ms = BLINK_NOT_MOUNTED;  */
+}
 
 // Invoked when usb bus is suspended
 void tud_suspend_cb(bool remote_wakeup_en)
 {
   (void)remote_wakeup_en;
-  blink_interval_ms = BLINK_SUSPENDED;
+  /* blink_interval_ms = BLINK_SUSPENDED; */
 }
 
 // Invoked when usb bus is resumed
 void tud_resume_cb(void)
 {
-  blink_interval_ms = tud_mounted() ? BLINK_MOUNTED : BLINK_NOT_MOUNTED;
+  /* blink_interval_ms = tud_mounted() ? BLINK_MOUNTED : BLINK_NOT_MOUNTED; */
 }
 
 //--------------------------------------------------------------------+
