@@ -31,6 +31,7 @@ function (setup_side FIRMWARE)
     src/keycode_buffer.c
     src/keyboard_led.c
     src/firmware_timer.c
+    src/key_tracking.c
     src/layer.c
     src/ui/ui.c
     src/ui/timer.c
